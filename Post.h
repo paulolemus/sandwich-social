@@ -19,6 +19,9 @@
 #ifndef EE205_FINAL_POST_H_
 #define EE205_FINAL_POST_H_
 
+// REFER TO THIS FOR MAX POST SIZE
+#define POST_MAX 100
+
 #include <string>
 #include <chrono>
 #include <ctime>

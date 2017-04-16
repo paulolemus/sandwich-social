@@ -28,9 +28,9 @@ struct Node {
     Node* children[27];
 
     Node(char value, bool isWord);
-    char getLower();
-    Node* getChild(char ch);
-    Node* addChild(char ch);
+    char getLower();//return value
+    Node* getChild(char ch);//returns pointer if exists
+    Node* addChild(char ch);//takes a char, adds to children[], returns pointer
 };
 
 class Trie {
@@ -63,6 +63,7 @@ Node::Node(char value, bool isWord) :
     isWord(isWord) {
     for(int i = 0 i < 27; ++i) children[i] = nullptr;
 }
+
 char Node::getLower() {
     char ch = value;
     if(ch >= 'A' && ch <= 'Z') ch += 32;
@@ -70,8 +71,24 @@ char Node::getLower() {
 }
 Node* Node::getChild(char ch) {
     if(ch >= 'A' && ch <= 'Z') ch += 32;
+    for(int it = 0; it < 27; it++){
+    	if(children[it]->value == ch){
+	return children[it];
+	}
+    }
+    return NULL;
 }
-
+Node* Node::addChild(char ch){
+    if(ch >= 'A' && ch <= 'Z') ch+= 32;//convert UC to LC
+    for(int it = 0; it < 27; it++){
+    	if(children[it] != NULL){
+		Node* temp = new Node(ch, 0);
+		children[it] = temp;
+		return children[it];
+	}
+    }
+    return NULL;
+}
 
 } // namespace sandwich
 #endif // SANDWICH_TRIE_H_

@@ -11,26 +11,32 @@ int main(int argc, char ** argv){
 
 	int yMax, xMax;
 	getmaxyx(stdscr, yMax, xMax);
-
-	WINDOW * menuwin = newwin(7, xMax-12, yMax-8, 5);
+	WINDOW * userInfoWin = newwin(15, xMax-12,  0, 5); 
+	box(userInfoWin, 0, 0); 
+	WINDOW * menuwin = newwin(9, xMax-12, yMax-8, 5);
 	box(menuwin, 0, 0);
 	refresh();
 	wrefresh(menuwin);
-
+	wrefresh(userInfoWin); 
 	keypad(menuwin, true);
 
 	string choices[5] = {"Post To Wall", "View Friend List", "Add Friend", "Edit Profile", "View Friend"};
 
+	mvwprintw(userInfoWin, 2, 2, "USER INFORMATION COMING SHORTLY....\n"); 
+
 	int choice;
 	int highlight = 0;
 
+
 	while(1){
 		for(int i = 0; i < 5; i++){
+			mvwprintw(menuwin, 1, 1, "SELECT AN OPTION BELOW:\n"); 
+			mvwprintw(menuwin, 2, 1, "-----------------------\n"); 
 			if(i == highlight){
 				wattron(menuwin, A_REVERSE);
-				mvwprintw(menuwin, i+1, 1, choices[i].c_str());
+			}	
+				mvwprintw(menuwin, i+3, 1, choices[i].c_str());
 				wattroff(menuwin, A_REVERSE);
-			}
 			}
 		choice = wgetch(menuwin);
 
@@ -55,8 +61,8 @@ int main(int argc, char ** argv){
 		if(choice == 10){
 			break;
 		}
-	printw("Your choice was: %s", choices[highlight].c_str());
-	endwin();
 	}
-
+	getch(); 	
+	endwin();
+	return 0; 
 }

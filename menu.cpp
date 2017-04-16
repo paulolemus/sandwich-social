@@ -9,11 +9,21 @@ int main(int argc, char ** argv){
 	noecho();
 	cbreak();
 
-	int yMax, xMax;
+	int yMax, xMax, userXbeg, userYbeg,menuXbeg, menuYbeg, userDepth, menuDepth, userWidth, menuWidth;
 	getmaxyx(stdscr, yMax, xMax);
-	WINDOW * userInfoWin = newwin(20, xMax-12,  0, 5); 
+
+	userDepth = yMax *(.625); // 5/8
+	menuDepth = yMax *(.25);  // 1/4 = 2/8
+	userWidth = xMax - 10; 
+	menuWidth = xMax - 10; 
+	userXbeg = 5; 
+	menuXbeg = 5; 
+	userYbeg = 0;  
+	menuYbeg = userDepth+1;
+
+	WINDOW * userInfoWin = newwin(userDepth, userWidth,  userYbeg, userXbeg); 
 	box(userInfoWin, 0, 0); 
-	WINDOW * menuwin = newwin(9, xMax-12, yMax-10, 5);
+	WINDOW * menuwin = newwin(menuDepth, menuWidth, menuYbeg, menuXbeg);
 	box(menuwin, 0, 0);
 	refresh();
 	wrefresh(menuwin);
@@ -25,14 +35,19 @@ int main(int argc, char ** argv){
 	mvwprintw(userInfoWin, 2, 2, "USER INFORMATION COMING SHORTLY...."); 
 	wrefresh(userInfoWin); 
 
-	int choice;
+	int choice, printRange;
 	int highlight = 0;
 
-
+	if(menuDepth < 9){ //the depth is less than the amt of choices
+		printRange = menuDepth - 4;//-box(2)-heading(2) = -4
+	}
+	else{
+		printRange = 5; 
+	}
 	while(1){
-		for(int i = 0; i < 5; i++){
+		for(int i = 0; i < printRange; i++){
 			mvwprintw(menuwin, 1, 1, "SELECT AN OPTION BELOW:"); 
-			mvwprintw(menuwin, 2, 1, "-----------------------"); 
+			mvwprintw(menuwin, 2, 1, "---------------%d------", printRange); 
 			if(i == highlight){
 				wattron(menuwin, A_REVERSE);
 			}	
@@ -59,7 +74,7 @@ int main(int argc, char ** argv){
 		
 		
 		}
-		if(choice == 10){
+		if(choice == 10){ //not sure what this does
 			break;
 		}
 	}

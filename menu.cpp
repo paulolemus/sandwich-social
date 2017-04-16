@@ -11,9 +11,9 @@ int main(int argc, char ** argv){
 
 	int yMax, xMax;
 	getmaxyx(stdscr, yMax, xMax);
-	WINDOW * userInfoWin = newwin(15, xMax-12,  0, 5); 
+	WINDOW * userInfoWin = newwin(20, xMax-12,  0, 5); 
 	box(userInfoWin, 0, 0); 
-	WINDOW * menuwin = newwin(9, xMax-12, yMax-8, 5);
+	WINDOW * menuwin = newwin(9, xMax-12, yMax-10, 5);
 	box(menuwin, 0, 0);
 	refresh();
 	wrefresh(menuwin);
@@ -22,7 +22,8 @@ int main(int argc, char ** argv){
 
 	string choices[5] = {"Post To Wall", "View Friend List", "Add Friend", "Edit Profile", "View Friend"};
 
-	mvwprintw(userInfoWin, 2, 2, "USER INFORMATION COMING SHORTLY....\n"); 
+	mvwprintw(userInfoWin, 2, 2, "USER INFORMATION COMING SHORTLY...."); 
+	wrefresh(userInfoWin); 
 
 	int choice;
 	int highlight = 0;
@@ -30,8 +31,8 @@ int main(int argc, char ** argv){
 
 	while(1){
 		for(int i = 0; i < 5; i++){
-			mvwprintw(menuwin, 1, 1, "SELECT AN OPTION BELOW:\n"); 
-			mvwprintw(menuwin, 2, 1, "-----------------------\n"); 
+			mvwprintw(menuwin, 1, 1, "SELECT AN OPTION BELOW:"); 
+			mvwprintw(menuwin, 2, 1, "-----------------------"); 
 			if(i == highlight){
 				wattron(menuwin, A_REVERSE);
 			}	

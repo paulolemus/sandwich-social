@@ -17,10 +17,10 @@ Friends         - HashSet<User*>
 
 Functions:
 
-search(std::string)
-    This returns true if the tree contains a matching string.
 add(std::string)
     Adds the string to the trie structure.
+search(std::string)
+    This returns true if the tree contains a matching string.
 complete(std::string) 
     Returns a vector of all possible strings that are completions of it.
 delete(std::string)

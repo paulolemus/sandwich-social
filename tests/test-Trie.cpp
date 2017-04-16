@@ -4,9 +4,14 @@
  */
 
 #include <gtest/gtest.h>
+#include "../Trie.h"
 
 TEST(Trie, assert_gtest_compiles_and_runs) {
     ASSERT_TRUE(true);
+}
+
+TEST(Trie, constructor) {
+    Trie trie;
 }
 
 int main(int argc, char** argv) {

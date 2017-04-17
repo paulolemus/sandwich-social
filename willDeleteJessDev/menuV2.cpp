@@ -1,6 +1,10 @@
+#include <iostream>
+#include <ncurses.h>
+
+
 #include "Menu.h"
 using namespace std;
-void print_menu(WINDOW *menu_win, int highLighter, int num_choices, string c[]);
+void print_menu(WINDOW *w, int h, int n, string s[],int d); 
 
 int main(int argc, char ** argv){
 
@@ -34,7 +38,7 @@ int main(int argc, char ** argv){
 	mvwprintw(userInfoWin, 2, 2, "USER INFORMATION COMING SHORTLY...."); 
 	wrefresh(userInfoWin); 
 
-	int choice, printRange;
+	int choice;
 	int highlight = 1;
 
 	print_menu(menuwin, highlight, n_choices, choices, menuDepth);
@@ -71,39 +75,26 @@ int main(int argc, char ** argv){
 
 
 
+void print_menu(WINDOW *w, int h, int n, string s[],int d){ 
+	int x,y,i, min_depth, printRange, miniRange; 
+	x=2;
+	y=3; 
+	min_depth = n + 4; //choices + header + box edges
+	box(w, 0, 0); 
+	mvwprintw(w, 1, 1, "PRESS ENTER TO SELECT AN OPTION BELOW:"); 
+	mvwprintw(w, 2, 1, "--------------------------------------"); 
 
-/*
-		for(int i = 0; i < printRange; i++){
-			mvwprintw(menuwin, 1, 1, "PRESS ENTER TO SELECT AN OPTION BELOW:"); 
-			mvwprintw(menuwin, 2, 1, "--------------------------------------"); 
-			if(i == highlight){
-				wattron(menuwin, A_REVERSE);
-			}	
-				mvwprintw(menuwin, i+3, 1, choices[i].c_str());
-				wattroff(menuwin, A_REVERSE);
-			}
-		choice = wgetch(menuwin);
+	if (d < min_depth)  printRange = d - 4;
+	else printRange = d;    
 
-		switch(choice){
-			case KEY_UP:
-				highlight--;
-				if(highlight == -1){
-				highlight = 0;
-				}
-				break;
-			case KEY_DOWN:
-				highlight++;
-				if(highlight == 5){
-					highlight = 4;
-				}
-				break;
-			default:
-				break;
-		
-		
-		}
-		if(choice == 10){ //not sure what this does
-			break;
-		}
-	}
-*/
+	for (i=0; i< n; i++){
+		if(h == i+1){ //highlighter = present choice
+			wattron(w, A_REVERSE);
+			mvwprintw(w, y, x, "%s", s[i].c_str());
+			wattroff(w, A_REVERSE); 
+		}   
+		else mvwprintw(w, y, x, "%s", s[i].c_str()); 
+		y++; 
+	}   
+	wrefresh(w); 
+} 

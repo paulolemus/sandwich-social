@@ -1,58 +1,54 @@
-//intro stuff
+// intro stuff
 //
+#include <ncurses.h>
+#include <iostream>
 
-#ifndef _MENU_H
-#define _MENU_H
+/*
+want to have class that determines the depth and width 
+	of the window we want 
+	based on the xMax and yMax values of the current screen
 
-#define NUM_C 5
-#include<ncurses.h>
-#include<string>
-using namespace std;
+want to have a setup for the window
 
-class myMenus{
-	private: 
-		int yMax;
-		int xMax;
-		int yBeg;	
-		int xBeg;
-		int Depth;
-		int Width;
-		int Fraction; 
+
+*/
+
+
+int depthCalc(int a, int b){
+	return a*b; 
+}
+
+
+
+
+void homescreenSetup(WINDOW* wTop, WINDOW* wBottom, int y, int x){
+//this function will set up two windows 
+// --- both centered (same x beginning location and width)
+// --- the top will be the workspace 
+// -------- it will be larger than the bottom 
+// -------- so they have different depths and y beginning locations
+// --- the bottom will be just for the menu
+	int topD, bottomD, tyBeg, byBeg, xBeg, width ; 
+
+	topD = y *(.625); // 5/8 of the screen (1/8 for blank space)
+	bottomD = y *(.25); //  1/4 = 2/8 of the screen
+	tyBeg = 0; //top duh
+	byBeg = topD +1; //starts where top leaves off + room
+	xBeg = 5; 
+	width = x - 10; //width of start screen is passed in and - 2X xbeg
 	
-		int num_choices;
-		string choices [NUM_C]; 
-		
-		WINDOW * menuTemplate;
-	public:
-		myMenus();
-		myMenus(int a, int b); 
+	wTop = newwin(topD, width, tyBeg, xBeg); //start new window
+	box(wTop, 0, 0);  //sets up the box in the visual screen
 
-		void setyMax(int a); 
-		void setxMax(int a); 
+	wBottom = newwin(bottomD, width, byBeg, xBeg); 
+	box(wBottom, 0, 0); 
 
-		//double inputs
-		void setyBeg(int a, int b); 
-		void setxBeg(int a, int b); 
-		void setDepth(int a, int b); 
-		void setWidth(int a, int b);
-
-		void setFraction (int a); 
-		void setmenuTemplate(int a, int b, int c, int d);
-
-		//getters
-		int getyMax(); 
-		int getxMax(); 
-		int getyBeg(); 
-		int getxBeg(); 
-		int getDepth(); 
-		int getWidth(); 	
-		WINDOW * getmenuTemplate();
-
-		//print
-		void print_menu(WINDOW * w, int h, int n, string s[], int d); 	
-}; 
+	mvwprintw(wTop, 2,2, "user stuff");
 
 
+	refresh(); // SUPER IMPORTANT: this must be first 
+	wrefresh(wBottom);	
+	wrefresh(wTop); //prints the window	return; 	
+}
 
 
-#endif // _MENU_H

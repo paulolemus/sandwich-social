@@ -102,7 +102,7 @@ TEST(Trie, complete_basic) {
     std::vector<std::string> vec;
 
     ASSERT_TRUE( trie.add(name) );
-    vec = trie.complete("s");
+    vec = trie.complete();
     ASSERT_EQ( vec.size(), 1 );
     ASSERT_EQ( vec[0], name );
 }

@@ -225,14 +225,30 @@ std::vector<std::string> Trie::complete(const std::string name) {
     return words;
 }
 
+/* This traverses the tree in a preorder fashion.
+ * TODO: Improve efficiency and runtime
+ */
 std::vector<std::string> Trie::preorder(Node* root) {
 
     std::vector<std::string> words;
 
-    // Guard
-    if(root == nullptr) return words;
-    //else if()
-        
+    if(root == nullptr);
+    else if(root->isLeaf) {
+        std::string substring(1, root->value);
+        words.push_back(substring);
+    }
+    else {
+        for(unsigned int i = 0; i < 27; ++i) {
+            if(root->children[i] != nullptr) {
+                auto vec = preorder(root->children[i]);
+                for(auto rightstring : vec) {
+                    std::string substring(1, root->value);
+                    substring += rightstring;
+                    words.push_back(substring);
+                }
+            }
+        }
+    }
     return words;
 }
 

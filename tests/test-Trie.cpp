@@ -1,11 +1,12 @@
 /* File: test-Trie.cpp
- * Name: 
+ * Name: Paulo Lemus
  * Date: 4/12/2017
  */
 
 #include <gtest/gtest.h>
 
 #include <string>
+#include <vector>
 #include "../Trie.h"
 
 TEST(Trie, assert_gtest_compiles_and_runs) {
@@ -77,6 +78,33 @@ TEST(Trie, search_valid_name) {
     std::string name = "Penny Gallow";
     ASSERT_TRUE( trie.add(name) );
     ASSERT_TRUE( trie.search(name) );
+}
+
+TEST(Trie, search_diff_capitalization) {
+    sandwich::Trie trie;
+
+    std::string name0 = "Penny Lucas";
+    std::string name1 = "penny lucas";
+    std::string name2 = "pEnnY lUCAS";
+    std::string name3 = " Penny Lucas";
+    
+    EXPECT_TRUE( trie.add(name0) );
+    EXPECT_TRUE( trie.search(name0) );
+    EXPECT_TRUE( trie.search(name1) );
+    EXPECT_TRUE( trie.search(name2) );
+    EXPECT_FALSE( trie.search(name3) );
+}
+
+TEST(Trie, complete_basic) {
+    sandwich::Trie trie;
+
+    std::string name = "Szechuan Sauce";
+    std::vector<std::string> vec;
+
+    ASSERT_TRUE( trie.add(name) );
+    vec = trie.complete("s");
+    ASSERT_EQ( vec.size(), 1 );
+    ASSERT_EQ( vec[0], name );
 }
 
 

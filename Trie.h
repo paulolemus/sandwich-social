@@ -1,5 +1,5 @@
 /* File: Trie.h
- * Name:
+ * Name: Paulo, Matt
  * Date: 4/15/2017
  * Team: Sandwich
  */
@@ -12,6 +12,7 @@
 #ifndef SANDWICH_TRIE_H_
 #define SANDWICH_TRIE_H_
 
+#include <iostream> // debugging
 #include <cctype>
 #include <string>
 #include <vector>
@@ -27,15 +28,24 @@ struct Node {
     bool isWord;
     Node* children[27];
 
+    // Functions
+    
     Node(char value, bool isWord);
-    char getLower();//return value
-    Node* getChild(char ch);//returns pointer if exists
-    Node* addChild(char ch);//takes a char, adds to children[], returns pointer
+
+    // Returns the value converted to lowercase
+    char getLower();
+    // Returns the node with the given value
+    Node* getChild(const char ch);
+    // Creates new node if it doesn't exist and returns
+    // a pointer to it. Otherwise, it just returns a pointer
+    // to the existing node
+    Node* addChild(const char ch, const bool isWord);
+
 };
 
 class Trie {
 
-    Node root('\0');
+    Node* root; // value = '\0', isWord = false;
     
 public:
 
@@ -45,14 +55,14 @@ public:
     /* Functions */
 
     // Add: Simply adds string to the trie structure
-    bool add(std::string);
+    bool add(const std::string name);
 
     // Search: Return true if the tree contains exact string
-    bool search(std::string);
+    bool search(const std::string name);
     
     // Complete: Give a string, this returns a vector
     // of all the possible completions of the string.
-    std::vector<std::string> complete(std::string);
+    std::vector<std::string> complete(std::string name);
 };
 
 ///////////////////////////////////
@@ -61,7 +71,7 @@ public:
 Node::Node(char value, bool isWord) : 
     value(value), 
     isWord(isWord) {
-    for(int i = 0 i < 27; ++i) children[i] = nullptr;
+    for(int i = 0; i < 27; ++i) children[i] = nullptr;
 }
 
 char Node::getLower() {
@@ -69,25 +79,108 @@ char Node::getLower() {
     if(ch >= 'A' && ch <= 'Z') ch += 32;
     return ch;
 }
-Node* Node::getChild(char ch) {
-    if(ch >= 'A' && ch <= 'Z') ch += 32;
-    for(int it = 0; it < 27; it++){
-    	if(children[it]->value == ch){
-	return children[it];
-	}
+
+Node* Node::getChild(const char ch) {
+
+    // Guard
+    if(!isalpha(ch) && ch != ' ') return nullptr;
+
+    // convert to index
+    int index = ch;
+    if(index == ' ') index = 26;
+    else {
+        if(index >= 'A' && index <= 'Z') {
+            index += 32;
+        }
+        index -= 'a';
     }
-    return NULL;
+    return children[index];
 }
-Node* Node::addChild(char ch){
-    if(ch >= 'A' && ch <= 'Z') ch+= 32;//convert UC to LC
-    for(int it = 0; it < 27; it++){
-    	if(children[it] != NULL){
-		Node* temp = new Node(ch, 0);
-		children[it] = temp;
-		return children[it];
-	}
+
+Node* Node::addChild(const char ch, const bool isWord){
+
+    // Guard
+    if(!isalpha(ch) && ch != ' ') return nullptr;
+
+    // Convert letter to index
+    int index = ch;
+    if(index == ' ') index = 26;
+    else {
+        if(index >= 'A' && index <= 'Z') {
+            index += 32;
+        }
+        index -= 'a';
     }
-    return NULL;
+
+    // Add node if nonexistant, then return index
+    if(children[index] == nullptr) {
+        children[index] = new Node(ch, isWord);
+    }
+    return children[index];
+}
+
+////////////////////////////////
+
+Trie::Trie() : root(new Node('\0', false)) {}
+
+bool Trie::add(const std::string name) {
+
+    // Validate string
+    for(unsigned int i = 0; i < name.size(); ++i) {
+        if( !isalpha(name[i]) && name[i] != ' ') {
+            return false;
+        }
+    }
+    
+    // Iterate through tree adding nodes
+    Node* current = root;
+    Node* next;
+    for(unsigned int i = 0; i < name.size(); ++i) {
+
+        int index = name[i];
+        if(index == ' ') index = 26;
+        else {
+            if(index >= 'A' && index <= 'Z') {
+                index += 32;
+            }
+            index -= 'a';
+        }
+
+        next = current->getChild(index);
+        if(next == nullptr) {
+            current = current->addChild(name[i], false);
+        }
+        else {
+            current = next;
+        }
+    }
+
+    if(current->isWord) return false;
+    else {
+        current->isWord = true;
+        return true;
+    }
+}
+
+bool Trie::search(const std::string name) {
+    
+    // Validate string
+    for(unsigned int i = 0; i < name.size(); ++i) {
+        if( !isalpha(name[i]) && name[i] != ' ') {
+            return false;
+        }   
+    }
+
+    // Search through tree
+    Node* node = root;
+    for(unsigned int i = 0; i < name.size(); ++i) {
+
+        node = node->getChild( name[i] );
+        if(node == nullptr) return false;
+    }
+
+    if(node->isWord) return true;
+    else             return false;
 }
 
 } // namespace sandwich

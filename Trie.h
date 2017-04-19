@@ -60,9 +60,18 @@ public:
     // Search: Return true if the tree contains exact string
     bool search(const std::string name);
     
+    // Return all possible strings
+    std::vector<std::string> complete();
+
     // Complete: Give a string, this returns a vector
     // of all the possible completions of the string.
-    std::vector<std::string> complete(std::string name);
+    std::vector<std::string> complete(const std::string name);
+
+
+private:
+    // Preorder traversal:
+    // Current, left right
+    std::vector<std::string> preorder(Node* root);
 };
 
 ///////////////////////////////////
@@ -182,6 +191,41 @@ bool Trie::search(const std::string name) {
     if(node->isWord) return true;
     else             return false;
 }
+
+std::vector<std::string> Trie::complete() {
+    return preorder(root);
+}
+
+
+/* ALGORITHM:
+ * 1. Navigate to the place where string given ends.
+ * 2. Work way down each branch until a leaf is reached.
+ *    Along the way, any time we hit a word, add that component 
+ *    to the vector will the name string
+ */
+std::vector<std::string> Trie::complete(const std::string name) {
+
+    std::vector<std::string> words;
+
+    // Guard
+    for(unsigned int i = 0; i < name.size(); ++i) {
+        if( !isalpha(name[i] && name[i] != ' ') return words;
+    }
+
+    // Iterate to last node of the word
+    Node* node = root;
+    for(unsigned int i = 0; i < name.size(); ++i) {
+        node = node->getChild( name[i] );
+        if(node == nullptr) return words;
+    }
+    return words;
+}
+
+std::vector<std::string> Trie::preorder(Node* root) {
+    std::vector<std::string> words;
+    return words;
+}
+
 
 } // namespace sandwich
 #endif // SANDWICH_TRIE_H_

@@ -209,7 +209,7 @@ std::vector<std::string> Trie::complete(const std::string name) {
 
     // Guard
     for(unsigned int i = 0; i < name.size(); ++i) {
-        if( !isalpha(name[i] && name[i] != ' ') return words;
+        if( !isalpha(name[i]) && name[i] != ' ') return words;
     }
 
     // Iterate to last node of the word

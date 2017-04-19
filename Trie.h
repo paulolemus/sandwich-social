@@ -26,6 +26,7 @@ namespace sandwich {
 struct Node {
     char value;
     bool isWord;
+    bool isLeaf;
     Node* children[27];
 
     // Functions
@@ -79,7 +80,8 @@ private:
 ///////////////////////////////////
 Node::Node(char value, bool isWord) : 
     value(value), 
-    isWord(isWord) {
+    isWord(isWord),
+    isLeaf(true) {
     for(int i = 0; i < 27; ++i) children[i] = nullptr;
 }
 
@@ -92,7 +94,8 @@ char Node::getLower() {
 Node* Node::getChild(const char ch) {
 
     // Guard
-    if(!isalpha(ch) && ch != ' ') return nullptr;
+    if((!isalpha(ch) && ch != ' ') || isLeaf) 
+        return nullptr;
 
     // convert to index
     int index = ch;
@@ -123,6 +126,7 @@ Node* Node::addChild(const char ch, const bool isWord){
 
     // Add node if nonexistant, then return index
     if(children[index] == nullptr) {
+        isLeaf = false;
         children[index] = new Node(ch, isWord);
     }
     return children[index];
@@ -222,7 +226,13 @@ std::vector<std::string> Trie::complete(const std::string name) {
 }
 
 std::vector<std::string> Trie::preorder(Node* root) {
+
     std::vector<std::string> words;
+
+    // Guard
+    if(root == nullptr) return words;
+    //else if()
+        
     return words;
 }
 

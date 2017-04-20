@@ -31,10 +31,8 @@ struct Node {
 
     // Functions
     
-    Node(char value, bool isWord);
+    Node(const char value, const bool isWord);
 
-    // Returns the value converted to lowercase
-    char getLower();
     // Returns the node with the given value
     Node* getChild(const char ch);
     // Creates new node if it doesn't exist and returns
@@ -56,17 +54,17 @@ public:
     /* Functions */
 
     // Add: Simply adds string to the trie structure
-    bool add(const std::string name);
+    bool add(std::string name);
 
     // Search: Return true if the tree contains exact string
-    bool search(const std::string name);
+    bool search(std::string name);
     
     // Return all possible strings
     std::vector<std::string> complete();
 
     // Complete: Give a string, this returns a vector
     // of all the possible completions of the string.
-    std::vector<std::string> complete(const std::string name);
+    std::vector<std::string> complete(std::string name);
 
 
 private:
@@ -78,18 +76,13 @@ private:
 ///////////////////////////////////
 //        IMPLEMENTATIONS        //
 ///////////////////////////////////
-Node::Node(char value, bool isWord) : 
+Node::Node(const char value, const bool isWord) : 
     value(value), 
     isWord(isWord),
     isLeaf(true) {
     for(int i = 0; i < 27; ++i) children[i] = nullptr;
 }
 
-char Node::getLower() {
-    char ch = value;
-    if(ch >= 'A' && ch <= 'Z') ch += 32;
-    return ch;
-}
 
 Node* Node::getChild(const char ch) {
 
@@ -132,16 +125,19 @@ Node* Node::addChild(const char ch, const bool isWord){
     return children[index];
 }
 
-////////////////////////////////
+///////////////////////////////////////////////
 
 Trie::Trie() : root(new Node('\0', false)) {}
 
-bool Trie::add(const std::string name) {
+bool Trie::add(std::string name) {
 
-    // Validate string
+    // Validate string / convert upper to lower
     for(unsigned int i = 0; i < name.size(); ++i) {
         if( !isalpha(name[i]) && name[i] != ' ') {
             return false;
+        }
+        if(name[i] >= 'A' && name[i] <= 'Z') {
+            name[i] = name[i] + 32;
         }
     }
     
@@ -151,13 +147,8 @@ bool Trie::add(const std::string name) {
     for(unsigned int i = 0; i < name.size(); ++i) {
 
         int index = name[i];
-        if(index == ' ') index = 26;
-        else {
-            if(index >= 'A' && index <= 'Z') {
-                index += 32;
-            }
-            index -= 'a';
-        }
+        if(index == ' ') index  = 26;
+        else             index -= 'a';
 
         next = current->getChild(index);
         if(next == nullptr) {
@@ -175,13 +166,16 @@ bool Trie::add(const std::string name) {
     }
 }
 
-bool Trie::search(const std::string name) {
+bool Trie::search(std::string name) {
     
     // Validate string
     for(unsigned int i = 0; i < name.size(); ++i) {
         if( !isalpha(name[i]) && name[i] != ' ') {
             return false;
-        }   
+        }  
+        if(name[i] >= 'A' && name[i] <= 'Z') {
+            name[i] = name[i] + 32;
+        }
     }
 
     // Search through tree
@@ -196,8 +190,25 @@ bool Trie::search(const std::string name) {
     else             return false;
 }
 
+/* Algorithm:
+ * Get the preorder for each node below the root.
+ * Append each word in each vector to one single words
+ * vector. This is done to prevent the root's null char
+ * from being placed at the beginning of each string
+ */
 std::vector<std::string> Trie::complete() {
-    return preorder(root);
+
+    std::vector<std::string> words;
+
+    for(unsigned int i = 0; i < 27; ++i) {
+        if(root->children[i] != nullptr) {
+            auto vec = preorder(root->children[i]);
+            for(auto word : vec) {
+                words.push_back(word);
+            }
+        }
+    }
+    return words;
 }
 
 
@@ -207,13 +218,17 @@ std::vector<std::string> Trie::complete() {
  *    Along the way, any time we hit a word, add that component 
  *    to the vector will the name string
  */
-std::vector<std::string> Trie::complete(const std::string name) {
+std::vector<std::string> Trie::complete(std::string name) {
 
     std::vector<std::string> words;
 
-    // Guard
+    // Guard / convert upper to lower
+    if(name.size() < 1) return words;
     for(unsigned int i = 0; i < name.size(); ++i) {
         if( !isalpha(name[i]) && name[i] != ' ') return words;
+        if(name[i] >= 'A' && name[i] <= 'Z') {
+            name[i] = name[i] + 32;
+        }
     }
 
     // Iterate to last node of the word
@@ -222,27 +237,47 @@ std::vector<std::string> Trie::complete(const std::string name) {
         node = node->getChild( name[i] );
         if(node == nullptr) return words;
     }
+
+    // Add string if current node is a word
+    if(node->isWord) words.push_back(name);
+
+    // Call preorder on all children to get completion
+    for(unsigned int i = 0; i < 27; ++i) {
+        if(node->children[i] != nullptr) {
+            auto vec = preorder(node->children[i]);
+            for(auto substring : vec) {
+                words.push_back(name + substring);
+            }
+        }
+    }
+
     return words;
 }
 
 /* This traverses the tree in a preorder fashion.
  * TODO: Improve efficiency and runtime
  */
-std::vector<std::string> Trie::preorder(Node* root) {
+std::vector<std::string> Trie::preorder(Node* node) {
 
     std::vector<std::string> words;
 
-    if(root == nullptr);
-    else if(root->isLeaf) {
-        std::string substring(1, root->value);
+    if(node == nullptr);
+    else if(node->isLeaf) {
+        std::string substring(1, node->value);
         words.push_back(substring);
     }
     else {
+        // Push back current value if current node is a word
+        if(node->isWord) {
+            std::string substring(1, node->value);
+            words.push_back(substring);
+        }
+        // Append string from beneath to current node
         for(unsigned int i = 0; i < 27; ++i) {
-            if(root->children[i] != nullptr) {
-                auto vec = preorder(root->children[i]);
+            if(node->children[i] != nullptr) {
+                auto vec = preorder(node->children[i]);
                 for(auto rightstring : vec) {
-                    std::string substring(1, root->value);
+                    std::string substring(1, node->value);
                     substring += rightstring;
                     words.push_back(substring);
                 }

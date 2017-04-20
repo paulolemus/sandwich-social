@@ -46,6 +46,9 @@ public:
     // Setters
     void setMsg (std::string& message);
     void setTime(std::string& time);
+
+    // Special
+    bool operator== (const Post& post);
 };
 
 // Implementations
@@ -89,6 +92,15 @@ void Post::setMsg(std::string& message) {
 void Post::setTime(std::string& time) {
     this->time = time;
 }
+
+bool Post::operator== (const Post& post) {
+    if(this->message == post.message &&
+       this->time    == post.time) {
+        return true;
+    }
+    else return false;
+}
+
 
 } // namespace sandwich
 

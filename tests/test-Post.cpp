@@ -71,6 +71,14 @@ TEST(Post, getCMessage) {
     ASSERT_EQ(stdCMsg, message);
 }
 
+TEST(Post, equals_overload) {
+    std::string message = "Hello World!";
+
+    sandwich::Post post0(message);
+    sandwich::Post post1(message);
+    ASSERT_TRUE(post0 == post1);
+}
+
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

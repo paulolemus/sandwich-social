@@ -33,7 +33,6 @@
 
 #include <vector>
 #include <string>
-//#include <unordered_map>
 #include "Post.h"
 
 namespace sandwich {
@@ -49,7 +48,8 @@ class User {
 
 public:
     User();
-
+    
+    static bool validateUsername(const std::string name);
 
 };
 

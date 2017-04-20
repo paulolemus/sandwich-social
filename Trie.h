@@ -54,17 +54,17 @@ public:
     /* Functions */
 
     // Add: Simply adds string to the trie structure
-    bool add(std::string name);
+    bool add(std::string key);
 
     // Search: Return true if the tree contains exact string
-    bool search(std::string name);
+    bool search(std::string key);
     
     // Return all possible strings
     std::vector<std::string> complete();
 
     // Complete: Give a string, this returns a vector
     // of all the possible completions of the string.
-    std::vector<std::string> complete(std::string name);
+    std::vector<std::string> complete(std::string key);
 
 
 private:
@@ -129,30 +129,30 @@ Node* Node::addChild(const char ch, const bool isWord){
 
 Trie::Trie() : root(new Node('\0', false)) {}
 
-bool Trie::add(std::string name) {
+bool Trie::add(std::string key) {
 
     // Validate string / convert upper to lower
-    for(unsigned int i = 0; i < name.size(); ++i) {
-        if( !isalpha(name[i]) && name[i] != ' ') {
+    for(unsigned int i = 0; i < key.size(); ++i) {
+        if( !isalpha(key[i]) && key[i] != ' ') {
             return false;
         }
-        if(name[i] >= 'A' && name[i] <= 'Z') {
-            name[i] = name[i] + 32;
+        if(key[i] >= 'A' && key[i] <= 'Z') {
+            key[i] = key[i] + 32;
         }
     }
     
     // Iterate through tree adding nodes
     Node* current = root;
     Node* next;
-    for(unsigned int i = 0; i < name.size(); ++i) {
+    for(unsigned int i = 0; i < key.size(); ++i) {
 
-        int index = name[i];
+        int index = key[i];
         if(index == ' ') index  = 26;
         else             index -= 'a';
 
         next = current->getChild(index);
         if(next == nullptr) {
-            current = current->addChild(name[i], false);
+            current = current->addChild(key[i], false);
         }
         else {
             current = next;
@@ -166,23 +166,23 @@ bool Trie::add(std::string name) {
     }
 }
 
-bool Trie::search(std::string name) {
+bool Trie::search(std::string key) {
     
     // Validate string
-    for(unsigned int i = 0; i < name.size(); ++i) {
-        if( !isalpha(name[i]) && name[i] != ' ') {
+    for(unsigned int i = 0; i < key.size(); ++i) {
+        if( !isalpha(key[i]) && key[i] != ' ') {
             return false;
         }  
-        if(name[i] >= 'A' && name[i] <= 'Z') {
-            name[i] = name[i] + 32;
+        if(key[i] >= 'A' && key[i] <= 'Z') {
+            key[i] = key[i] + 32;
         }
     }
 
     // Search through tree
     Node* node = root;
-    for(unsigned int i = 0; i < name.size(); ++i) {
+    for(unsigned int i = 0; i < key.size(); ++i) {
 
-        node = node->getChild( name[i] );
+        node = node->getChild( key[i] );
         if(node == nullptr) return false;
     }
 
@@ -216,37 +216,37 @@ std::vector<std::string> Trie::complete() {
  * 1. Navigate to the place where string given ends.
  * 2. Work way down each branch until a leaf is reached.
  *    Along the way, any time we hit a word, add that component 
- *    to the vector will the name string
+ *    to the vector will the key string
  */
-std::vector<std::string> Trie::complete(std::string name) {
+std::vector<std::string> Trie::complete(std::string key) {
 
     std::vector<std::string> words;
 
     // Guard / convert upper to lower
-    if(name.size() < 1) return words;
-    for(unsigned int i = 0; i < name.size(); ++i) {
-        if( !isalpha(name[i]) && name[i] != ' ') return words;
-        if(name[i] >= 'A' && name[i] <= 'Z') {
-            name[i] = name[i] + 32;
+    if(key.size() < 1) return words;
+    for(unsigned int i = 0; i < key.size(); ++i) {
+        if( !isalpha(key[i]) && key[i] != ' ') return words;
+        if(key[i] >= 'A' && key[i] <= 'Z') {
+            key[i] = key[i] + 32;
         }
     }
 
     // Iterate to last node of the word
     Node* node = root;
-    for(unsigned int i = 0; i < name.size(); ++i) {
-        node = node->getChild( name[i] );
+    for(unsigned int i = 0; i < key.size(); ++i) {
+        node = node->getChild( key[i] );
         if(node == nullptr) return words;
     }
 
     // Add string if current node is a word
-    if(node->isWord) words.push_back(name);
+    if(node->isWord) words.push_back(key);
 
     // Call preorder on all children to get completion
     for(unsigned int i = 0; i < 27; ++i) {
         if(node->children[i] != nullptr) {
             auto vec = preorder(node->children[i]);
             for(auto substring : vec) {
-                words.push_back(name + substring);
+                words.push_back(key + substring);
             }
         }
     }

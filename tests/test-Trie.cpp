@@ -14,18 +14,18 @@ TEST(Trie, assert_gtest_compiles_and_runs) {
 }
 
 TEST(Trie, constructor) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
     ASSERT_TRUE(true);
 }
 
 TEST(Trie, add_string) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
     std::string name = "john wick";
     ASSERT_TRUE( trie.add(name) );
 }
 
 TEST(Trie, add_multiple_unique_string) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
 
     std::string name0 = "john wick";
     std::string name1 = "adam savage";
@@ -39,7 +39,7 @@ TEST(Trie, add_multiple_unique_string) {
 }
 
 TEST(Trie, add_identical_string) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
 
     std::string name = "john wick";
 
@@ -48,7 +48,7 @@ TEST(Trie, add_identical_string) {
 }
 
 TEST(Trie, add_nested_string) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
 
     std::string name0 = "john wick";
     std::string name1 = "john w";
@@ -60,7 +60,7 @@ TEST(Trie, add_nested_string) {
 }
 
 TEST(Trie, add_same_alpha_different_casing) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
 
     std::string name0 = "john wick";
     std::string name1 = "John wick";
@@ -71,7 +71,7 @@ TEST(Trie, add_same_alpha_different_casing) {
 }
 
 TEST(Trie, add_invalid_string) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
 
     std::string invalid0 = "@savage";
     std::string invalid1 = "Th3 5Av@g3";
@@ -80,14 +80,14 @@ TEST(Trie, add_invalid_string) {
 }
 
 TEST(Trie, search_empty) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
 
     std::string name = "penny gallow";
     ASSERT_FALSE( trie.search(name) );
 }
 
 TEST(Trie, search_valid_name) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
 
     std::string name = "penny gallow";
     ASSERT_TRUE( trie.add(name) );
@@ -96,7 +96,7 @@ TEST(Trie, search_valid_name) {
 
 TEST(Trie, search_is_case_insensitive) {
     {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
     std::string name0 = "JOhn Wick";
     std::string name1 = "john wick";
     std::string name2 = "JOHN WICK";
@@ -107,7 +107,7 @@ TEST(Trie, search_is_case_insensitive) {
     ASSERT_TRUE( trie.search(name3) );
     }
     {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
     std::string name0 = "JOhn Wick";
     std::string name1 = "john wick";
     std::string name2 = "JOHN WICK";
@@ -118,7 +118,7 @@ TEST(Trie, search_is_case_insensitive) {
     ASSERT_TRUE( trie.search(name3) );
     }
     {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
     std::string name0 = "JOhn Wick";
     std::string name1 = "john wick";
     std::string name2 = "JOHN WICK";
@@ -129,7 +129,7 @@ TEST(Trie, search_is_case_insensitive) {
     ASSERT_TRUE( trie.search(name3) );
     }
     {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
     std::string name0 = "JOhn Wick";
     std::string name1 = "john wick";
     std::string name2 = "JOHN WICK";
@@ -142,7 +142,7 @@ TEST(Trie, search_is_case_insensitive) {
 }
 
 TEST(Trie, complete_basic) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
 
     std::string name = "szechuan sauce";
     std::vector<std::string> vec;
@@ -154,7 +154,7 @@ TEST(Trie, complete_basic) {
 }
 
 TEST(Trie, complete_is_lowercase) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
  
     std::string input    = "SZECHUAN SAUCE";
     std::string expected = "szechuan sauce";
@@ -167,7 +167,7 @@ TEST(Trie, complete_is_lowercase) {
 }
 
 TEST(Trie, complete_multiple_unique_first_letter) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
 
     std::vector<std::string> names;
     names.push_back("alison beverly");
@@ -193,7 +193,7 @@ TEST(Trie, complete_multiple_unique_first_letter) {
 }
 
 TEST(Trie, complete_multiple_same_first_char) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
 
     std::vector<std::string> names;
     names.push_back("abe jackson");
@@ -211,7 +211,7 @@ TEST(Trie, complete_multiple_same_first_char) {
 }
 
 TEST(Trie, autocomplete_invalid) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
     trie.add("Hello world");
 
     auto vec = trie.complete("");
@@ -225,7 +225,7 @@ TEST(Trie, autocomplete_invalid) {
 }
 
 TEST(Trie, autocomplete_valid_simple) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
     std::string word = "hello world";
     ASSERT_TRUE( trie.add(word) );
 
@@ -259,7 +259,7 @@ TEST(Trie, autocomplete_valid_simple) {
 }
 
 TEST(Trie, autocomplete_nested_words) {
-    sandwich::Trie trie;
+    sandwich::Trie<> trie;
 
     std::vector<std::string> words;
     words.push_back("the");

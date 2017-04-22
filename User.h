@@ -45,8 +45,8 @@ class User {
     std::string name;
     std::string bio;
     
-    std::vector<sandwich::Post>  posts;
-    std::vector<sandwich::User*> friends;
+    std::vector<sandwich::Post>        posts;
+    std::vector<const sandwich::User*> friends;
 
 public:
     // Constructor
@@ -56,26 +56,28 @@ public:
          const std::string& bio);
 
     // Getters / Setters
-    std::string& getUsername() const;
-    std::string& getName()     const;
-    std::string& getBio()      const;
+    const std::string& getUsername() const;
+    const std::string& getName()     const;
+    const std::string& getBio()      const;
     bool setUsername(std::string& username);
     bool setName    (std::string& name);
-    bool setBio     (std::string& bio);
+    void setBio     (std::string& bio);
     
     // Post operations
-    bool addPost   (const std::string& post);
-    bool addPost   (const Post& post);
-    bool removePost(const Post& post);
+    void addPost   (const std::string& post);
+    void addPost   (const Post& post);
+    void removePost(const Post& post);
+    std::vector<sandwich::Post> getPosts();
 
     // Friend operations
     bool addFriend   (const User* user);
     bool removeFriend(const User* user);
     bool hasFriend   (const User* user);
+    std::vector<const sandwich::User*> getFriends();
 
     // Special
-    static bool validateUsername(const std::string& name);
-    bool operator== (const User& left, const User& right) const;
+    static bool validateStr(const std::string& str);
+    bool operator== (const User& other) const;
 
 };
 
@@ -88,16 +90,15 @@ User::User(
     const std::string& bio
     ) : username(username), name(name), bio(bio) {}
 
-std::string& User::getUsername() const { return username; }
-std::string& User::getName()     const { return name; }
-std::string& User::getBio()      const { return bio; }
+const std::string& User::getUsername() const { return username; }
+const std::string& User::getName()     const { return name; }
+const std::string& User::getBio()      const { return bio; }
 
 bool User::setUsername(std::string& str) {
 
     // Guard invalid && convert to lower
     for(unsigned int i = 0; i < str.size(); ++i) {
         if(!isalpha( str[i] ) && str[i] != ' ') return false;
-        else if(str[i] >= 'A' && str[i] <= 'Z') str[i] += 32;
     }
     username = str;
     return true;
@@ -108,30 +109,33 @@ bool User::setName(std::string& str) {
     // Guard invalid && conver to lower
     for(unsigned int i = 0; i < str.size(); ++i) {
         if(!isalpha( str[i] ) && str[i] != ' ') return false;
-        else if(str[i] >= 'A' && str[i] <= 'Z') str[i] += 32;
     }
     name = str;
     return true;
 }
 
-bool User::setBio(std::string& str) {
-    
-    // Guard invalid && conver to lower
-    for(unsigned int i = 0; i < str.size(); ++i) {
-        if(!isalpha( str[i] ) && str[i] != ' ') return false;
-        else if(str[i] >= 'A' && str[i] <= 'Z') str[i] += 32;
-    }
+void User::setBio(std::string& str) {
     bio = str;
-    return true;
 }
 
 
-bool User::addPost(const std::string& post) {
+void User::addPost(const std::string& post) {
     posts.push_back(Post(post));
 }
-bool User::addPost(const Post& post) {
-    post.push_back(post);
+void User::addPost(const Post& post) {
+    posts.push_back(post);
 }
+
+void User::removePost(const Post& post) {
+
+    for(unsigned int i = 0; i < posts.size(); ++i) {
+        if(posts[i] == post) {
+            posts.erase( posts.begin() + i );
+        }
+    }
+}
+
+std::vector<sandwich::Post> User::getPosts() { return posts; }
 
 
 // Check if we already have this friend. If we do,
@@ -144,7 +148,7 @@ bool User::addFriend(const User* user) {
     return true;
 }
 
-bool removeFriend(const User* user) {
+bool User::removeFriend(const User* user) {
     
     bool isRemoved = false;
     for(unsigned int i = 0; i < friends.size(); ++i) {
@@ -156,32 +160,50 @@ bool removeFriend(const User* user) {
     return isRemoved;
 }
 
-bool hasFriend(const User* user) {
+bool User::hasFriend(const User* user) {
     for(auto ptr : friends) {
         if(*ptr == *user) return true;
     }
     return false;
 }
 
+std::vector<const sandwich::User*> User::getFriends() {
+    return friends;
+}
 
 
 // validateString:
 // Given a string, it will return true if the string only
 // contains alpha characters and/or spaces
-static bool validateString(const std::string& key) {
-    for(unsigned int i = 0; i < key.size(); ++i) {
-        if(!isalpha(key[i]) && key[i] != ' ') return false;
+bool User::validateStr(const std::string& str) {
+    for(unsigned int i = 0; i < str.size(); ++i) {
+        if(!isalpha(str[i]) && str[i] != ' ') return false;
     }
     return true;
 }
 
 // Used to check if two accounts are equal to each other
-bool User::operator== (const User& left, const User& right) const {
-    if((left.username == right.username) &&
-        left.name     == right.name) {
-        return true;
+bool User::operator== (const User& other) const {
+
+    if( this->username.size() != other.username.size() ) {
+        return false;
     }
-    else return false;
+    else {
+
+        char left, right;
+        for(unsigned int i = 0; i < other.username.size(); ++i) {
+            left  = this->username[i];
+            right = other.username[i];
+            if(left  >= 'A' && left  <= 'Z') left  += 32;
+            if(right >= 'A' && right <= 'Z') right += 32;
+
+            if(left != right) {
+                return false;
+            }
+        }
+        return true;
+
+    }
 }
 
 } // namespace sandwich

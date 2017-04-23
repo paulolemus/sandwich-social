@@ -14,6 +14,7 @@
 !Make
 !makefile
 !Makefile
+!*.sh
 
-# Unignore everythinng in gtest
-!dep/googletest/*
+# ignore everything in gtest
+dep/*

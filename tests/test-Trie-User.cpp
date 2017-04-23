@@ -66,7 +66,23 @@ TEST(Trie_User, store_user_ptrs) {
 
 TEST(Trie_User, store_and_get_users) {
 
+    sandwich::Trie<sandwich::User*> trie;
+
+    std::string username = "Mr koo";
+    sandwich::User* user = new sandwich::User();
+    user->setUsername(username);
+    
+    auto users = trie.get(user->getUsername());
+    
+    ASSERT_EQ( users.size(), 0 );
+    ASSERT_TRUE( trie.store(user->getUsername(), user) );
+
+    users = trie.get( user->getUsername() );
+
+    ASSERT_EQ( users.size(), 1 );
+    ASSERT_EQ( users[0], user );
 }
+
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

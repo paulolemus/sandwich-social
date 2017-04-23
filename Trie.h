@@ -4,53 +4,100 @@
  * Team: Sandwich
  */
 
-/* This Trie will be used for autocompletion when
- * searching for users. Case will not matter.
- * Users can enter alpha characters and spaces only.
+/* This Trie will be used to store the username and name 
+ * of all users. It will be used particularly for the following:
+ *
+ * 1. Autocompletion of a string. For example, if you want to
+ *    search for a different user's account, you can search for
+ *    either the name or username of the account and you will
+ *    get a correct result.
+ *
+ * 2. Retrieving a particular user by either username or name.
+ *    Users must have unique usernames, however they all can 
+ *    have the same name. Doing a "get" for either string will
+ *    return a vector of all the possible users that belong to
+ *    that string.
+ *
+ * 3. Validating that a user exists.
+ *
+ *
+ * BEHAVIOR:
+ *
+ * Every function that takes a string argument first validates
+ * if the string given is ONLY spaces and alpha characters.
+ * All string are saved as lowercase, and all searches first
+ * convert the given string to lowercase. Keep in mind
+ * that usernames may appear with casing, but this makes the
+ * searches non-case-sensitive.
+ *
+ *
+ * INSTANTIATION OF TRIE:
+ * sandwich::Trie<Type> trie;
  */
 
 #ifndef SANDWICH_TRIE_H_
 #define SANDWICH_TRIE_H_
 
-#include <iostream>
 #include <cctype>
 #include <string>
 #include <vector>
 
 namespace sandwich {
 
-/* Node that has a value and marker if the node is a word.
- * It has an array of pointers to children, with [0] = a,
- * [25] = z and [26] = " "
+///////////////////////////////////////////
+//            DECLARATIONS               //
+///////////////////////////////////////////
+
+
+/* Node struct
+ *
+ * This node struct is what is used as nodes in the
+ * trie class. Each node has a character value, a bool
+ * so that we may tell if all the nodes leading up to the 
+ * current spell a valid string. The array of node pointers
+ * is what is used to store all possible children. Index 0
+ * represents an 'a' node, and index 25 represents 'z' node.
+ * Index 26 is a ' ' node.
+ *
+ * The node also holds a vector of generic data, used for storage
+ * and retrieval.
  */
 template <typename T = char>
 struct Node {
-    char value;
-    bool isWord;
-    bool isLeaf;
-    Node<T>* children[27];
 
+    char           value;
+    bool           isWord;
+    bool           isLeaf;
+    Node<T>*       children[27];
     std::vector<T> data;
 
-    // Functions
-    
+    // constructor / deconstructor
     Node(const char value, const bool isWord);
+    ~Node();
 
-    // Returns the node with the given value
+    // Given a character, returns a pointer
+    // from the corresponding Node* index. 
     Node<T>* getChild(const char ch);
+
     // Creates new node if it doesn't exist and returns
     // a pointer to it. Otherwise, it just returns a pointer
     // to the existing node
     Node<T>* addChild(const char ch, const bool isWord);
 
-    // Add datum to data vector if it does not already
-    // hold it.
+    // Add generic datum to data vector if it
+    // does not already hold it.
     bool store(const T& datum);
+
     // Remove datum from vector if it exists
     void remove(const T& datum);
-
 };
 
+
+/* Trie class
+ *
+ * This class is used to autocomplete string,
+ * store data at a key, and retrieve data at a key.
+ */
 template <typename T = char>
 class Trie {
 
@@ -58,24 +105,29 @@ class Trie {
     
 public:
 
-    /* Constructor */
+    // Constructor / Destructor
     Trie();
+    ~Trie();
 
-    /* Functions */
 
-    // Add: Simply adds string to the trie structure
+    // Simply adds string to the trie structure.
+    // Returns true on success, false on failure
     bool add(std::string key);
-    // Search: Return true if the tree contains exact string
+
+    // Return true if the tree contains string.
+    // This search is not case sensitive.
     bool search(std::string key);
-    // Return all possible strings
+
+    // Return all strings in the trie
     std::vector<std::string> complete();
+
     // Complete: Give a string, this returns a vector
     // of all the possible completions of the string.
     std::vector<std::string> complete(std::string key);
 
-    /* Store and retrieve functions */
 
     // Store the datum at the end of each key given
+    // It only stores if the datum does not already exist
     bool store(std::string key, const T& datum);
 
     // Returns vector of data found at key location
@@ -96,12 +148,20 @@ private:
 ///////////////////////////////////
 //        IMPLEMENTATIONS        //
 ///////////////////////////////////
+
 template <typename T>
 Node<T>::Node(const char value, const bool isWord) : 
     value(value), 
     isWord(isWord),
     isLeaf(true) {
     for(int i = 0; i < 27; ++i) children[i] = nullptr;
+}
+
+template <typename T>
+Node<T>::~Node() {
+    for(auto ptr : children) {
+        if(ptr != nullptr) delete ptr;
+    }
 }
 
 
@@ -172,6 +232,8 @@ void Node<T>::remove(const T& datum) {
 
 template <typename T>
 Trie<T>::Trie() : root(new Node<T>('\0', false)) {}
+template <typename T>
+Trie<T>::~Trie() { delete root; }
 
 template <typename T>
 bool Trie<T>::add(std::string key) {
@@ -332,6 +394,8 @@ bool Trie<T>::store(std::string key, const T& datum) {
             current = next;
         }
     }
+    // Mark the last node of they key string as a
+    // word, and store the data in the node's vector
     current->isWord = true;
     return current->store(datum);
 }

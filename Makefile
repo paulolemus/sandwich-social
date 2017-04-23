@@ -25,13 +25,16 @@ LIBS = -lncurses
 
 CXX_FLAGS := -Wall -Wextra -pedantic --std=c++11 -g \
 				$(LIBS)
-TEST_FLAGS := -Wall -Wextra -pedantic --std=c++11 -g \
+TEST_FLAGS := -Wall -Wextra -pedantic --std=c++11 -g -I../ \
 			  $(TESTINCLUDEDIR) $(TESTLIBS)
 
 #############################################################################
 ## Add all new targets below this line
 
 all: 
+
+sandwich-social: sandwich-social.cpp
+	$(CXX) $^ -o $@ $(LIBS) $(CXX_FLAGS)
 
 
 	
@@ -71,6 +74,7 @@ tests/%.out: tests/%.cpp
 .PHONY: clean-build clean-tests clean-deps clean
 
 clean-build:
+	-rm sandwich-social
 
 clean-tests:
 	-rm tests/*.out

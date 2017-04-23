@@ -6,8 +6,8 @@
 #include <gtest/gtest.h>
 #include <string>
 #include <vector>
-#include "../Trie.h"
-#include "../User.h"
+#include "Trie.h"
+#include "User.h"
 
 TEST(Trie_User, assert_gtest_compiles_and_runs) {
     ASSERT_TRUE(true);

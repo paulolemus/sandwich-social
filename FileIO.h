@@ -33,8 +33,6 @@ class FileIO {
 public:
 
     FileIO();
-    FileIO(std::string userFileName);
-    FileIO(std::string friendsFileName);
     FileIO(std::string userFileName, std::string friendsFileName);
 
     // Getters / Setters for filenames
@@ -69,12 +67,6 @@ public:
 
 FileIO::FileIO() {}
 
-FileIO::FileIO(std::string userFileName) : 
-    userFileName(userFileName) {}
-
-FileIO::FileIO(std::string friendsFileName) :
-    friendsFileName(friendsFileName) {}
-
 FileIO::FileIO(std::string userFileName, std::string friendsFileName) :
     userFileName(userFileName), friendsFileName(friendsFileName) {}
 
@@ -91,10 +83,14 @@ void FileIO::setFriendsFileName(const std::string friendsFileName) {
 }
 
 sandwich::User* FileIO::readUser() {
-
+    
+    sandwich::User* user = new User();
+    return user;
 }
 std::vector<std::string> FileIO::readFriends() {
 
+    std::vector<std::string> friendList;
+    return friendList;
 }
 
 void FileIO::writeUser(const sandwich::User* const user) {

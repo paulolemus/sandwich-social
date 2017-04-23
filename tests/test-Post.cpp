@@ -13,7 +13,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "../Post.h"
+#include "Post.h"
 
 // Ensure gtest is linked properly
 TEST(Post, assert_gtest_compiles_and_runs) {

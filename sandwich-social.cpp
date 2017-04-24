@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
      */
     std::unordered_map<std::string, sandwich::User*> userMap;
     sandwich::Trie<sandwich::User*>                  trie;
-    sandwich::FileIO                                 fileIO;
+    //sandwich::FileIO                                 fileIO;
 
     sandwich::User* currUser;
 

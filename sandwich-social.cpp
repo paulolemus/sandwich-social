@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
                 case sandwich::GUI::Type::HOME:
                 case sandwich::GUI::Type::LOGOUT:
                 case sandwich::GUI::Type::QUIT:
-		default:
+        		default:
                    	std::cout << "enum not working\n\n"; 
             	    break;
 	    }

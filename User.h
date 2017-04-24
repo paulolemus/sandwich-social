@@ -79,10 +79,13 @@ public:
     // Special
     static bool validateStr(const std::string& str);
     bool operator== (const User& other) const;
+    bool operator<  (const User& other) const;
 
 };
 
-/////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+//                  IMPLEMENTATIONS                   //
+////////////////////////////////////////////////////////
 
 User::User() {}
 User::User(
@@ -217,6 +220,29 @@ bool User::operator== (const User& other) const {
 
     }
 }
+
+bool User::operator< (const User& other) const {
+
+    if(this->username.size() < other.username.size()) {
+        return true;
+    }
+    else if(this->username.size() > other.username.size()) {
+        return false;
+    }
+    else {
+        char left, right;
+        for(unsigned int i = 0; i < this->username.size(); ++i) {
+            left  = this->username[i];
+            right = other.username[i];
+            if(left  >= 'A' && left  <= 'Z') left  += 32;
+            if(right >= 'A' && right <= 'Z') right += 32;
+
+            if(left > right) return false;
+        }
+        return true;
+    }
+}
+
 
 } // namespace sandwich
 

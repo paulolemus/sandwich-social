@@ -84,8 +84,9 @@ void FileIO::setFriendsFileName(const std::string friendsFileName) {
 
 std::vector<sandwich::User*> FileIO::readUsers() {
     
+    std::vector<sandwich::User*> users;
     sandwich::User* user = new User();
-    return user;
+    return users;
 }
 std::vector<std::string> FileIO::readFriends() {
 

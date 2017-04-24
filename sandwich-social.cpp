@@ -38,10 +38,10 @@ int main(int argc, char** argv) {
     // Must have launced program with data file arguments.
     // This can be changed, we can hardcore the strings for the
     // data files if we want
-    if(argc < 4) {
-        std::cout << "No provided user or friends data files" << std::endl;
-        exit(1);
-    }
+    //if(argc < 4) {
+    //    std::cout << "No provided user or friends data files" << std::endl;
+    //    exit(1);
+    //}
 
     // TODO: READ IN USERS AND FRIENDS,
     //       POPULATE userMap AND trie

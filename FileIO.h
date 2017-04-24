@@ -46,7 +46,7 @@ public:
      * information from the file. It then returns 
      * a pointer to the newly created user.
      */
-    sandwich::User*          readUser();
+    std::vector<sandwich::User*> readUsers();
     /* readFriends:
      * Returns a vector of strings with the user
      * who the friends belong to, followed by the user's

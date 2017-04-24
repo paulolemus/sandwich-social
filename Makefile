@@ -66,7 +66,7 @@ $(TEST_SINGLE_EXECUTABLE): $(TEST_SINGLE_FILE)
 	$(CXX) -o $@ $^ $(TEST_FLAGS)
 
 tests/%.out: tests/%.cpp
-	$(CXX) -o $@ $^ $(TEST_FLAGS)
+	$(CXX) -o $@ $^ $(TEST_FLAGS) $(LIBS)
 
 ##############################################################################
 

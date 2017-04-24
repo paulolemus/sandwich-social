@@ -43,7 +43,7 @@ public:
         sandwich::Trie<sandwich::User*>&                  trie,
         sandwich::User*&                                  currUser);
 
-    
+    ~GUI(); 
     Type loginScreen();
     Type homeScreen();
 

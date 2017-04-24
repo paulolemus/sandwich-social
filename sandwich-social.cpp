@@ -95,5 +95,7 @@ int main(int argc, char** argv) {
         //       to a file then actually quit.
         // Back to login screen
     }
+    endwin(); 
+    getch(); 
     return 0;
 }

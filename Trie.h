@@ -119,12 +119,9 @@ public:
     // This search is not case sensitive.
     bool search(std::string key);
 
-    // Return all strings in the trie
-    std::vector<std::string> complete();
-
     // Complete: Give a string, this returns a vector
     // of all the possible completions of the string.
-    std::vector<std::string> complete(std::string key);
+    std::vector<std::string> complete(std::string key = "");
 
 
     // Store the datum at the end of each key given
@@ -143,7 +140,11 @@ private:
     std::vector<std::string> preorder(Node<T>* node);
 
     // Retrieval preorder
-    std::unordered_set<T> preorderGet(Node<T>* node);
+    std::unordered_set<T> getPreorder(Node<T>* node);
+
+    // Used to sort the vector obtained from
+    // the unordered set
+    void insertionSort(std::vector<T>& vec);
 };
 
 ///////////////////////////////////
@@ -299,29 +300,6 @@ bool Trie<T>::search(std::string key) {
     else             return false;
 }
 
-/* Algorithm:
- * Get the preorder for each node below the root.
- * Append each word in each vector to one single words
- * vector. This is done to prevent the root's null char
- * from being placed at the beginning of each string
- */
-template <typename T>
-std::vector<std::string> Trie<T>::complete() {
-
-    std::vector<std::string> words;
-
-    for(unsigned int i = 0; i < 27; ++i) {
-        if(root->children[i] != nullptr) {
-            auto vec = preorder(root->children[i]);
-            for(auto word : vec) {
-                words.push_back(word);
-            }
-        }
-    }
-    return words;
-}
-
-
 /* ALGORITHM:
  * 1. Navigate to the place where string given ends.
  * 2. Work way down each branch until a leaf is reached.
@@ -334,7 +312,6 @@ std::vector<std::string> Trie<T>::complete(std::string key) {
     std::vector<std::string> words;
 
     // Guard / convert upper to lower
-    if(key.size() < 1) return words;
     for(unsigned int i = 0; i < key.size(); ++i) {
         if( !isalpha(key[i]) && key[i] != ' ') return words;
         if(key[i] >= 'A' && key[i] <= 'Z') {
@@ -433,12 +410,13 @@ std::vector<T> Trie<T>::get(std::string key) {
 template <typename T>
 std::vector<T> Trie<T>::getComplete(std::string key) {
 
-    std::vector<T> dataSet;
+    std::vector<T>        dataVector;
+    std::unordered_set<T> dataSet;
 
     // Verify key, convert to lower if necessary
     for(unsigned int i = 0; i < key.size(); ++i) {
         if(!isalpha(key[i]) && key[i] != ' ') {
-            return dataSet;
+            return dataVector;
         }
         if(key[i] >= 'A' && key[i] <= 'Z') {
             key[i] = key[i] + 32;
@@ -449,28 +427,32 @@ std::vector<T> Trie<T>::getComplete(std::string key) {
     Node<T>* node = root;
     for(unsigned int i = 0; i < key.size(); ++i) {
         node = node->getChild( key[i] );
-        if(node == nullptr) return dataSet;
+        if(node == nullptr) return dataVector;
     }
 
     // Add current data if it exists
     if(node->isWord) {
-        dataSet = node->data;
+        for(const auto& datum : node->data) {
+            dataSet.insert(datum);
+        }
     }
 
     // Add data from all subtree nodes if they do not
     // already exist in the current dataSet.
     for(unsigned int i = 0; i < 27; ++i) {
         if(node->children[i] != nullptr) {
-            auto dataVec = preorderGet(node->children[i]);
-            bool isExisting = false;
-            for(int j = 0; j < dataVec.size(); ++j) {
-                //for() {
-
-                //}
+            auto subSet = getPreorder(node->children[i]);
+            for(const auto& datum : subSet) {
+                dataSet.insert(datum);
             }
         }
     }
-    return dataSet;
+
+    // Copy set elements into vector
+    for(const auto& datum : dataSet) {
+        dataVector.push_back(datum);
+    }
+    return dataVector;
 }
 
 /* This traverses the tree in a preorder fashion.
@@ -507,6 +489,45 @@ std::vector<std::string> Trie<T>::preorder(Node<T>* node) {
     return words;
 }
 
+
+template <typename T>
+std::unordered_set<T> Trie<T>::getPreorder(Node<T>* node) {
+
+    std::unordered_set<T> dataSet;
+
+    if(node == nullptr);
+    else {
+        if(node->isWord) {
+            for(auto datum : node->data) {
+                dataSet.insert(datum);
+            }
+        }
+        for(unsigned int i = 0; i < 27; ++i) {
+            if(node->children[i] != nullptr) {
+                auto subSet = getPreorder(node->children[i]);
+                for(const auto& datum : subSet) {
+                    dataSet.insert(datum);
+                }
+            }
+        }
+    }
+    return dataSet;
+}
+
+template <typename T>
+void Trie<T>::insertionSort(std::vector<T>& vec) {
+
+    for(unsigned int i = 1; i < vec.size(); ++i) {
+        T datum = vec[i];
+        unsigned int j = i - 1;
+
+        while(j >= 0 && *datum < *vec[j]) {
+            vec[j + 1] = vec[j];
+            --j;
+        }
+        vec[j + 1] = datum;
+    }
+}
 
 } // namespace sandwich
 #endif // SANDWICH_TRIE_H_

@@ -215,7 +215,8 @@ TEST(Trie, autocomplete_invalid) {
     trie.add("Hello world");
 
     auto vec = trie.complete("");
-    EXPECT_EQ(vec.size(), 0);
+    EXPECT_EQ(vec.size(), 1);
+    EXPECT_EQ(vec[0], "hello world");
     vec = trie.complete("@");
     EXPECT_EQ(vec.size(), 0);
     vec = trie.complete("w");

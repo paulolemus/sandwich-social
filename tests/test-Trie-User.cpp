@@ -1,9 +1,11 @@
 /* File: test-Trie-User.cpp
- * Name: 
+ * Name: Paulo Lemus
+ * Team: Sandwich
  * Date: 4/12/2017
  */
 
 #include <gtest/gtest.h>
+#include <algorithm>
 #include <string>
 #include <vector>
 #include "Trie.h"
@@ -90,15 +92,83 @@ TEST(Trie_User, getCompleteBasic) {
     std::string username0 = "YamaSama";
     std::string username1 = "pauloasdf";
     std::string username2 = "jessieG";
-    sandwich::User* user0 = new User();
-    sandwich::User* user1 = new User();
-    sandwich::User* user2 = new User();
+    sandwich::User* user0 = new sandwich::User();
+    sandwich::User* user1 = new sandwich::User();
+    sandwich::User* user2 = new sandwich::User();
     user0->setUsername(username0);
     user1->setUsername(username1);
     user2->setUsername(username2);
     trie.store(user0->getUsername(), user0);
     trie.store(user1->getUsername(), user1);
     trie.store(user2->getUsername(), user2);
+
+    auto users = trie.getComplete();
+    ASSERT_EQ(users.size(), 3);
+    ASSERT_TRUE( std::find(users.begin(), users.end(), user0) != users.end() );
+    ASSERT_TRUE( std::find(users.begin(), users.end(), user1) != users.end() );
+    ASSERT_TRUE( std::find(users.begin(), users.end(), user2) != users.end() );
+}
+
+TEST(Trie_User, getCompleteString) {
+
+    sandwich::Trie<sandwich::User*> trie;
+
+    std::string username0 = "YamaSama";
+    std::string username1 = "pauloasdf";
+    std::string username2 = "jessieG";
+    sandwich::User* user0 = new sandwich::User();
+    sandwich::User* user1 = new sandwich::User();
+    sandwich::User* user2 = new sandwich::User();
+    user0->setUsername(username0);
+    user1->setUsername(username1);
+    user2->setUsername(username2);
+    trie.store(user0->getUsername(), user0);
+    trie.store(user1->getUsername(), user1);
+    trie.store(user2->getUsername(), user2);
+
+    auto users = trie.getComplete("y");
+    ASSERT_EQ(users.size(), 1);
+    ASSERT_TRUE( std::find(users.begin(), users.end(), user0) != users.end() );
+}
+
+TEST(Trie_User, getCompleteStringMany) {
+
+    sandwich::Trie<sandwich::User*> trie;
+
+    std::string username0 = "YamaSama";
+    std::string username1 = "pauloasdf";
+    std::string username2 = "jessieG";
+    std::string username3 = "Yama";
+    std::string username4 = "Yamamoto";
+    sandwich::User* user0 = new sandwich::User();
+    sandwich::User* user1 = new sandwich::User();
+    sandwich::User* user2 = new sandwich::User();
+    sandwich::User* user3 = new sandwich::User();
+    sandwich::User* user4 = new sandwich::User();
+    user0->setUsername(username0);
+    user1->setUsername(username1);
+    user2->setUsername(username2);
+    user3->setUsername(username3);
+    user4->setUsername(username4);
+    trie.store(user0->getUsername(), user0);
+    trie.store(user1->getUsername(), user1);
+    trie.store(user2->getUsername(), user2);
+    trie.store(user3->getUsername(), user3);
+    trie.store(user4->getUsername(), user4);
+
+    auto users = trie.getComplete("y");
+    ASSERT_EQ(users.size(), 3);
+    ASSERT_TRUE( std::find(users.begin(), users.end(), user0) != users.end() );
+    ASSERT_TRUE( std::find(users.begin(), users.end(), user3) != users.end() );
+    ASSERT_TRUE( std::find(users.begin(), users.end(), user4) != users.end() );
+
+    users = trie.getComplete();
+    ASSERT_EQ(users.size(), 5);
+    ASSERT_TRUE( std::find(users.begin(), users.end(), user0) != users.end() );
+    ASSERT_TRUE( std::find(users.begin(), users.end(), user1) != users.end() );
+    ASSERT_TRUE( std::find(users.begin(), users.end(), user2) != users.end() );
+    ASSERT_TRUE( std::find(users.begin(), users.end(), user3) != users.end() );
+    ASSERT_TRUE( std::find(users.begin(), users.end(), user4) != users.end() );
 }
 
 

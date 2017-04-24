@@ -143,7 +143,7 @@ private:
     std::vector<std::string> preorder(Node<T>* node);
 
     // Retrieval preorder
-    std::unordered_set<T> preorderGet(Node<T>* node);
+    std::unordered_set<T> getPreorder(Node<T>* node);
 };
 
 ///////////////////////////////////
@@ -507,6 +507,18 @@ std::vector<std::string> Trie<T>::preorder(Node<T>* node) {
     return words;
 }
 
+
+template <typename T>
+std::unordered_set<T> getPreorder(Node<T>* node) {
+
+    std::unordered_set<T> dataSet;
+
+    if(node == nullptr);
+    else if(node->isWord) {
+
+    }
+    return dataSet;
+}
 
 } // namespace sandwich
 #endif // SANDWICH_TRIE_H_

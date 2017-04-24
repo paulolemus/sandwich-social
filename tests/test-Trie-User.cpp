@@ -99,6 +99,8 @@ TEST(Trie_User, getCompleteBasic) {
     trie.store(user0->getUsername(), user0);
     trie.store(user1->getUsername(), user1);
     trie.store(user2->getUsername(), user2);
+
+
 }
 
 

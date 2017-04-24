@@ -48,7 +48,7 @@ public:
 
     void postWallScreen();
     void viewFriendsScreen();
-    void addFriendsScreen();
+    void addFriendScreen();
     void viewFriendScreen();
     void editProfileScreen();
     void removeFriendScreen();
@@ -76,7 +76,7 @@ void GUI::postWallScreen() {
 void GUI::viewFriendsScreen() {
 
 }
-void GUI::addFriendsScreen() {
+void GUI::addFriendScreen() {
 
 }
 void GUI::viewFriendScreen() {

@@ -18,8 +18,8 @@
 #include "Post.h"
 #include "User.h"
 //#include "FileIO.h"
-//#include "GUI.h"
-#include "tempGui.h"
+#include "GUI.h"
+//#include "tempGui.h"
 int main(int argc, char** argv) {
 
     /* userMap will hold usernames as keys and User* as values.

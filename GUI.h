@@ -1,6 +1,6 @@
 /*
  *
- * adding junk to pull, and more junk
+ *
  */
 
 /*
@@ -42,9 +42,8 @@ public:
     GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
         sandwich::Trie<sandwich::User*>&                  trie,
         sandwich::User*&                                  currUser);
-    ~GUI();
 
-    
+    ~GUI(); 
     Type loginScreen();
     Type homeScreen();
 
@@ -56,8 +55,9 @@ public:
     void removeFriendScreen();
 
     void testFunc();
+    void center(WINDOW *w, int yLoc, std::string text);
 };
-
+	
 GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
          sandwich::Trie<sandwich::User*>&                  trie,
          sandwich::User*&                                  currUser) :
@@ -90,7 +90,10 @@ GUI::Type GUI::loginScreen() {
 	wrefresh(b); 
 
 	WINDOW *w = newwin(y-4, x-14, 2, 7); 
-	mvwprintw(w,(y-4)/2, (x-14)/2, "type in your username\n"); 
+//	mvwprintw(w,(y-4)*.25, (x-14)/3, "WELCOME TO SANDWICH SOCIAL");
+  //     	mvwprintw(w,(y-4)*.5, (x-14)*.25, "Input your username to login or start an account below: "); 	
+	center(w, (y-4)*.25, "WELCOME TO SANDWICH SOCIAL"); 
+        center(w, (y-4)*.5, "Input your username to login or start a new account"); 	
 	//refresh(); 
 	wrefresh(w); 
 	//int c = wgetch(w);
@@ -115,6 +118,7 @@ GUI::Type GUI::loginScreen() {
 
 	int a = getch(); 
 }
+
 
 /* The home screen contains two parts, the feed
  * and the menu. The menu consists of the following options:
@@ -255,10 +259,20 @@ void GUI::testFunc() {
     trie.store(currUser->getUsername(), currUser);
     userMap[currUser->getLower()] = currUser;
 }
-
-
 	
+
+void GUI::center(WINDOW *w, int yLoc, std::string text){
+	int len, indent, depth, width; 
+	getmaxyx(stdscr, depth, width); 
+	len = text.size();  
+	indent = width -14 - len; 
+	indent /=2;
+        mvwprintw(w, yLoc, indent, text.c_str()); 	
+//	mvaddstr(yLoc, indent, text.c_str()); 
+//	refresh(); 
 	
+}
+
 } // namespace sandwich
 
 #endif // SANDWICH_GUI_H_

@@ -24,19 +24,23 @@ int main(int argc, char ** argv){
 	menuYbeg = userDepth+1;
 	
 	//start out the window pointers and their boxes (classic style)
-	WINDOW * userInfoWin = newwin(userDepth, userWidth,  userYbeg, userXbeg); 
+	WINDOW * userInfoWin_BOX =  newwin(userDepth+2, userWidth+2,  userYbeg-1, userXbeg-1); 
+	WINDOW * userInfoWin = newwin(userDepth, userWidth,  userYbeg, userXbeg);
+        box(userInfoWin_BOX, 0, 0); 	
 	box(userInfoWin, 0, 0); 
 	WINDOW * menuwin = newwin(menuDepth, menuWidth, menuYbeg, menuXbeg);
-	box(menuwin, 0, 0);
+	box(menuwin, 0,0);
 	refresh();
+	wrefresh(userInfoWin_BOX); 
 	wrefresh(menuwin);
 	wrefresh(userInfoWin); 
 	keypad(menuwin, true);
 
-	string choices[5] = {"Post To Wall", "View Friend List", "Add Friend", "Edit Profile", "View Friend"};
+	string choices[7] = {"Post To Wall", "View Friend List", "Add Friend", "Edit Profile", "View Friend", "Delete Friend", "Log Out"};
 	int n_choices = sizeof(choices)/sizeof(string); 
 	
 	mvwprintw(userInfoWin, 2, 2, "USER INFORMATION COMING SHORTLY...."); 
+	wrefresh(userInfoWin_BOX); 
 	wrefresh(userInfoWin); 
 
 	int choice;
@@ -60,6 +64,7 @@ int main(int argc, char ** argv){
 	string m = post.getMsg(); 
 	mvwprintw(userInfoWin, 12, 2, "Post info: ");
        	mvwprintw(userInfoWin, 13, 2, "%s -- %s", t.c_str(), m.c_str()); 	
+	wrefresh(userInfoWin_BOX); 
 	wrefresh(userInfoWin); 
 	clrtoeol(); // don't know what this does (clear to end of line maybe?)
 	refresh();
@@ -140,10 +145,29 @@ string submit_selection(WINDOW* w, int choice){
 		case 5: 
 		       	wclear(w); 
 			box(w, 0, 0); 
-			mvwprintw(w, 2,2, "NEW POST: ");	
+			mvwprintw(w, 2,2, "VIEW A FRIEND: ");	
 			mvwprintw(w, 3,2, "Select a friend to view: ");
 			wrefresh(w); 
 			break; 
+		
+		case 6: 
+		       	wclear(w); 
+			box(w, 0, 0); 
+			mvwprintw(w, 2,2, "DELETE A FRIEND: ");	
+			mvwprintw(w, 3,2, "Select a friend to DELETE: ");
+			wrefresh(w); 
+			break; 
+		
+		case 7: 
+		       	wclear(w); 
+			box(w, 0, 0); 
+			mvwprintw(w, 2,2, "Are you sure you want to leave Sandwich Social?: ");	
+			mvwprintw(w, 3,2, "YES or NO?: ");
+			wrefresh(w); 
+			break; 
+		
+		
+		
 		default: 
 			mvwprintw(w, 8,8, "Press enter to select");
 			wrefresh(w); 

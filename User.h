@@ -59,6 +59,7 @@ public:
     const std::string& getUsername() const;
     const std::string& getName()     const;
     const std::string& getBio()      const;
+    const std::string& getLower()    const;
     bool setUsername(std::string& username);
     bool setName    (std::string& name);
     void setBio     (std::string& bio);
@@ -93,6 +94,17 @@ User::User(
 const std::string& User::getUsername() const { return username; }
 const std::string& User::getName()     const { return name; }
 const std::string& User::getBio()      const { return bio; }
+const std::string& User::getLower() const {
+    std::string lower = username;
+
+    // Convert to lower case
+    for(unsigned int i = 0; i < lower.size(); ++i) {
+        if(lower[i] >= 'A' && lower[i] <= 'Z') {
+            lower[i] = lower[i] + 32;
+        }
+    }
+    return lower;
+}
 
 bool User::setUsername(std::string& str) {
 

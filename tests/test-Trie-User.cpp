@@ -83,6 +83,24 @@ TEST(Trie_User, store_and_get_users) {
     ASSERT_EQ( users[0], user );
 }
 
+TEST(Trie_User, getCompleteBasic) {
+
+    sandwich::Trie<sandwich::User*> trie;
+
+    std::string username0 = "YamaSama";
+    std::string username1 = "pauloasdf";
+    std::string username2 = "jessieG";
+    sandwich::User* user0 = new User();
+    sandwich::User* user1 = new User();
+    sandwich::User* user2 = new User();
+    user0->setUsername(username0);
+    user1->setUsername(username1);
+    user2->setUsername(username2);
+    trie.store(user0->getUsername(), user0);
+    trie.store(user1->getUsername(), user1);
+    trie.store(user2->getUsername(), user2);
+}
+
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

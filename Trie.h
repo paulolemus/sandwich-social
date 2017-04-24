@@ -133,7 +133,7 @@ public:
     // Returns vector of data found at key location
     std::vector<T> get(std::string key);
     std::vector<T> get(std::vector<std::string> keys);
-    std::vector<T> getComplete(std::string key);
+    std::vector<T> getComplete(std::string key = "");
 
 
 private:
@@ -428,21 +428,45 @@ std::vector<T> Trie<T>::get(std::string key) {
     return node->data;
 }
 
-/* ALGORITHM:
- * Need to go to each key location and build up keys 
- * that are not already in our vector.
- */
+
 template <typename T>
-std::vector<T> Trie<T>::get(std::vector<std::string> keys) {
+std::vector<T> Trie<T>::getComplete(std::string key) {
 
     std::vector<T> dataSet;
 
-    for(unsigned int i = 0; i < keys.size(); ++i) {
-        for(unsigned int j = 0; j < keys[i].size(); ++j) {
-            
-
+    // Verify key, convert to lower if necessary
+    for(unsigned int i = 0; i < key.size(); ++i) {
+        if(!isalpha(key[i]) && key[i] != ' ') {
+            return dataSet;
+        }
+        if(key[i] >= 'A' && key[i] <= 'Z') {
+            key[i] = key[i] + 32;
         }
     }
+
+    // Iterate to key subtree node
+    Node<T>* node = root;
+    for(unsigned int i = 0; i < key.size(); ++i) {
+        node = node->getChild( key[i] );
+        if(node == nullptr) return dataSet;
+    }
+
+    // Add current data if it exists
+    if(node->isWord) {
+        dataSet = node->data;
+    }
+
+    // Add data from all subtree nodes if they do not
+    // already exist in the current dataSet.
+    for(unsigned int i = 0; i < 27; ++i) {
+        if(node->children[i] != nullptr) {
+            auto dataVec = preorderGet(node->children[i]);
+            for(auto datum : dataVec) {
+
+            }
+        }
+    }
+    return dataSet;
 }
 
 /* This traverses the tree in a preorder fashion.

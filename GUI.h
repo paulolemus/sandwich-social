@@ -1,6 +1,7 @@
-/*
- *
- *
+/* File: GUI.h
+ * Name: Jessica Grazziotin & Paulo Lemus
+ * Team: Sandwich
+ * Date: 4/23/2017
  */
 
 /*
@@ -55,7 +56,12 @@ public:
     void removeFriendScreen();
 
     void testFunc();
-    void center(WINDOW *w, int yLoc, std::string text);
+    void centerText(WINDOW *w, int yLoc, std::string text); //centers text in the input window
+    int centerY(WINDOW *w); //returns the center y location of the window
+    int centerX(WINDOW *w);  //returns the center x location of the window
+
+    std::string payload(WINDOW* w, char s);
+
 };
 	
 GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
@@ -67,7 +73,10 @@ GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
     { //initializes the window    
     	initscr(); 
 	noecho();
-	cbreak(); 
+	cbreak();
+       	start_color(); 
+	init_pair(1,COLOR_BLACK,COLOR_CYAN);
+	init_pair(2,COLOR_RED,COLOR_WHITE); 
     }
 
 GUI::~GUI() {
@@ -90,30 +99,72 @@ GUI::Type GUI::loginScreen() {
 	wrefresh(b); 
 
 	WINDOW *w = newwin(y-4, x-14, 2, 7); 
-//	mvwprintw(w,(y-4)*.25, (x-14)/3, "WELCOME TO SANDWICH SOCIAL");
-  //     	mvwprintw(w,(y-4)*.5, (x-14)*.25, "Input your username to login or start an account below: "); 	
-	center(w, (y-4)*.25, "WELCOME TO SANDWICH SOCIAL"); 
-        center(w, (y-4)*.5, "Input your username to login or start a new account"); 	
+	WINDOW *input = newwin(1, 30, centerY(w)+6, centerX(w)-7);
+       	wcolor_set (input,2, NULL); 	
+	//wattron(input, COLOR_PAIR(1)); 
+	//werase(input); 
+	wbkgd(input,COLOR_PAIR(1)); 
+	//mvwprintw(input,0,0, "                              "); 
+	wmove(input, 0,0); 
+	//wattroff(input, COLOR_PAIR(1)); 
+	centerText(w, (y-4)*.25, "WELCOME TO SANDWICH SOCIAL"); 
+        centerText(w, (y-4)*.5, "Input your username to login or start a new account"); 	
 	//refresh(); 
 	wrefresh(w); 
+	wrefresh(input); 
 	//int c = wgetch(w);
 	char s=wgetch(w);
        	std::string temp; 	
-	std::vector<char> v; 
-	while(s!=10){
-	        mvwprintw(w,14,14,"%c", s); 
-		wrefresh(w); 	       
-		temp+=s; 
-		s = wgetch(w); 
-	}	
-	mvwprintw(w, 14, 14, "%s",temp.c_str()); 
+        int xinput =0; 	
+	wmove(input,0,0);
+	temp = payload(input, s); 
+	mvwprintw(w, centerY(w)+8, centerX(w)-7,  "%s",temp.c_str()); 
 	wrefresh(w); 
 	refresh(); 	
 	if(trie.search(temp)){
-		
-		std::cout << "\n\nfound " << temp << "\n\n"; 
+		return sandwich::GUI::Type::HOME; 
+
 	}
-	else std::cout << "\n\ndidn't find " << temp << "\n\n";  
+	else{
+		werase(w);
+		std::string newusrIntro = "Thanks for joining Sandwich Social ";
+		sandwich::User* newUser = new sandwich::User(); 
+		trie.store(temp, newUser); 
+		newusrIntro += temp;
+		newusrIntro += "!!";
+		centerText(w, (y-4)*.25, newusrIntro); 
+		centerText(w, ((y-4)*.25)+1, "Input your information below: "); 	
+        	mvwprintw(w, centerY(w)+2, centerX(w)-20, "Name: ");
+		WINDOW *name = newwin(1, 30, centerY(w)+4, centerX(w)-7);
+		wbkgd(name, COLOR_PAIR(1)); 
+		//wcolor_set(name, 1, NULL); 
+		//mvwprintw(name,0,0, "                              "); 
+		centerText(w, (y-4)*.75, "Short Bio (Max 150 characters): ");
+		WINDOW *bio = newwin(4, 50, ((y-4)*.75)+6, centerX(w)-20); 
+		wbkgd(bio, COLOR_PAIR(1)); 
+		//wcolor_set(bio, 2, NULL); 
+		wrefresh(w); 
+		wrefresh(name);
+		wrefresh(bio);
+		wmove(name, 0,0);
+		wrefresh(name); 
+		s = wgetch(name); 
+		temp = payload(name, s); 
+		//set name
+		newUser->setName(temp); ; 
+		//refresh
+		wrefresh(w); 
+		wrefresh(name); 
+		wmove(bio, 0,0); 
+		wrefresh(bio); 
+		s = wgetch(bio); 
+		temp = payload(bio, s); 
+		newUser->setBio(temp); 
+		
+		//do same for bio
+		refresh();
+		return sandwich::GUI::Type::HOME; 	
+	}	
 
 
 	int a = getch(); 
@@ -131,6 +182,10 @@ GUI::Type GUI::loginScreen() {
  * 7. Logout
  */
 GUI::Type GUI::homeScreen() {
+	erase(); 
+	std::cout << "HOME SCREEN \n"; 
+	//std::cout << trie(currUser->name)<< "\n"; 
+	int s = getch(); 	
 	return sandwich::GUI::Type::LOGOUT;
 }
 
@@ -250,6 +305,8 @@ void GUI::removeFriendScreen() {
     //    Otherwise, do nothing.
 }
 
+
+
 void GUI::testFunc() {
 
     std::string username = "Test username";
@@ -261,17 +318,49 @@ void GUI::testFunc() {
 }
 	
 
-void GUI::center(WINDOW *w, int yLoc, std::string text){
+void GUI::centerText(WINDOW *w, int yLoc, std::string text){
 	int len, indent, depth, width; 
-	getmaxyx(stdscr, depth, width); 
+	getmaxyx(w, depth, width); 
 	len = text.size();  
-	indent = width -14 - len; 
+	indent = width - len; 
 	indent /=2;
         mvwprintw(w, yLoc, indent, text.c_str()); 	
 //	mvaddstr(yLoc, indent, text.c_str()); 
 //	refresh(); 
 	
 }
+
+int GUI::centerY(WINDOW *w){
+	int y, x; 
+	getmaxyx(w, y, x); 
+	return y/2;
+}
+
+int GUI::centerX(WINDOW *w){
+	int y, x; 
+	getmaxyx(w, y, x); 
+	return x/2;
+}
+
+std::string GUI::payload(WINDOW* w, char s){
+	if (s == '~Z'){
+		refresh();
+	}
+	std::string temp; 
+	int xinput=0;
+	while(s!=10){
+		mvwprintw(w,0,xinput,"%c", s); 
+		xinput++; 
+		wrefresh(w); 	       
+		temp+=s; 
+		s = wgetch(w); 
+		if (s == '~Z'){
+			refresh();
+		}
+	}	
+	return temp; 
+}
+
 
 } // namespace sandwich
 

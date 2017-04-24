@@ -464,9 +464,9 @@ std::vector<T> Trie<T>::getComplete(std::string key) {
             auto dataVec = preorderGet(node->children[i]);
             bool isExisting = false;
             for(int j = 0; j < dataVec.size(); ++j) {
-                for() {
+                //for() {
 
-                }
+                //}
             }
         }
     }

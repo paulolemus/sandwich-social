@@ -77,13 +77,16 @@ int main(int argc, char** argv) {
                 case sandwich::GUI::Type::REMOVE_FRIEND:
                     gui.removeFriendScreen();
                     break;
+                case sandwich::GUI::Type::HOME:
                 case sandwich::GUI::Type::LOGOUT:
                 case sandwich::GUI::Type::QUIT:
                 case default:
                     break;
             }
 
-            nextScreen = gui.loginScreen();
+            if(nextScreen != sandwich::GUI::Type::QUIT) {
+                nextScreen = gui.loginScreen();
+            }
         }
 
         // TODO: On exit / quit command, write user and friend data

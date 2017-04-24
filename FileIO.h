@@ -57,7 +57,7 @@ public:
     /* This takes a pointer to a user and then writes
      * all of its information to a text file.
      */
-    void writeUser   (const sandwich::User* const user);
+    void writeUser(const sandwich::User* const user);
     /* Given a user, write all its friends usernames to
      * a text file
      */
@@ -82,7 +82,7 @@ void FileIO::setFriendsFileName(const std::string friendsFileName) {
     this->friendsFileName = friendsFileName;
 }
 
-sandwich::User* FileIO::readUser() {
+std::vector<sandwich::User*> FileIO::readUsers() {
     
     sandwich::User* user = new User();
     return user;

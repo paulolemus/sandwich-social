@@ -80,11 +80,13 @@ int main(int argc, char** argv) {
                     gui.removeFriendScreen();
                     break;
                 case sandwich::GUI::Type::HOME:
+		    std::cout << "returned home \n\n";
                 case sandwich::GUI::Type::LOGOUT:
                 case sandwich::GUI::Type::QUIT:
-        		default:
+        		break; 
+		default:
                    	std::cout << "enum not working\n\n"; 
-            	    break;
+            //	    break;
 	    }
 
             if(nextScreen != sandwich::GUI::Type::QUIT) {

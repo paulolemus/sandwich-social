@@ -22,12 +22,12 @@
 namespace sandwich {
 
 class GUI {
-
+	public:
     std::unordered_map<std::string, sandwich::User*>& userMap;
     sandwich::Trie<sandwich::User*>&                  trie;
     sandwich::User*&                                  currUser;
 
-public:
+
     enum class Type : int {
         HOME,
         POST_TO_WALL,
@@ -47,6 +47,10 @@ public:
     ~GUI(); 
     Type loginScreen();
     Type homeScreen();
+
+    std::unordered_map<std::string, sandwich::User*>& getMap(); 
+    sandwich::Trie<sandwich::User*>& getTrie(); 
+    sandwich::User*& getCurrentUser(); 
 
     void postWallScreen();
     void viewFriendsScreen();
@@ -115,10 +119,9 @@ GUI::Type GUI::loginScreen() {
 	//int c = wgetch(w);
 	char s=wgetch(w);
        	std::string temp; 	
-        int xinput =0; 	
 	wmove(input,0,0);
 	temp = payload(input, s); 
-	mvwprintw(w, centerY(w)+8, centerX(w)-7,  "%s",temp.c_str()); 
+	//mvwprintw(w, centerY(w)+8, centerX(w)-7,  "%s",temp.c_str()); 
 	wrefresh(w); 
 	refresh(); 	
 	if(trie.search(temp)){
@@ -128,8 +131,11 @@ GUI::Type GUI::loginScreen() {
 	else{
 		werase(w);
 		std::string newusrIntro = "Thanks for joining Sandwich Social ";
-		sandwich::User* newUser = new sandwich::User(); 
-		trie.store(temp, newUser); 
+	//	auto tempUser = getCurrentUser();
+	 //      	tempUser->setUsername(temp); //this seg faults before the screen refreshes	
+		//currUser.setUsername(temp); //this won't let me compile 
+	//	trie.store(temp, tempUser); 
+//		std::cout << tempUser->getUsername(); //this works but causes a seg fault
 		newusrIntro += temp;
 		newusrIntro += "!!";
 		centerText(w, (y-4)*.25, newusrIntro); 
@@ -149,20 +155,24 @@ GUI::Type GUI::loginScreen() {
 		wmove(name, 0,0);
 		wrefresh(name); 
 		s = wgetch(name); 
-		temp = payload(name, s); 
+		std::string  newname; 
+		newname = payload(name, s); 
 		//set name
-		newUser->setName(temp); ; 
+	//	tempUser->setName(newname);  
+		//tempUser.setName(newname); //this won't let me compile 
 		//refresh
 		wrefresh(w); 
 		wrefresh(name); 
 		wmove(bio, 0,0); 
 		wrefresh(bio); 
 		s = wgetch(bio); 
-		temp = payload(bio, s); 
-		newUser->setBio(temp); 
+		std::string biostring;
+		biostring = payload(bio, s); 
+	//	tempUser->setBio(biostring); 
 		
 		//do same for bio
 		refresh();
+		getch(); 
 		return sandwich::GUI::Type::HOME; 	
 	}	
 
@@ -183,11 +193,26 @@ GUI::Type GUI::loginScreen() {
  */
 GUI::Type GUI::homeScreen() {
 	erase(); 
+	refresh(); 
 	std::cout << "HOME SCREEN \n"; 
-	//std::cout << trie(currUser->name)<< "\n"; 
+	//sandwich::User* cUser = getCurrentUser(); 
+	//std::cout << cUser->getName()<< "\n"; 
 	int s = getch(); 	
 	return sandwich::GUI::Type::LOGOUT;
 }
+
+std::unordered_map<std::string, sandwich::User*>& GUI::getMap(){
+	return userMap; 
+}
+       
+sandwich::Trie<sandwich::User*>& GUI::getTrie(){
+       return trie; 
+}       
+
+sandwich::User*& GUI::getCurrentUser(){
+	return currUser; 
+}
+
 
 /* Post to wall screen allows user to write a text post
  * with a cap of 100 characters. This post will appear on
@@ -343,9 +368,6 @@ int GUI::centerX(WINDOW *w){
 }
 
 std::string GUI::payload(WINDOW* w, char s){
-	if (s == '~Z'){
-		refresh();
-	}
 	std::string temp; 
 	int xinput=0;
 	while(s!=10){
@@ -354,9 +376,6 @@ std::string GUI::payload(WINDOW* w, char s){
 		wrefresh(w); 	       
 		temp+=s; 
 		s = wgetch(w); 
-		if (s == '~Z'){
-			refresh();
-		}
 	}	
 	return temp; 
 }

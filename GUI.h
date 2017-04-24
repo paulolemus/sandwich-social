@@ -125,6 +125,9 @@ GUI::Type GUI::loginScreen() {
 	wrefresh(w); 
 	refresh(); 	
 	if(trie.search(temp)){
+
+		//currUser.username = trie.get(username); 
+	//	std::cout << "\n" << currUser->getUsername() << "\n"; 
 		return sandwich::GUI::Type::HOME; 
 
 	}
@@ -133,7 +136,15 @@ GUI::Type GUI::loginScreen() {
 		std::string newusrIntro = "Thanks for joining Sandwich Social ";
 	//	auto tempUser = getCurrentUser();
 	 //      	tempUser->setUsername(temp); //this seg faults before the screen refreshes	
-		//currUser.setUsername(temp); //this won't let me compile 
+		
+	//	currUser = new sandwich::User(); 
+		if(sandwich::User::validateStr(temp)){ 
+			std::cout << "validated";
+		//	currUser->setUsername(temp); //this won't let me compile 
+
+		}
+
+		//currUser->setUsername(temp); //this won't let me compile 
 	//	trie.store(temp, tempUser); 
 //		std::cout << tempUser->getUsername(); //this works but causes a seg fault
 		newusrIntro += temp;
@@ -171,8 +182,19 @@ GUI::Type GUI::loginScreen() {
 	//	tempUser->setBio(biostring); 
 		
 		//do same for bio
+	
+		if(sandwich::User::validateStr(temp) && sandwich::User::validateStr(newname) && sandwich::User::validateStr(biostring)){ 
+			erase();
+			refresh(); 
+			std::cout << "temp works: " << temp << "\n"; 
+			std::cout << "newname works: " << newname << "\n"; 
+			std::cout << "bio works: " << biostring<< "\n"; 
+			getch(); 
+		}
+		
 		refresh();
 		getch(); 
+	
 		return sandwich::GUI::Type::HOME; 	
 	}	
 

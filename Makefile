@@ -26,7 +26,7 @@ LIBS = -lncurses
 CXX_FLAGS := -Wall -Wextra -pedantic --std=c++11 -g \
 				$(LIBS)
 TEST_FLAGS := -Wall -Wextra -pedantic --std=c++11 -g \
-			  $(TESTINCLUDEDIR) $(TESTLIBS)
+			  $(TESTINCLUDEDIR) $(TESTLIBS) $(LIBS)
 
 #############################################################################
 ## Add all new targets below this line
@@ -66,7 +66,7 @@ $(TEST_SINGLE_EXECUTABLE): $(TEST_SINGLE_FILE)
 	$(CXX) -o $@ $^ $(TEST_FLAGS)
 
 tests/%.out: tests/%.cpp
-	$(CXX) -o $@ $^ $(TEST_FLAGS) $(LIBS)
+	$(CXX) -o $@ $^ $(TEST_FLAGS)
 
 ##############################################################################
 

@@ -17,7 +17,7 @@
 #include "Trie.h"
 #include "Post.h"
 #include "User.h"
-#include "FileIO.h"
+//#include "FileIO.h"
 #include "GUI.h"
 
 int main(int argc, char** argv) {
@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
      */
     std::unordered_map<std::string, sandwich::User*> userMap;
     sandwich::Trie<sandwich::User*>                  trie;
-    sandwich::FileIO                                 fileIO;
+    //sandwich::FileIO                                 fileIO;
 
     sandwich::User* currUser;
 
@@ -38,10 +38,11 @@ int main(int argc, char** argv) {
     // Must have launced program with data file arguments.
     // This can be changed, we can hardcore the strings for the
     // data files if we want
-    if(argc < 4) {
+  /*  if(argc < 4) {
         std::cout << "No provided user or friends data files" << std::endl;
         exit(1);
     }
+   */ 
 
     // TODO: READ IN USERS AND FRIENDS,
     //       POPULATE userMap AND trie
@@ -80,9 +81,10 @@ int main(int argc, char** argv) {
                 case sandwich::GUI::Type::HOME:
                 case sandwich::GUI::Type::LOGOUT:
                 case sandwich::GUI::Type::QUIT:
-                case default:
-                    break;
-            }
+		default:
+                   	std::cout << "enum not working\n\n"; 
+            	    break;
+	    }
 
             if(nextScreen != sandwich::GUI::Type::QUIT) {
                 nextScreen = gui.loginScreen();

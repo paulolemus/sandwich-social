@@ -24,9 +24,11 @@ int main(int argc, char ** argv){
 	menuYbeg = userDepth+1;
 	
 	//start out the window pointers and their boxes (classic style)
-	WINDOW * userInfoWin_BOX =  newwin(userDepth+2, userWidth+2,  userYbeg-1, userXbeg-1); 
+	WINDOW * userInfoWin_BOX =  newwin(userDepth+4, userWidth+4,  userYbeg-2, userXbeg-2); 
 	WINDOW * userInfoWin = newwin(userDepth, userWidth,  userYbeg, userXbeg);
         box(userInfoWin_BOX, 0, 0); 	
+	wrefresh(userInfoWin_BOX); 
+
 	box(userInfoWin, 0, 0); 
 	WINDOW * menuwin = newwin(menuDepth, menuWidth, menuYbeg, menuXbeg);
 	box(menuwin, 0,0);
@@ -85,7 +87,7 @@ string submit_selection(WINDOW* w, int choice){
 	switch(choice){
 		case 1:
 		       	wclear(w); 
-			box(w, 0, 0); 
+			//box(w, 0, 0); 
 			mvwprintw(w, 2,2, "NEW POST: ");
 			mvwprintw(w, 3,2, "Tell us about your favorite Sandwhich... ");
 			c=0; 

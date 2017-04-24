@@ -26,7 +26,7 @@ LIBS = -lncurses
 CXX_FLAGS := -Wall -Wextra -pedantic --std=c++11 -g \
 				$(LIBS)
 TEST_FLAGS := -Wall -Wextra -pedantic --std=c++11 -g \
-			  $(TESTINCLUDEDIR) $(TESTLIBS)
+			  $(TESTINCLUDEDIR) $(TESTLIBS) $(LIBS)
 
 #############################################################################
 ## Add all new targets below this line

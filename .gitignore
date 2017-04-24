@@ -15,6 +15,7 @@
 !makefile
 !Makefile
 !*.sh
+!*.dat
 
 # ignore everything in gtest
 dep/*

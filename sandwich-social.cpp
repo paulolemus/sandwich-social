@@ -50,35 +50,35 @@ int main(int argc, char** argv) {
     sandwich::GUI gui(userMap, trie, currUser);
 
     // TODO: Login user, set the currUser.
-    sandwich::ScreenType nextScreen = gui.loginScreen();
+    sandwich::GUI::Type nextScreen = gui.loginScreen();
 
-    while(nextScreen != sandwich::ScreenType::QUIT) {
+    while(nextScreen != sandwich::GUI::Type::QUIT) {
 
 
-        while(nextScreen != sandwich::ScreenType::LOGOUT) {
+        while(nextScreen != sandwich::GUI::Type::LOGOUT) {
             nextScreen = gui.homeScreen();
             switch(nextScreen) {
 
-                case sandwich::ScreenType::POST_TO_WALL:
+                case sandwich::GUI::Type::POST_TO_WALL:
                     gui.postWallScreen();
                     break;
-                case sandwich::ScreenType::VIEW_FRIENDS:
+                case sandwich::GUI::Type::VIEW_FRIENDS:
                     gui.viewFriendsScreen();
                     break;
-                case sandwich::ScreenType::ADD_FRIEND:
+                case sandwich::GUI::Type::ADD_FRIEND:
                     gui.addFriendScreen();
                     break;
-                case sandwich::ScreenType::EDIT_PROFILE:
+                case sandwich::GUI::Type::EDIT_PROFILE:
                     gui.editProfileScreen();
                     break;
-                case sandwich::ScreenType::VIEW_FRIEND:
+                case sandwich::GUI::Type::VIEW_FRIEND:
                     gui.viewFriendScreen();
                     break;
-                case sandwich::ScreenType::REMOVE_FRIEND:
+                case sandwich::GUI::Type::REMOVE_FRIEND:
                     gui.removeFriendScreen();
                     break;
-                case sandwich::ScreenType::LOGOUT:
-                case sandwich::ScreenType::QUIT:
+                case sandwich::GUI::Type::LOGOUT:
+                case sandwich::GUI::Type::QUIT:
                 case default:
                     break;
             }

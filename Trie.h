@@ -41,6 +41,7 @@
 #include <cctype>
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 namespace sandwich {
 
@@ -142,7 +143,7 @@ private:
     std::vector<std::string> preorder(Node<T>* node);
 
     // Retrieval preorder
-    std::vector<T> preorderGet(Node<T>* node);
+    std::unordered_set<T> preorderGet(Node<T>* node);
 };
 
 ///////////////////////////////////
@@ -293,7 +294,7 @@ bool Trie<T>::search(std::string key) {
         node = node->getChild( key[i] );
         if(node == nullptr) return false;
     }
-
+    
     if(node->isWord) return true;
     else             return false;
 }
@@ -461,8 +462,11 @@ std::vector<T> Trie<T>::getComplete(std::string key) {
     for(unsigned int i = 0; i < 27; ++i) {
         if(node->children[i] != nullptr) {
             auto dataVec = preorderGet(node->children[i]);
-            for(auto datum : dataVec) {
+            bool isExisting = false;
+            for(int j = 0; j < dataVec.size(); ++j) {
+                for() {
 
+                }
             }
         }
     }

@@ -18,6 +18,7 @@
 #include "Post.h"
 #include "User.h"
 #include "FileIO.h"
+#include "GUI.h"
 
 int main(int argc, char** argv) {
 
@@ -41,19 +42,53 @@ int main(int argc, char** argv) {
         std::cout << "No provided user or friends data files" << std::endl;
         exit(1);
     }
-    
+
     // TODO: READ IN USERS AND FRIENDS,
     //       POPULATE userMap AND trie
-    
+
     // TODO: Initialize the NCURSES GUI
-    
+    sandwich::GUI gui(userMap, trie, currUser);
 
     // TODO: Login user, set the currUser.
-    
-    // TODO: Get each menu working
-    
-    // TODO: On exit / quit command, write user and friend data
-    //       to a file then actually quit.
+    sandwich::ScreenType nextScreen = gui.loginScreen();
 
+    while(nextScreen != sandwich::ScreenType::QUIT) {
+
+
+        while(nextScreen != sandwich::ScreenType::LOGOUT) {
+            nextScreen = gui.homeScreen();
+            switch(nextScreen) {
+
+                case sandwich::ScreenType::POST_TO_WALL:
+                    gui.postWallScreen();
+                    break;
+                case sandwich::ScreenType::VIEW_FRIENDS:
+                    gui.viewFriendsScreen();
+                    break;
+                case sandwich::ScreenType::ADD_FRIEND:
+                    gui.addFriendScreen();
+                    break;
+                case sandwich::ScreenType::EDIT_PROFILE:
+                    gui.editProfileScreen();
+                    break;
+                case sandwich::ScreenType::VIEW_FRIEND:
+                    gui.viewFriendScreen();
+                    break;
+                case sandwich::ScreenType::REMOVE_FRIEND:
+                    gui.removeFriendScreen();
+                    break;
+                case sandwich::ScreenType::LOGOUT:
+                case sandwich::ScreenType::QUIT:
+                case default:
+                    break;
+            }
+
+            nextScreen = gui.loginScreen();
+        }
+
+        // TODO: On exit / quit command, write user and friend data
+        //       to a file then actually quit.
+        // Back to login screen
+    }
     return 0;
 }

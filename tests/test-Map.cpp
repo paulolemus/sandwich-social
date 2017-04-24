@@ -24,10 +24,6 @@ TEST(User, insertInMap){
 
 }
 
-
-
-//TEST(User, getAllUsers){
-//	std::unordered_map<std::string, sandwich:User*> userMap;
 TEST(User, findInMap){
 	std::unordered_map<std::string, sandwich::User*> userMap;
 

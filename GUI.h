@@ -22,12 +22,11 @@
 namespace sandwich {
 
 class GUI {
-	public:
     std::unordered_map<std::string, sandwich::User*>& userMap;
     sandwich::Trie<sandwich::User*>&                  trie;
     sandwich::User*&                                  currUser;
 
-
+public:
     enum class Type : int {
         HOME,
         POST_TO_WALL,
@@ -41,16 +40,12 @@ class GUI {
     };
 
     GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
-        sandwich::Trie<sandwich::User*>&                  trie,
-        sandwich::User*&                                  currUser);
+            sandwich::Trie<sandwich::User*>&                  trie,
+            sandwich::User*&                                  currUser);
 
     ~GUI(); 
     Type loginScreen();
     Type homeScreen();
-
-    std::unordered_map<std::string, sandwich::User*>& getMap(); 
-    sandwich::Trie<sandwich::User*>& getTrie(); 
-    sandwich::User*& getCurrentUser(); 
 
     void postWallScreen();
     void viewFriendsScreen();
@@ -67,139 +62,136 @@ class GUI {
     std::string payload(WINDOW* w, char s);
 
 };
-	
+
 GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
-         sandwich::Trie<sandwich::User*>&                  trie,
-         sandwich::User*&                                  currUser) :
+        sandwich::Trie<sandwich::User*>&                  trie,
+        sandwich::User*&                                  currUser) :
     userMap(userMap),
     trie(trie),
     currUser(currUser)
-    { //initializes the window    
-    	initscr(); 
-	noecho();
-	cbreak();
-       	start_color(); 
-	init_pair(1,COLOR_BLACK,COLOR_CYAN);
-	init_pair(2,COLOR_RED,COLOR_WHITE); 
-    }
+{ //initializes the window    
+    initscr(); 
+    noecho();
+    cbreak();
+    start_color(); 
+    init_pair(1,COLOR_BLACK,COLOR_CYAN);
+    init_pair(2,COLOR_RED,COLOR_WHITE); 
+}
 
 GUI::~GUI() {
     endwin();
 }
 
 GUI::Type GUI::loginScreen() {
-	std::string username = "jack";
-	sandwich::User* tester = new sandwich::User(); 
-	tester->setUsername(username);
-	
-	//sandwich::User * tester = new sandwich::User("jack", "jackDaniels", "is Lit"); 
-	trie.store(username, tester); 
+    std::string username = "jack";
+    sandwich::User* tester = new sandwich::User(); 
+    tester->setUsername(username);
 
-	int y,x; 
-	getmaxyx(stdscr, y, x); 
-	WINDOW *b = newwin(y, x-10, 0, 5);
-	box(b,0,0);
-	refresh(); 
-	wrefresh(b); 
+    userMap.insert({tester->getLower(), tester});
+    trie.store(tester->getLower(), tester); 
 
-	WINDOW *w = newwin(y-4, x-14, 2, 7); 
-	WINDOW *input = newwin(1, 30, centerY(w)+6, centerX(w)-7);
-       	wcolor_set (input,2, NULL); 	
-	//wattron(input, COLOR_PAIR(1)); 
-	//werase(input); 
-	wbkgd(input,COLOR_PAIR(1)); 
-	//mvwprintw(input,0,0, "                              "); 
-	wmove(input, 0,0); 
-	//wattroff(input, COLOR_PAIR(1)); 
-	centerText(w, (y-4)*.25, "WELCOME TO SANDWICH SOCIAL"); 
-        centerText(w, (y-4)*.5, "Input your username to login or start a new account"); 	
-	//refresh(); 
-	wrefresh(w); 
-	wrefresh(input); 
-	//int c = wgetch(w);
-	char s=wgetch(w);
-       	std::string temp; 	
-	wmove(input,0,0);
-	temp = payload(input, s); 
-	//mvwprintw(w, centerY(w)+8, centerX(w)-7,  "%s",temp.c_str()); 
-	wrefresh(w); 
-	refresh(); 	
-	if(trie.search(temp)){
+    int y,x; 
+    getmaxyx(stdscr, y, x); 
+    WINDOW *b = newwin(y, x-10, 0, 5);
+    box(b,0,0);
+    refresh(); 
+    wrefresh(b); 
 
-		//currUser.username = trie.get(username); 
-	//	std::cout << "\n" << currUser->getUsername() << "\n"; 
-		return sandwich::GUI::Type::HOME; 
+    WINDOW *w = newwin(y-4, x-14, 2, 7); 
+    WINDOW *input = newwin(1, 30, centerY(w)+6, centerX(w)-7);
+    wcolor_set (input,2, NULL); 	
+    //wattron(input, COLOR_PAIR(1)); 
+    //werase(input); 
+    wbkgd(input,COLOR_PAIR(1)); 
+    //mvwprintw(input,0,0, "                              "); 
+    wmove(input, 0,0); 
+    //wattroff(input, COLOR_PAIR(1)); 
+    centerText(w, (y-4)*.25, "WELCOME TO SANDWICH SOCIAL"); 
+    centerText(w, (y-4)*.5, "Input your username to login or start a new account"); 	
+    //refresh(); 
+    wrefresh(w); 
+    wrefresh(input); 
+    //int c = wgetch(w);
+    char s=wgetch(w);
+    wmove(input,0,0);
+    std::string temp = payload(input, s); 
+    //mvwprintw(w, centerY(w)+8, centerX(w)-7,  "%s",temp.c_str()); 
+    wrefresh(w); 
+    refresh(); 	
+    if(trie.search(temp)){
 
-	}
-	else{
-		werase(w);
-		std::string newusrIntro = "Thanks for joining Sandwich Social ";
-	//	auto tempUser = getCurrentUser();
-	 //      	tempUser->setUsername(temp); //this seg faults before the screen refreshes	
-		
-	//	currUser = new sandwich::User(); 
-		if(sandwich::User::validateStr(temp)){ 
-			std::cout << "validated";
-		//	currUser->setUsername(temp); //this won't let me compile 
+        for(unsigned int i = 0; i < temp.size(); ++i) {
+            if(temp[i] >= 'A' && temp[i] <= 'Z') temp[i] = temp[i] + 32;
+        }
+        currUser = userMap[temp];
+        return sandwich::GUI::Type::HOME;
+    }
+    else{
+        werase(w);
+        std::string newusrIntro = "Thanks for joining Sandwich Social ";
 
-		}
+        if(sandwich::User::validateStr(temp)){ 
+            std::cout << "validated";
+        }
+        newusrIntro += temp;
+        newusrIntro += "!!";
+        centerText(w, (y-4)*.25, newusrIntro); 
+        centerText(w, ((y-4)*.25)+1, "Input your information below: "); 	
+        mvwprintw(w, centerY(w)+2, centerX(w)-20, "Name: ");
+        WINDOW *name = newwin(1, 30, centerY(w)+4, centerX(w)-7);
+        wbkgd(name, COLOR_PAIR(1)); 
+        //wcolor_set(name, 1, NULL); 
+        //mvwprintw(name,0,0, "                              "); 
+        centerText(w, (y-4)*.75, "Short Bio (Max 150 characters): ");
+        WINDOW *bio = newwin(4, 50, ((y-4)*.75)+6, centerX(w)-20); 
+        wbkgd(bio, COLOR_PAIR(1)); 
+        //wcolor_set(bio, 2, NULL); 
+        wrefresh(w); 
+        wrefresh(name);
+        wrefresh(bio);
+        wmove(name, 0,0);
+        wrefresh(name); 
+        s = wgetch(name); 
+        std::string  newname; 
+        newname = payload(name, s); 
+        //set name
+        //refresh
+        wrefresh(w); 
+        wrefresh(name); 
+        wmove(bio, 0,0); 
+        wrefresh(bio); 
+        s = wgetch(bio); 
+        std::string biostring;
+        biostring = payload(bio, s); 
 
-		//currUser->setUsername(temp); //this won't let me compile 
-	//	trie.store(temp, tempUser); 
-//		std::cout << tempUser->getUsername(); //this works but causes a seg fault
-		newusrIntro += temp;
-		newusrIntro += "!!";
-		centerText(w, (y-4)*.25, newusrIntro); 
-		centerText(w, ((y-4)*.25)+1, "Input your information below: "); 	
-        	mvwprintw(w, centerY(w)+2, centerX(w)-20, "Name: ");
-		WINDOW *name = newwin(1, 30, centerY(w)+4, centerX(w)-7);
-		wbkgd(name, COLOR_PAIR(1)); 
-		//wcolor_set(name, 1, NULL); 
-		//mvwprintw(name,0,0, "                              "); 
-		centerText(w, (y-4)*.75, "Short Bio (Max 150 characters): ");
-		WINDOW *bio = newwin(4, 50, ((y-4)*.75)+6, centerX(w)-20); 
-		wbkgd(bio, COLOR_PAIR(1)); 
-		//wcolor_set(bio, 2, NULL); 
-		wrefresh(w); 
-		wrefresh(name);
-		wrefresh(bio);
-		wmove(name, 0,0);
-		wrefresh(name); 
-		s = wgetch(name); 
-		std::string  newname; 
-		newname = payload(name, s); 
-		//set name
-	//	tempUser->setName(newname);  
-		//tempUser.setName(newname); //this won't let me compile 
-		//refresh
-		wrefresh(w); 
-		wrefresh(name); 
-		wmove(bio, 0,0); 
-		wrefresh(bio); 
-		s = wgetch(bio); 
-		std::string biostring;
-		biostring = payload(bio, s); 
-	//	tempUser->setBio(biostring); 
-		
-		//do same for bio
-	
-		if(sandwich::User::validateStr(temp) && sandwich::User::validateStr(newname) && sandwich::User::validateStr(biostring)){ 
-			erase();
-			refresh(); 
-			std::cout << "temp works: " << temp << "\n"; 
-			std::cout << "newname works: " << newname << "\n"; 
-			std::cout << "bio works: " << biostring<< "\n"; 
-			getch(); 
-		}
-		
-		refresh();
-		getch(); 
-	
-		return sandwich::GUI::Type::HOME; 	
-	}	
+        //do same for bio
+
+        if(sandwich::User::validateStr(temp)    && 
+                sandwich::User::validateStr(newname) && 
+                sandwich::User::validateStr(biostring)){ 
+
+            erase();
+            refresh(); 
+            std::cout << "temp works: " << temp << "\n";
+            std::cout << "newname works: " << newname << "\n"; 
+            std::cout << "bio works: " << biostring<< "\n"; 
+
+            currUser = new sandwich::User(temp, newname, biostring);
+            userMap[currUser->getLower()] = currUser;
+            trie.store(currUser->getUsername(), currUser);
+            trie.store(currUser->getName(), currUser);
+
+            getch(); 
+        }
+
+        refresh();
+        getch(); 
+
+        return sandwich::GUI::Type::HOME; 	
+    }	
 
 
-	int a = getch(); 
+    int a = getch(); 
 }
 
 
@@ -214,25 +206,13 @@ GUI::Type GUI::loginScreen() {
  * 7. Logout
  */
 GUI::Type GUI::homeScreen() {
-	erase(); 
-	refresh(); 
-	std::cout << "HOME SCREEN \n"; 
-	//sandwich::User* cUser = getCurrentUser(); 
-	//std::cout << cUser->getName()<< "\n"; 
-	int s = getch(); 	
-	return sandwich::GUI::Type::LOGOUT;
-}
-
-std::unordered_map<std::string, sandwich::User*>& GUI::getMap(){
-	return userMap; 
-}
-       
-sandwich::Trie<sandwich::User*>& GUI::getTrie(){
-       return trie; 
-}       
-
-sandwich::User*& GUI::getCurrentUser(){
-	return currUser; 
+    erase(); 
+    refresh(); 
+    std::cout << "HOME SCREEN \n"; 
+    //sandwich::User* cUser = getCurrentUser(); 
+    //std::cout << cUser->getName()<< "\n"; 
+    int s = getch(); 	
+    return sandwich::GUI::Type::LOGOUT;
 }
 
 
@@ -295,7 +275,7 @@ void GUI::addFriendScreen() {
  */
 void GUI::viewFriendScreen() {
 
-    
+
     // std::string friendUsername; // populate this
     // sandwich::User* friend = nullptr;
     //
@@ -331,7 +311,7 @@ void GUI::viewFriendScreen() {
 }
 
 /* This screen will allow you to edit your bio to fit your liking
- */
+*/
 void GUI::editProfileScreen() {
 
     // Pseudocode
@@ -341,7 +321,7 @@ void GUI::editProfileScreen() {
 }
 
 /* This screen allows you to remove a friend by username
- */
+*/
 void GUI::removeFriendScreen() {
 
     // Pseudocode
@@ -363,43 +343,43 @@ void GUI::testFunc() {
     trie.store(currUser->getUsername(), currUser);
     userMap[currUser->getLower()] = currUser;
 }
-	
+
 
 void GUI::centerText(WINDOW *w, int yLoc, std::string text){
-	int len, indent, depth, width; 
-	getmaxyx(w, depth, width); 
-	len = text.size();  
-	indent = width - len; 
-	indent /=2;
-        mvwprintw(w, yLoc, indent, text.c_str()); 	
-//	mvaddstr(yLoc, indent, text.c_str()); 
-//	refresh(); 
-	
+    int len, indent, depth, width; 
+    getmaxyx(w, depth, width); 
+    len = text.size();  
+    indent = width - len; 
+    indent /=2;
+    mvwprintw(w, yLoc, indent, text.c_str()); 	
+    //	mvaddstr(yLoc, indent, text.c_str()); 
+    //	refresh(); 
+
 }
 
 int GUI::centerY(WINDOW *w){
-	int y, x; 
-	getmaxyx(w, y, x); 
-	return y/2;
+    int y, x; 
+    getmaxyx(w, y, x); 
+    return y/2;
 }
 
 int GUI::centerX(WINDOW *w){
-	int y, x; 
-	getmaxyx(w, y, x); 
-	return x/2;
+    int y, x; 
+    getmaxyx(w, y, x); 
+    return x/2;
 }
 
 std::string GUI::payload(WINDOW* w, char s){
-	std::string temp; 
-	int xinput=0;
-	while(s!=10){
-		mvwprintw(w,0,xinput,"%c", s); 
-		xinput++; 
-		wrefresh(w); 	       
-		temp+=s; 
-		s = wgetch(w); 
-	}	
-	return temp; 
+    std::string temp; 
+    int xinput=0;
+    while(s!=10){
+        mvwprintw(w,0,xinput,"%c", s); 
+        xinput++; 
+        wrefresh(w); 	       
+        temp+=s; 
+        s = wgetch(w); 
+    }	
+    return temp; 
 }
 
 

@@ -42,9 +42,9 @@ public:
     void        setFriendsFileName(const std::string friendsFileName);
 
     /* Read User:
-     * Created a new user and populates it with
+     * Creates new users and populates it with
      * information from the file. It then returns 
-     * a pointer to the newly created user.
+     * a vector of pointers to the newly created users.
      */
     std::vector<sandwich::User*> readUsers();
     /* readFriends:
@@ -85,9 +85,31 @@ void FileIO::setFriendsFileName(const std::string friendsFileName) {
 std::vector<sandwich::User*> FileIO::readUsers() {
     
     std::vector<sandwich::User*> users;
+    std::string s1;
+    ifstream() myfile("users.dat");
+
+    getline(myfile, s1);
+    while(s1 != END_FILE){
+	    if(s1 == "START_POSTS"){//post branch ends when END_POSTS
+	    	getline();
+		while(s1 != END_POSTS){
+			
+		}
+	    }
+	    else{
+		//save usernam
+		//save name
+		//save bio
+		//push onto vector
+		//getline()    
+	    }
+	    getline();
+    }
+
     sandwich::User* user = new User();
     return users;
 }
+
 std::vector<std::string> FileIO::readFriends() {
 
     std::vector<std::string> friendList;

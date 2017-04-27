@@ -25,6 +25,18 @@
 
 namespace sandwich {
 
+
+bool validuser(std::string a, std::string b, std::string c){
+    if(s1.substr(0,10) == "username: "){
+	if(s2.substr(0,10) == "name    : "){
+            if(s3.substr(0,10) == "bio     : "){
+	     	return 1;
+	    }
+	}
+    }
+    return 0;
+}
+
 class FileIO {
 
     std::string userFileName;
@@ -85,28 +97,42 @@ void FileIO::setFriendsFileName(const std::string friendsFileName) {
 std::vector<sandwich::User*> FileIO::readUsers() {
     
     std::vector<sandwich::User*> users;
-    std::string s1;
-    ifstream() myfile("users.dat");
+    std::string s1, s2, s3;
+    std::ifstream myfile("users.dat");
 
-    getline(myfile, s1);
-    while(s1 != END_FILE){
+    if(myfile){//if file exists
+    while(getline(myfile, s1)){//getline until end of file
+	if(s1.empty() == 0){//skip empty lines
 	    if(s1 == "START_POSTS"){//post branch ends when END_POSTS
 	    	getline();
 		while(s1 != END_POSTS){
-			
 		}
 	    }
-	    else{
-		//save usernam
-		//save name
-		//save bio
-		//push onto vector
-		//getline()    
-	    }
-	    getline();
+	   	 else{//reading user fields
+		     getline(myfile, s2);
+		     getline(myfile, s3);
+		     if(validuser(s1, s2, s3)){
+		     	extract();
+			sandwich::User* U = new User();
+			users.pushback(U);
+		     }else{
+		     	std::cout << "ERROR: INVALID USER DATA" << std::endl;
+		     }	     
+			 }
+			//check valid username
+			//check valid name
+			//check valid bio
+			//make user
+			//push onto vector    
+	      }
+	 }
+    }    
+	myfile.close();//close file
     }
-
-    sandwich::User* user = new User();
+    else{
+    	std::cout << "ERROR: FILE NOT FOUND" << std::endl;
+    
+    }
     return users;
 }
 

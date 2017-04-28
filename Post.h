@@ -36,6 +36,7 @@ class Post {
 public:
     // Constructor
     Post(std::string message);
+    Post(std::string message, std::string time);
 
     // Getters
     const std::string& getMsg()   const;
@@ -67,6 +68,8 @@ Post::Post(std::string message) : message(message) {
     // Save contents into string
     time = ctime(&currTime);
 }
+Post::Post(std::string message, std::string time) :
+    message(message), time(time) {}
 
 // Getters
 const std::string& Post::getMsg()  const { return message; }

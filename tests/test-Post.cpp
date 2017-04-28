@@ -13,6 +13,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 #include "Post.h"
 
 // Ensure gtest is linked properly
@@ -77,6 +78,18 @@ TEST(Post, equals_overload) {
     sandwich::Post post0(message);
     sandwich::Post post1(message);
     ASSERT_TRUE(post0 == post1);
+}
+
+TEST(Post, post_in_vector) {
+
+    std::vector<sandwich::Post> posts;
+    
+    std::string message = "Hello World!";
+    std::string timeStr = "12:34:34 Apr 4";
+    posts.push_back({message, timeStr});
+
+    ASSERT_EQ(posts.size(), 1);
+    ASSERT_EQ(posts[0].getMsg(), message);
 }
 
 

@@ -86,8 +86,7 @@ GUI::Type GUI::loginScreen() {
  
     //create a start user for testing
     std::string username = "jack";
-    sandwich::User* tester = new sandwich::User(); 
-    tester->setUsername(username);
+    sandwich::User* tester = new sandwich::User(username, "name", "bio"); 
 
     //create insert the username into the Map paired with the tester
     userMap.insert({tester->getLower(), tester});
@@ -198,6 +197,7 @@ GUI::Type GUI::loginScreen() {
     int a = getch(); 
 }
 
+    
 
 /* The home screen contains two parts, the feed
  * and the menu. The menu consists of the following options:
@@ -371,8 +371,7 @@ void GUI::removeFriendScreen() {
 void GUI::testFunc() {
 
     std::string username = "Test username";
-    currUser = new User();
-    currUser->setUsername(username);
+    currUser = new User(username, "name", "bio");
 
     trie.store(currUser->getUsername(), currUser);
     userMap[currUser->getLower()] = currUser;

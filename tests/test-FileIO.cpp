@@ -10,6 +10,9 @@
 TEST(FileIO, constructor){
 	sandwich::FileIO f1;
 }
+TEST(FileIO, constructorinput){
+	sandwich::FileIO f1("Name","friends");
+}
 
 
 

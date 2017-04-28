@@ -41,8 +41,8 @@ namespace sandwich {
 
 class User {
 
-    std::string username;
-    std::string name;
+    const std::string username;
+    const std::string name;
     std::string bio;
     
     std::vector<sandwich::Post>        posts;
@@ -50,7 +50,6 @@ class User {
 
 public:
     // Constructor
-    User();
     User(const std::string& username, 
          const std::string& name,
          const std::string& bio);
@@ -60,9 +59,8 @@ public:
     const std::string& getName()     const;
     const std::string& getBio()      const;
     std::string        getLower()    const;
-    bool setUsername(std::string& username);
-    bool setName    (std::string& name);
-    void setBio     (std::string& bio);
+
+    void setBio(std::string& bio);
     
     // Post operations
     void addPost   (const std::string& post);
@@ -87,7 +85,6 @@ public:
 //                  IMPLEMENTATIONS                   //
 ////////////////////////////////////////////////////////
 
-User::User() {}
 User::User(
     const std::string& username,
     const std::string& name,
@@ -98,8 +95,8 @@ const std::string& User::getUsername() const { return username; }
 const std::string& User::getName()     const { return name; }
 const std::string& User::getBio()      const { return bio; }
 std::string        User::getLower()    const {
-    std::string lower = username;
 
+    std::string lower = username;
     // Convert to lower case
     for(unsigned int i = 0; i < lower.size(); ++i) {
         if(lower[i] >= 'A' && lower[i] <= 'Z') {
@@ -107,26 +104,6 @@ std::string        User::getLower()    const {
         }
     }
     return lower;
-}
-
-bool User::setUsername(std::string& str) {
-
-    // Guard invalid && convert to lower
-    for(unsigned int i = 0; i < str.size(); ++i) {
-        if(!isalpha( str[i] ) && str[i] != ' ') return false;
-    }
-    username = str;
-    return true;
-}
-
-bool User::setName(std::string& str) {
-    
-    // Guard invalid && conver to lower
-    for(unsigned int i = 0; i < str.size(); ++i) {
-        if(!isalpha( str[i] ) && str[i] != ' ') return false;
-    }
-    name = str;
-    return true;
 }
 
 void User::setBio(std::string& str) {

@@ -47,14 +47,10 @@ TEST(Trie_User, store_user_ptrs) {
     std::string username2 = "epidurmis";
     std::string username3 = "Shooshoo";
 
-    sandwich::User* user0 = new sandwich::User();
-    sandwich::User* user1 = new sandwich::User();
-    sandwich::User* user2 = new sandwich::User();
-    sandwich::User* user3 = new sandwich::User();
-    user0->setUsername(username0);
-    user1->setUsername(username1);
-    user2->setUsername(username2);
-    user3->setUsername(username3);
+    sandwich::User* user0 = new sandwich::User(username0, "name", "bio");
+    sandwich::User* user1 = new sandwich::User(username1, "name", "bio");
+    sandwich::User* user2 = new sandwich::User(username2, "name", "bio");
+    sandwich::User* user3 = new sandwich::User(username3, "name", "bio");
 
     ASSERT_TRUE( trie.store( username0, user0 ) );
     ASSERT_TRUE( trie.search(username0) );
@@ -71,8 +67,7 @@ TEST(Trie_User, store_and_get_users) {
     sandwich::Trie<sandwich::User*> trie;
 
     std::string username = "Mr koo";
-    sandwich::User* user = new sandwich::User();
-    user->setUsername(username);
+    sandwich::User* user = new sandwich::User(username, "name", "bio");
     
     auto users = trie.get(user->getUsername());
     
@@ -92,12 +87,9 @@ TEST(Trie_User, getCompleteBasic) {
     std::string username0 = "YamaSama";
     std::string username1 = "pauloasdf";
     std::string username2 = "jessieG";
-    sandwich::User* user0 = new sandwich::User();
-    sandwich::User* user1 = new sandwich::User();
-    sandwich::User* user2 = new sandwich::User();
-    user0->setUsername(username0);
-    user1->setUsername(username1);
-    user2->setUsername(username2);
+    sandwich::User* user0 = new sandwich::User(username0, "name", "bio");
+    sandwich::User* user1 = new sandwich::User(username1, "name", "bio");
+    sandwich::User* user2 = new sandwich::User(username2, "name", "bio");
     trie.store(user0->getUsername(), user0);
     trie.store(user1->getUsername(), user1);
     trie.store(user2->getUsername(), user2);
@@ -116,12 +108,9 @@ TEST(Trie_User, getCompleteString) {
     std::string username0 = "YamaSama";
     std::string username1 = "pauloasdf";
     std::string username2 = "jessieG";
-    sandwich::User* user0 = new sandwich::User();
-    sandwich::User* user1 = new sandwich::User();
-    sandwich::User* user2 = new sandwich::User();
-    user0->setUsername(username0);
-    user1->setUsername(username1);
-    user2->setUsername(username2);
+    sandwich::User* user0 = new sandwich::User(username0, "name", "bio");
+    sandwich::User* user1 = new sandwich::User(username1, "name", "bio");
+    sandwich::User* user2 = new sandwich::User(username2, "name", "bio");
     trie.store(user0->getUsername(), user0);
     trie.store(user1->getUsername(), user1);
     trie.store(user2->getUsername(), user2);
@@ -140,16 +129,11 @@ TEST(Trie_User, getCompleteStringMany) {
     std::string username2 = "jessieG";
     std::string username3 = "Yama";
     std::string username4 = "Yamamoto";
-    sandwich::User* user0 = new sandwich::User();
-    sandwich::User* user1 = new sandwich::User();
-    sandwich::User* user2 = new sandwich::User();
-    sandwich::User* user3 = new sandwich::User();
-    sandwich::User* user4 = new sandwich::User();
-    user0->setUsername(username0);
-    user1->setUsername(username1);
-    user2->setUsername(username2);
-    user3->setUsername(username3);
-    user4->setUsername(username4);
+    sandwich::User* user0 = new sandwich::User(username0, "name", "bio");
+    sandwich::User* user1 = new sandwich::User(username1, "name", "bio");
+    sandwich::User* user2 = new sandwich::User(username2, "name", "bio");
+    sandwich::User* user3 = new sandwich::User(username3, "name", "bio");
+    sandwich::User* user4 = new sandwich::User(username4, "name", "bio");
     trie.store(user0->getUsername(), user0);
     trie.store(user1->getUsername(), user1);
     trie.store(user2->getUsername(), user2);

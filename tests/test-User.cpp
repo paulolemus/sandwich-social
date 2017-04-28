@@ -12,12 +12,6 @@ TEST(User, assert_gtest_compiles_and_runs) {
     ASSERT_TRUE(true);
 }
 
-TEST(User, user_constructor) {
-
-    sandwich::User user;
-    ASSERT_TRUE(true);
-}
-
 TEST(User, user_constructor_copy) {
 
     std::string username = "supadoopa";
@@ -47,11 +41,7 @@ TEST(User, getters_setters) {
     std::string name     = "Adam Driver";
     std::string bio      = "All hail DARTH VADER!";
 
-    sandwich::User user;
-
-    ASSERT_TRUE( user.setUsername(username) );
-    ASSERT_TRUE( user.setName(name) );
-    user.setBio(bio);
+    sandwich::User user(username, name, bio);
 
     ASSERT_EQ( user.getUsername(), username );
     ASSERT_EQ( user.getName(),     name );
@@ -60,7 +50,7 @@ TEST(User, getters_setters) {
 
 TEST(User, add_str_post) {
 
-    sandwich::User user;
+    sandwich::User user("username", "name", "bio");
 
     std::string newPost0 = "I absolutely love cats! ERMAH GERD <3";
     user.addPost(newPost0);
@@ -79,7 +69,7 @@ TEST(User, add_str_post) {
 
 TEST(User, add_Post_post) {
 
-    sandwich::User user;
+    sandwich::User user("username", "name", "bio");
 
     sandwich::Post post0("Sup bro. I am an ANIMAL!!1!");
     sandwich::Post post1("Does anyone want to buy protein supplements!?");
@@ -100,7 +90,7 @@ TEST(User, add_Post_post) {
 
 TEST(User, remove_post) {
 
-    sandwich::User user;
+    sandwich::User user("username", "name", "bio");
 
     sandwich::Post post0("Sup bro. I am an ANIMAL!!1!");
     sandwich::Post post1("Does anyone want to buy protein supplements!?");
@@ -132,8 +122,8 @@ TEST(User, remove_post) {
 
 TEST(User, add_friend_has_friend) {
 
-    sandwich::User user0;
-    sandwich::User user1;
+    sandwich::User user0("username", "name", "bio");
+    sandwich::User user1("username", "name", "bio");
 
     ASSERT_FALSE( user0.hasFriend(&user1) );
     ASSERT_TRUE ( user0.addFriend(&user1) );
@@ -143,8 +133,8 @@ TEST(User, add_friend_has_friend) {
 
 TEST(User, add_friend_remove_friend) {
 
-    sandwich::User* user0 = new sandwich::User();
-    sandwich::User* user1 = new sandwich::User();
+    sandwich::User* user0 = new sandwich::User("username", "name", "bio");
+    sandwich::User* user1 = new sandwich::User("username", "name", "bio");
 
     ASSERT_FALSE( user0->removeFriend(user1) );
     ASSERT_TRUE ( user0->addFriend(user1) );

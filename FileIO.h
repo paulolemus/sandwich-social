@@ -22,20 +22,36 @@
 #include <string>
 #include <vector>
 #include "User.h"
+#include <iostream>
 
 namespace sandwich {
 
 
 bool validuser(std::string a, std::string b, std::string c){
-    if(s1.substr(0,10) == "username: "){
-	if(s2.substr(0,10) == "name    : "){
-            if(s3.substr(0,10) == "bio     : "){
+    if(a.substr(0,10) == "username: "){
+	if(b.substr(0,10) == "name    : "){
+            if(c.substr(0,10) == "bio     : "){
 	     	return 1;
 	    }
 	}
     }
     return 0;
 }
+
+std::vector<std::string> extract(std::string a, std::string b, std::string c){
+	std::vector<std::string> v1;
+	std::string vs1, vs2, vs3;
+	
+    vs1 = a.substr(10);
+    vs2 = b.substr(10);
+    vs3 = c.substr(10);
+    v1.push_back(vs1);
+    v1.push_back(vs2);
+    v1.push_back(vs3);
+    
+    return v1;
+}
+
 
 class FileIO {
 
@@ -98,27 +114,28 @@ std::vector<sandwich::User*> FileIO::readUsers() {
     
     std::vector<sandwich::User*> users;
     std::string s1, s2, s3;
+    std::vector<std::string> v1;
     std::ifstream myfile("users.dat");
 
     if(myfile){//if file exists
     while(getline(myfile, s1)){//getline until end of file
 	if(s1.empty() == 0){//skip empty lines
-	    if(s1 == "START_POSTS"){//post branch ends when END_POSTS
-	    	getline();
+	    /*if(s1 == "START_POSTS"){//post branch ends when END_POSTS
+	    	
 		while(s1 != END_POSTS){
 		}
-	    }
-	   	 else{//reading user fields
+	    }*/
+	   //	 else{//reading user fields
 		     getline(myfile, s2);
 		     getline(myfile, s3);
 		     if(validuser(s1, s2, s3)){
-		     	extract();
-			sandwich::User* U = new User();
-			users.pushback(U);
+		     	v1 = extract(s1,s2,s3);
+			sandwich::User* U = new User(v1[0],v1[1],v1[2]);
+			users.push_back(U);
 		     }else{
 		     	std::cout << "ERROR: INVALID USER DATA" << std::endl;
 		     }	     
-			 }
+			// }
 			//check valid username
 			//check valid name
 			//check valid bio
@@ -126,9 +143,9 @@ std::vector<sandwich::User*> FileIO::readUsers() {
 			//push onto vector    
 	      }
 	 }
+	 myfile.close();//close file
     }    
-	myfile.close();//close file
-    }
+	
     else{
     	std::cout << "ERROR: FILE NOT FOUND" << std::endl;
     

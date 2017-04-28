@@ -2,7 +2,7 @@
 
 CXX := c++
 
-CXX_FLAGS := -Wall -Wextra -pedantic --std=c++11 -g
+CXX_FLAGS := -Wall -Wextra -pedantic --std=c++11 -g -I../
 
 LIBS := -lncurses
 

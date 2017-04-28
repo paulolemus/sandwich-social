@@ -6,6 +6,8 @@ using namespace std;
 void print_menu(WINDOW *w, int h, int n, string s[],int d); 
 int menu_selector(int n, int c, int* highlight, int a, int b);
 string submit_selection(WINDOW* w, int choice);
+int menu_setup(WINDOW* w, int n, string s[], int d); 
+
 
 int main(int argc, char ** argv){
 
@@ -45,6 +47,10 @@ int main(int argc, char ** argv){
 	wrefresh(userInfoWin_BOX); 
 	wrefresh(userInfoWin); 
 
+	//print_menu(menuwin, highlight, n_choices, choices, menuDepth);
+
+	int choice = menu_setup(menuwin, n_choices, choices, menuDepth); 
+	/*
 	int choice;
 	int highlight = 1;
 
@@ -55,6 +61,7 @@ int main(int argc, char ** argv){
 		print_menu(menuwin, highlight, n_choices, choices, menuDepth); 
 		if(choice!=0)break; //user make a choice, break loop
 	}
+	*/
 	//mvwprintw(menuwin, 0,0, "debugging");
 	
 	wrefresh(menuwin);
@@ -98,9 +105,11 @@ string submit_selection(WINDOW* w, int choice){
 					s= ' ';
 					x --;
 				 	c--;  
+					wmove(w,y,x-5); 
+					refresh(); 
 					mvwprintw(w, y, x, "%c",s);
+					refresh(); 
 					s=wgetch(w);
-
 				}
 				mvwprintw(w, y, x, "%c", s);
 				if(c==79){
@@ -108,7 +117,8 @@ string submit_selection(WINDOW* w, int choice){
 				}
 				else str[c]=s;
 				c++; 
-				wrefresh(w); 
+				wrefresh(w);
+			        refresh();	
 			}	
 //	//		post(s1); 
 	//		t = post.getTime(); 
@@ -226,3 +236,21 @@ void print_menu(WINDOW *w, int h, int n, string s[],int d){
 	}   
 	wrefresh(w); 
 } 
+
+int menu_setup(WINDOW* w, int n, string s[], int d){ 
+	int choice;
+	int h = 1;
+	int y, x; 
+	getmaxyx(stdscr, y, x); 
+	print_menu(w, h, n, s, d); 
+	//print_menu(menuwin, highlight, n_choices, choices, menuDepth);
+	while(1){
+		int c = wgetch(w); 
+		//choice = menu_selector(n_choices, c, &highlight, yMax-1, menuXbeg); 
+		choice = menu_selector(n, c, &h, y-1, 5);  
+		print_menu(w, h, n, s, d); 
+		//print_menu(menuwin, highlight, n_choices, choices, menuDepth); 
+		if(choice!=0)break; //user make a choice, break loop
+	}
+	return choice; 
+}

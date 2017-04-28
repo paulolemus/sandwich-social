@@ -134,7 +134,7 @@ GUI::Type GUI::loginScreen() {
         std::string newusrIntro = "Thanks for joining Sandwich Social ";
 
         if(sandwich::User::validateStr(temp)){ 
-            std::cout << "validated";
+            //std::cout << "validated";
         }
         newusrIntro += temp;
         newusrIntro += "!!";
@@ -175,9 +175,9 @@ GUI::Type GUI::loginScreen() {
 
             erase();
             refresh(); 
-            std::cout << "temp works: " << temp << "\n";
-            std::cout << "newname works: " << newname << "\n"; 
-            std::cout << "bio works: " << biostring<< "\n"; 
+            //std::cout << "temp works: " << temp << "\n";
+            //std::cout << "newname works: " << newname << "\n"; 
+            //std::cout << "bio works: " << biostring<< "\n"; 
 
             currUser = new sandwich::User(temp, newname, biostring);
             userMap[currUser->getLower()] = currUser;
@@ -212,16 +212,16 @@ GUI::Type GUI::loginScreen() {
 GUI::Type GUI::homeScreen() {
     erase(); 
     refresh(); 
-    std::cout << "HOME SCREEN \n"; 
+    //std::cout << "HOME SCREEN \n"; 
     
     int x, y; 
     getmaxyx(stdscr, y, x); 
     
     //top and bottom windows based on the get max returns
-    WINDOW * topDisplay = newwin(y*.625, x-10, 0, 5); 
-    WINDOW * bottomMenuDisplay = newwin(y*.25, x-10, (y*.625)+1, 5); 
+    WINDOW * topDisplay = newwin((y*.625)-4, x-14, 2, 7); 
+    WINDOW * bottomMenuDisplay = newwin(y*.25, x-10, (y*.625)+3, 5); 
     //box for the top window
-    WINDOW * topBox = newwin((y*6.25)+4, x+6, -2, 3); 
+    WINDOW * topBox = newwin((y*.625), x-10,0, 5); 
 
     //create boxes for the box windows
     box(topBox, 0,0); 
@@ -229,11 +229,12 @@ GUI::Type GUI::homeScreen() {
     
     //setup keypad and refresh all windows
     keypad(bottomMenuDisplay, true); 
-    wrefresh(topDisplay); 
+//    wrefresh(topDisplay); 
     wrefresh(topBox); 
+//    wrefresh(topDisplay); 
     wrefresh(bottomMenuDisplay); 
     refresh(); 
-
+    wrefresh(topDisplay); 
     std::string choices[7] = {"Post to Wall", "View Friend List", "Add Friend", "Edit Profile", "View Friend", "Delete Friend", "Logout"}; 
     int n_choices = sizeof(choices)/sizeof(std::string); //makes sure this automatically updates if something is added to the list of choices
     

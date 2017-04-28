@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <iostream>
 
 #include "User.h"
 #include "Trie.h"
@@ -17,6 +18,9 @@ class GUI {
     std::unordered_map<std::string, sandwich::User*>& userMap;
     sandwich::Trie<sandwich::User*>&                  trie;
     sandwich::User*&                                  currUser;
+
+    WINDOW* createWindow(int height, int width, int starty, int startx);
+    void    destroyWindow(WINDOW* local_window);
 
 public:
     enum class Type : int {
@@ -67,22 +71,25 @@ GUI::~GUI() {
 
 GUI::Type GUI::loginScreen() {
 
-    keypad(stdscr, TRUE);
+    int y = 0, x = 0;
+    int height, width;
+    getmaxyx(stdscr, height, width);
 
-    printw("Type any character to see it in bold\n");
-    refresh();
-    int ch = getch();
+    WINDOW* loginWindow = createWindow(height, width, y, x);
+    keypad(loginWindow, TRUE);
+    wrefresh(loginWindow);
 
-    if(ch == KEY_F(1)) {
-        printw("You pressed f1");
+    int ch = wgetch(loginWindow);
+
+    switch(ch) {
+
+        case 27:
+            destroyWindow(loginWindow);
+            return sandwich::GUI::Type::QUIT;
+        default:
+            destroyWindow(loginWindow);
+            return sandwich::GUI::Type::LOGOUT;
     }
-    else {
-        printw("the key pressed is: ");
-        attron(A_BOLD);
-        printw("%c", ch);
-        attroff(A_BOLD);
-    }
-    refresh();
     return sandwich::GUI::Type::LOGOUT;
 }
 
@@ -219,12 +226,26 @@ void GUI::removeFriendScreen() {
 }
 
 
+WINDOW* GUI::createWindow(int height, int width, int starty, int startx) {
+
+    WINDOW* newWindow = newwin(height, width, starty, startx);
+    box(newWindow, 0, 0);
+    wrefresh(newWindow);
+    return newWindow;
+}
+
+void GUI::destroyWindow(WINDOW* local_window) {
+    wborder(local_window, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+    wrefresh(local_window);
+    delwin(local_window);
+}
+
+
 
 void GUI::testFunc() {
 
     std::string username = "Test username";
     currUser = new User(username, "name", "bio");
-
     trie.store(currUser->getUsername(), currUser);
     userMap[currUser->getLower()] = currUser;
 }

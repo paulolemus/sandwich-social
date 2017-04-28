@@ -21,7 +21,6 @@ int main(int argc, char** argv) {
 
     sandwich::User* currUser;
 
-
     sandwich::GUI gui(userMap, trie, currUser);
 
     // Login screen to begin program

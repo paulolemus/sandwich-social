@@ -1,30 +1,68 @@
-/* File: paulo-test.cpp
- * Name: Paulo Lemus
- * Team: Sandwich
+/* File paulo-test.cpp
+ *
+ * A test driver for program
  */
 
-/* A test program to learn how to use the ncurses library.
- */
+#include <iostream>
+#include <unordered_map>
+#include <vector>
 
 #include <ncurses.h>
-#include <iostream>
-#include <cstdio>
 
-int main() {
+#include "GUI.h"
+#include "Trie.h"
+#include "Post.h"
+#include "User.h"
 
-    // Open config
-    initscr();              // Starts ncurses mode
-    cbreak();               // get input immediately
-    noecho();               // prevent characters from being automatically echoed
-    keypad(stdscr, TRUE);   // Enable keypad and arrow keys
+int main(int argc, char** argv) {
 
-    printw("Hello World!"); // print window
-    refresh();              // Draws virtual screen to actual screen
-    getch();                // get a character without printing it to screen
-    refresh();              // Draws virtual screen to actual screen
-    getchar();              // get char and print to screen
-    refresh();              // Draws virtual screen to actual screen
-    getchar();
-    endwin();               // Ends ncurses mode
+    std::unordered_map<std::string, sandwich::User*> userMap;
+    sandwich::Trie<sandwich::User*>                  trie;
+
+    sandwich::User* currUser;
+
+
+    sandwich::GUI gui(userMap, trie, currUser);
+
+    // Login screen to begin program
+    sandwich::GUI::Type nextScreen = gui.loginScreen();
+
+    while(nextScreen != sandwich::GUI::Type::QUIT) {
+
+        while(nextScreen != sandwich::GUI::Type::LOGOUT) {
+            nextScreen = gui.homeScreen();
+            switch(nextScreen) {
+
+                case sandwich::GUI::Type::POST_TO_WALL:
+                    gui.postWallScreen();
+                    break;
+                case sandwich::GUI::Type::VIEW_FRIENDS:
+                    gui.viewFriendsScreen();
+                    break;
+                case sandwich::GUI::Type::ADD_FRIEND:
+                    gui.addFriendScreen();
+                    break;
+                case sandwich::GUI::Type::EDIT_PROFILE:
+                    gui.editProfileScreen();
+                    break;
+                case sandwich::GUI::Type::VIEW_FRIEND:
+                    gui.viewFriendScreen();
+                    break;
+                case sandwich::GUI::Type::REMOVE_FRIEND:
+                    gui.removeFriendScreen();
+                    break;
+                case sandwich::GUI::Type::HOME:
+                case sandwich::GUI::Type::LOGOUT:
+                case sandwich::GUI::Type::QUIT:
+                    break; 
+                default:
+                    std::cout << "enum not working\n\n"; 
+            } // homescreen loop
+        } // loginscreen loop
+        if(nextScreen == sandwich::GUI::Type::LOGOUT) {
+            nextScreen = gui.loginScreen();
+        }
+    }
+    getch(); 
     return 0;
 }

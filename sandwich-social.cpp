@@ -36,28 +36,15 @@ int main(int argc, char** argv) {
     sandwich::User* currUser;
 
 
-    // Must have launced program with data file arguments.
-    // This can be changed, we can hardcore the strings for the
-    // data files if we want
-  /*  if(argc < 4) {
-        std::cout << "No provided user or friends data files" << std::endl;
-        exit(1);
-    }
-   */ 
-
-    // TODO: READ IN USERS AND FRIENDS,
-    //       POPULATE userMap AND trie
-
-    // TODO: Initialize the NCURSES GUI
     sandwich::GUI gui(userMap, trie, currUser);
 
-    // TODO: Login user, set the currUser.
     sandwich::GUI::Type nextScreen = gui.loginScreen();
 
     while(nextScreen != sandwich::GUI::Type::QUIT) {
 
+        while(nextScreen != sandwich::GUI::Type::LOGOUT ||
+              nextScreen != sandwich::GUI::Type::QUIT) {
 
-        while(nextScreen != sandwich::GUI::Type::LOGOUT) {
             nextScreen = gui.homeScreen();
             switch(nextScreen) {
 
@@ -80,23 +67,16 @@ int main(int argc, char** argv) {
                     gui.removeFriendScreen();
                     break;
                 case sandwich::GUI::Type::HOME:
-		    std::cout << "returned home \n\n";
                 case sandwich::GUI::Type::LOGOUT:
                 case sandwich::GUI::Type::QUIT:
-        		break; 
-		default:
-                   	std::cout << "enum not working\n\n"; 
-            //	    break;
-	    }
-
-            if(nextScreen != sandwich::GUI::Type::QUIT) {
-                nextScreen = gui.loginScreen();
+                    break; 
+                default:
+                    std::cout << "enum not working\n\n"; 
             }
         }
-
-        // TODO: On exit / quit command, write user and friend data
-        //       to a file then actually quit.
-        // Back to login screen
+        if(nextScreen == sandwich::GUI::Type::LOGOUT) {
+            nextScreen = gui.loginScreen();
+        }
     }
     getch(); 
     return 0;

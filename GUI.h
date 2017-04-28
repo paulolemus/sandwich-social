@@ -194,6 +194,7 @@ GUI::Type GUI::loginScreen() {
     int a = getch(); 
 }
 
+    
 
 /* The home screen contains two parts, the feed
  * and the menu. The menu consists of the following options:

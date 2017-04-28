@@ -21,6 +21,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <queue>
 #include "User.h"
 #include <iostream>
 
@@ -115,17 +116,86 @@ std::vector<sandwich::User*> FileIO::readUsers() {
     std::vector<sandwich::User*> users;
     std::string s1, s2, s3;
     std::vector<std::string> v1;
+    std::queue<std::string> que;
     std::ifstream myfile("users.dat");
 
     if(myfile){//if file exists
-    while(getline(myfile, s1)){//getline until end of file
-	if(s1.empty() == 0){//skip empty lines
+    while(!myfile.eof() || !que.empty()){//getline until end of file
+	
+	if(que.empty()){
+	getline(myfile, s1);
+	}else{
+	s1 = que.front();//get from queue
+	que.pop();
+	}
+
+	if(s1.substr(0,10) == "username: "){
+	    
+	    if(que.empty()){
+	    getline(myfile, s2);
+	    }else{
+	    s2 = que.front();//get from queue
+	    que.pop();
+	    }
+
+	    if(s2.substr(0,10) == "name    : "){
+	        
+		if(que.empty()){
+		getline(myfile, s3);
+		}else{
+		s3 = que.front();//get from stack
+		que.pop();
+		}
+
+		if(s3.substr(0,10) == "bio     : "){//valid user
+		   
+		    v1 = extract(s1, s2, s3);//extract substrings
+		    sandwich::User* U = new User(v1[0], v1[1], v1[2]);
+		    users.push_back(U);//create new user and add to vector 
+		    
+		    while(s1 != "END_POSTS"){//post loop
+		        
+			if(que.empty()){
+			getline(myfile, s1);
+			}else{
+			s1 = que.front();
+			que.pop();
+			}
+
+			if(s1.substr(0,6) == "POST: "){
+			    
+			    if(que.empty()){
+			    getline(myfile, s2);
+			    }else{
+			    s2 = que.front();
+			    que.pop();
+			    }
+
+			    if(s2 == "TIME: "){//valid post
+
+			        s1 = s1.substr(6);//extract substrings
+				s2 = s2.substr(6);
+				U->addPost({s1,s2});//new post
+				
+			    }else{
+			    	que.push(s2);
+			    }
+			}
+		    }
+		}else{
+		    que.push(s2);//enqueue both
+	    	    que.push(s3);	    
+		}
+	    }else{
+	 	que.push(s2);//enqueue
+	    }
+	}
 	    /*if(s1 == "START_POSTS"){//post branch ends when END_POSTS
 	    	
 		while(s1 != END_POSTS){
 		}
-	    }*/
-	   //	 else{//reading user fields
+	    }
+	   	 else{//reading user fields
 		     getline(myfile, s2);
 		     getline(myfile, s3);
 		     if(validuser(s1, s2, s3)){
@@ -141,7 +211,7 @@ std::vector<sandwich::User*> FileIO::readUsers() {
 			//check valid bio
 			//make user
 			//push onto vector    
-	      }
+	      }*/
 	 }
 	 myfile.close();//close file
     }    
@@ -161,28 +231,9 @@ std::vector<std::string> FileIO::readFriends() {
 
 void FileIO::writeUser(const sandwich::User* const user) {
 
-    // 1. Open new file or open a file to overwrite.
-    // 2. For each pointer in the vector of pointers:
-    //      a. cat the username on the end of a string "username: <username>"
-    //      b. do the same for name and bio
-    //      c. Write those for file.
-    //      d. Write the string START_POSTS:
-    //      e. Get the user's vector of posts.
-    //      f. For each post, write the contents and timestamp.
-    //      g. Write END_POSTS\n\n
-    // 3. Repeat from 1 until all users have been written.
-    //    This should actually be easier than read.
-
 }
 void FileIO::writeFriends(const sandwich::User* const user) {
 
-    // 1. For each user in vector:
-    // 2. Write username followed by a : and newline
-    // 3. Get the vector of friends
-    // 4. For each friend in the vector of friends:
-    //      a. Write their usernames on newlines.
-    // 5. Write a newline to file.
-    // 6. Repeat from 2 until all users have been written.
 }
 
 

@@ -161,9 +161,28 @@ std::vector<std::string> FileIO::readFriends() {
 
 void FileIO::writeUser(const sandwich::User* const user) {
 
+    // 1. Open new file or open a file to overwrite.
+    // 2. For each pointer in the vector of pointers:
+    //      a. cat the username on the end of a string "username: <username>"
+    //      b. do the same for name and bio
+    //      c. Write those for file.
+    //      d. Write the string START_POSTS:
+    //      e. Get the user's vector of posts.
+    //      f. For each post, write the contents and timestamp.
+    //      g. Write END_POSTS\n\n
+    // 3. Repeat from 1 until all users have been written.
+    //    This should actually be easier than read.
+
 }
 void FileIO::writeFriends(const sandwich::User* const user) {
 
+    // 1. For each user in vector:
+    // 2. Write username followed by a : and newline
+    // 3. Get the vector of friends
+    // 4. For each friend in the vector of friends:
+    //      a. Write their usernames on newlines.
+    // 5. Write a newline to file.
+    // 6. Repeat from 2 until all users have been written.
 }
 
 

@@ -69,25 +69,28 @@ GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
     userMap(userMap),
     trie(trie),
     currUser(currUser)
-{ //initializes the window    
+{ //initializes the window, noecho, and cbreak at construction    
     initscr(); 
     noecho();
     cbreak();
-    start_color(); 
-    init_pair(1,COLOR_BLACK,COLOR_CYAN);
-    init_pair(2,COLOR_RED,COLOR_WHITE); 
+    start_color(); //makes colors availiable for the GUI
+    init_pair(1,COLOR_BLACK,COLOR_CYAN);// black letters with Cyan background
+    init_pair(2,COLOR_RED,COLOR_WHITE); //red letters with white background
 }
 
 GUI::~GUI() {
-    endwin();
+    endwin();// ends the window at destruction
 }
 
 GUI::Type GUI::loginScreen() {
+ 
+    //create a start user for testing
     std::string username = "jack";
-    sandwich::User* tester = new sandwich::User(); 
-    tester->setUsername(username);
+    sandwich::User* tester = new sandwich::User(username, "name", "bio"); 
 
+    //create insert the username into the Map paired with the tester
     userMap.insert({tester->getLower(), tester});
+    //store the user in the trie by its user name
     trie.store(tester->getLower(), tester); 
 
     int y,x; 
@@ -143,7 +146,7 @@ GUI::Type GUI::loginScreen() {
         //wcolor_set(name, 1, NULL); 
         //mvwprintw(name,0,0, "                              "); 
         centerText(w, (y-4)*.75, "Short Bio (Max 150 characters): ");
-        WINDOW *bio = newwin(4, 50, ((y-4)*.75)+6, centerX(w)-20); 
+        WINDOW *bio = newwin(4, 50, ((y-4)*.75)+6, centerX(w)-15); 
         wbkgd(bio, COLOR_PAIR(1)); 
         //wcolor_set(bio, 2, NULL); 
         wrefresh(w); 
@@ -210,7 +213,37 @@ GUI::Type GUI::homeScreen() {
     erase(); 
     refresh(); 
     std::cout << "HOME SCREEN \n"; 
+    
+    int x, y; 
+    getmaxyx(stdscr, y, x); 
+    
+    //top and bottom windows based on the get max returns
+    WINDOW * topDisplay = newwin(y*.625, x-10, 0, 5); 
+    WINDOW * bottomMenuDisplay = newwin(y*.25, x-10, (y*.625)+1, 5); 
+    //box for the top window
+    WINDOW * topBox = newwin((y*6.25)+4, x+6, -2, 3); 
+
+    //create boxes for the box windows
+    box(topBox, 0,0); 
+    box(bottomMenuDisplay, 0,0); 
+    
+    //setup keypad and refresh all windows
+    keypad(bottomMenuDisplay, true); 
+    wrefresh(topDisplay); 
+    wrefresh(topBox); 
+    wrefresh(bottomMenuDisplay); 
+    refresh(); 
+
+    std::string choices[7] = {"Post to Wall", "View Friend List", "Add Friend", "Edit Profile", "View Friend", "Delete Friend", "Logout"}; 
+    int n_choices = sizeof(choices)/sizeof(std::string); //makes sure this automatically updates if something is added to the list of choices
+    
+    
+    
+    
+    
     //sandwich::User* cUser = getCurrentUser(); 
+    
+    
     //std::cout << cUser->getName()<< "\n"; 
     int s = getch(); 	
     return sandwich::GUI::Type::LOGOUT;
@@ -338,8 +371,7 @@ void GUI::removeFriendScreen() {
 void GUI::testFunc() {
 
     std::string username = "Test username";
-    currUser = new User();
-    currUser->setUsername(username);
+    currUser = new User(username, "name", "bio");
 
     trie.store(currUser->getUsername(), currUser);
     userMap[currUser->getLower()] = currUser;

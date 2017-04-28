@@ -84,8 +84,7 @@ GUI::~GUI() {
 
 GUI::Type GUI::loginScreen() {
     std::string username = "jack";
-    sandwich::User* tester = new sandwich::User(); 
-    tester->setUsername(username);
+    sandwich::User* tester = new sandwich::User(username, "name", "bio"); 
 
     userMap.insert({tester->getLower(), tester});
     trie.store(tester->getLower(), tester); 
@@ -338,8 +337,7 @@ void GUI::removeFriendScreen() {
 void GUI::testFunc() {
 
     std::string username = "Test username";
-    currUser = new User();
-    currUser->setUsername(username);
+    currUser = new User(username, "name", "bio");
 
     trie.store(currUser->getUsername(), currUser);
     userMap[currUser->getLower()] = currUser;

@@ -3,6 +3,7 @@
 #define SANDWICH_GUI_H_
 
 #include <ncurses.h>
+#include <string>
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -75,26 +76,57 @@ GUI::Type GUI::loginScreen() {
 
     int y = 0, x = 0;
     int height, width;
+    std::string usernameStr;
+    std::string loginPrompt = "Welcome to Sandwich Social!";
+    std::string subPrompt   = "Please enter your username";
+    int yPrompt, xPromptTop, xPromptBottom;
+    int yInput, xInputStart, xInputEnd;
+
     getmaxyx(stdscr, height, width);
+    yPrompt       = height / 3;
+    xPromptTop    = width / 2 - loginPrompt.size() / 2 - 1;
+    xPromptBottom = width / 2 - subPrompt.size() / 2 - 1;
+    yInput      = height / 2;
+    xInputStart = width / 4;
+    xInputEnd   = width - width / 4;
 
     WINDOW* loginWindow = createWindow(height, width, y, x);
+
+    // Draw the login prompts
+    wmove(loginWindow, yPrompt, xPromptTop);
+    wprintw(loginWindow, "%s", loginPrompt.c_str());
+    wmove(loginWindow, yPrompt + 1, xPromptBottom);
+    wprintw(loginWindow, "%s", subPrompt.c_str());
+    wmove(loginWindow, yInput, xInputStart);
+
+    attron(A_REVERSE);
+    for(int i = xInputStart; i < xInputEnd; ++i) {
+        wprintw(loginWindow, "%c", 'q');
+    }
+    //attroff(A_REVERSE);
 
     int ch;
     ch = wgetch(loginWindow);
     while(ch != '\n') {
+
+        // Delete case
         if(ch == 127) {
             int xTemp, yTemp;
             getyx(loginWindow, yTemp, xTemp);
             wmove(loginWindow, yTemp, xTemp - 1);
-            wdelch(loginWindow);
+            wprintw(loginWindow, " ");
+            wmove(loginWindow, yTemp, xTemp - 1);
         }
+        // Print the character
         else {
             wprintw(loginWindow, "%c", ch);
         }
         wrefresh(loginWindow);
         ch = wgetch(loginWindow);
     }
+
     ch = wgetch(loginWindow);
+    // Esc case
     if(ch == 27) {
         destroyWindow(loginWindow);
         return sandwich::GUI::Type::QUIT;

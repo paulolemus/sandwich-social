@@ -63,6 +63,8 @@ GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
     initscr(); 
     noecho();
     cbreak();
+    start_color();
+    keypad(stdscr, TRUE);
 }
 
 GUI::~GUI() {
@@ -76,21 +78,31 @@ GUI::Type GUI::loginScreen() {
     getmaxyx(stdscr, height, width);
 
     WINDOW* loginWindow = createWindow(height, width, y, x);
-    keypad(loginWindow, TRUE);
-    wrefresh(loginWindow);
 
-    int ch = wgetch(loginWindow);
-
-    switch(ch) {
-
-        case 27:
-            destroyWindow(loginWindow);
-            return sandwich::GUI::Type::QUIT;
-        default:
-            destroyWindow(loginWindow);
-            return sandwich::GUI::Type::LOGOUT;
+    int ch;
+    ch = wgetch(loginWindow);
+    while(ch != '\n') {
+        if(ch == 127) {
+            int xTemp, yTemp;
+            getyx(loginWindow, yTemp, xTemp);
+            wmove(loginWindow, yTemp, xTemp - 1);
+            wdelch(loginWindow);
+        }
+        else {
+            wprintw(loginWindow, "%c", ch);
+        }
+        wrefresh(loginWindow);
+        ch = wgetch(loginWindow);
     }
-    return sandwich::GUI::Type::LOGOUT;
+    ch = wgetch(loginWindow);
+    if(ch == 27) {
+        destroyWindow(loginWindow);
+        return sandwich::GUI::Type::QUIT;
+    }
+    else {
+        destroyWindow(loginWindow);
+        return sandwich::GUI::Type::LOGOUT;
+    }
 }
 
     

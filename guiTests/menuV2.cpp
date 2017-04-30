@@ -7,6 +7,7 @@ void print_menu(WINDOW *w, int h, int n, string s[],int d);
 int menu_selector(int n, int c, int* highlight, int a, int b);
 string submit_selection(WINDOW* w, int choice);
 int menu_setup(WINDOW* w, int n, string s[], int d); 
+std::string userInput (WINDOW* w, int max);
 
 
 int main(int argc, char ** argv){
@@ -77,7 +78,9 @@ int main(int argc, char ** argv){
 	wrefresh(userInfoWin); 
 	clrtoeol(); // don't know what this does (clear to end of line maybe?)
 	refresh();
-       	getch(); 	
+       	getch(); 
+	getch();
+	getch(); 	
 	endwin(); 
 	return 0;
 }
@@ -89,8 +92,9 @@ string submit_selection(WINDOW* w, int choice){
 	char s; 
 	int y, x, c; 
 //	string s1(std);
-        string t; 	
+        string response; 	
 //	sandwich::Post post(s1); ;
+
 	switch(choice){
 		case 1:
 		       	wclear(w); 
@@ -98,40 +102,11 @@ string submit_selection(WINDOW* w, int choice){
 			mvwprintw(w, 2,2, "NEW POST: ");
 			mvwprintw(w, 3,2, "Tell us about your favorite Sandwhich... ");
 			c=0; 
-			while(s!=10 && c<cMax){
-			       	s =wgetch(w);
-				getyx(w, y, x); 
-				while(s == 127){
-					s= ' ';
-					x --;
-				 	c--;  
-					wmove(w,y,x-5); 
-					refresh(); 
-					mvwprintw(w, y, x, "%c",s);
-					refresh(); 
-					s=wgetch(w);
-				}
-				mvwprintw(w, y, x, "%c", s);
-				if(c==79){
-					mvwprintw(w,y+2, 2, "Characters are full, Max = %d",cMax); 
-				}
-				else str[c]=s;
-				c++; 
-				wrefresh(w);
-			        refresh();	
-			}	
-//	//		post(s1); 
-	//		t = post.getTime(); 
+			response = userInput(w, 50); 
 			wrefresh(w);	
 			mvwprintw(w, 8,2, "You said:  ");
-			mvwprintw(w, 9,2," %s", str);
+			mvwprintw(w, 9,2," %s", response.c_str());
 			wrefresh(w);
-/*		mvwprintw(w, 10, 2, "You're post says: ");
-		       	mvwprintw(w, 11, 2, "%s", post.getMsg());
-			mvwprintw(w, 12, 2, "Post time: ");
-			mvwprintw(w, 12, 14, "%s", post.getTime()); 	
-			wrefresh(w);
-	*/	//	sandwich::Post post(str); 	
 			break; 
 		case 2: 
 		       	wclear(w); 
@@ -185,8 +160,8 @@ string submit_selection(WINDOW* w, int choice){
 			wrefresh(w); 
 			break; 
 	}
-	string temp(str); 
-	return temp; 
+	//string temp(str); 
+	return response; 
 }
 
 int menu_selector(int n, int c, int* highlight, int a, int b){
@@ -211,6 +186,45 @@ int menu_selector(int n, int c, int* highlight, int a, int b){
 	}
 	return 0; 
 }
+
+		
+
+
+std::string userInput (WINDOW* w, int max){
+	char str[max];
+	char s; 
+	int y, x, c; 
+	while(s!=10 && c<max){
+		s =wgetch(w);
+		getyx(w, y, x); 
+		while(s == 127){
+			s= ' ';
+			x --;
+			c--;   
+			mvwprintw(w, y, x, "%c",s);
+			wmove(w,y,x); 
+			refresh(); 
+			s=wgetch(w);
+		}
+		mvwprintw(w, y, x, "%c", s);
+		if(c==max-1){
+			mvwprintw(w,y+2, 2, "Characters are full, Max = %d",max); 
+		}
+		else str[c]=s;
+		refresh(); 
+		c++; 
+		wrefresh(w);
+	}	
+	if (s == 10 || c ==max){
+		str[c]='*'; 
+	}
+	string temp = string (str); 
+	return temp;
+}
+
+
+
+
 
 
 void print_menu(WINDOW *w, int h, int n, string s[],int d){ 

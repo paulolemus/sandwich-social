@@ -60,9 +60,9 @@ public:
     int centerX(WINDOW *w);  //returns the center x location of the window
 
     std::string payload(WINDOW* w, char s);
-    void print_menu(WINDOW *w, int h, int n, string s[],int d); 
+    void print_menu(WINDOW *w, int h, int n, std::string s[],int d); 
     int menu_selector(int n, int c, int* highlight, int a, int b);
-    int menu_setup(WINDOW* w, int n, string s[], int d); 
+    int menu_setup(WINDOW* w, int n, std::string s[], int d); 
     std::string userInput (WINDOW* w, int max);
 
 };
@@ -105,7 +105,7 @@ GUI::Type GUI::loginScreen() {
     wrefresh(b); 
 
     WINDOW *w = newwin(y-4, x-14, 2, 7); 
-    WINDOW *input = newwin(1, 30, centerY(w)+6, centerX(w)-7);
+    WINDOW* input = newwin(1, 30, centerY(w)+6, centerX(w)-7);
     wcolor_set (input,2, NULL); 	
     //wattron(input, COLOR_PAIR(1)); 
     //werase(input); 
@@ -121,8 +121,10 @@ GUI::Type GUI::loginScreen() {
     //int c = wgetch(w);
     char s=wgetch(w);
     wmove(input,0,0);
-    std::string temp = payload(input, s); 
-    //mvwprintw(w, centerY(w)+8, centerX(w)-7,  "%s",temp.c_str()); 
+    //std::string temp = payload(input, s); 
+    std::string temp = userInput(input, 28); 
+	//mvwprintw(w, centerY(w)+8, centerX(w)-7,  "%s",temp.c_str()); 
+    //s=wgetch(w);
     wrefresh(w); 
     refresh(); 	
     if(trie.search(temp)){
@@ -141,7 +143,7 @@ GUI::Type GUI::loginScreen() {
             //std::cout << "validated";
         }
         newusrIntro += temp;
-        newusrIntro += "!!";
+        //newusrIntro += "!!";
         centerText(w, (y-4)*.25, newusrIntro); 
         centerText(w, ((y-4)*.25)+1, "Input your information below: "); 	
         mvwprintw(w, centerY(w)+2, centerX(w)-20, "Name: ");
@@ -159,17 +161,18 @@ GUI::Type GUI::loginScreen() {
         wmove(name, 0,0);
         wrefresh(name); 
         s = wgetch(name); 
-        std::string  newname; 
-        newname = payload(name, s); 
+        std::string newname= userInput(name, 28); 
+        wrefresh(name); 
+	//newname = payload(name, s); 
         //set name
         //refresh
         wrefresh(w); 
         wrefresh(name); 
         wmove(bio, 0,0); 
         wrefresh(bio); 
-        s = wgetch(bio); 
-        std::string biostring;
-        biostring = payload(bio, s); 
+        //s = wgetch(bio); 
+        std::string biostring = userInput(bio, 100);
+        //biostring = payload(bio, s); 
 
         //do same for bio
 
@@ -243,7 +246,7 @@ GUI::Type GUI::homeScreen() {
     int n_choices = sizeof(choices)/sizeof(std::string); //makes sure this automatically updates if something is added to the list of choices
     
     
-    
+    int choice = menu_setup(bottomMenuDisplay, n_choices, choices, y*.25);     
     
     
     //sandwich::User* cUser = getCurrentUser(); 
@@ -420,7 +423,7 @@ std::string GUI::payload(WINDOW* w, char s){
     return temp; 
 }
 
-int menu_selector(int n, int c, int* highlight, int a, int b){
+int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
 	int choice= 0; 
 	int n_choices = n; 
 	switch(c){
@@ -446,17 +449,19 @@ int menu_selector(int n, int c, int* highlight, int a, int b){
 		
 
 
-std::string userInput (WINDOW* w, int max){
-	char str[max];
-	char s; 
-	int y, x, c; 
+std::string GUI::userInput (WINDOW * w, int max){
+	std::string str;
+	//char str[max];
+	char s=0; 
+	int y, x, c=0; 
 	while(s!=10 && c<max){
 		s =wgetch(w);
 		getyx(w, y, x); 
 		while(s == 127){
 			s= ' ';
 			x --;
-			c--;   
+			c--;  
+		        str.erase(str.end()-1);	
 			mvwprintw(w, y, x, "%c",s);
 			wmove(w,y,x); 
 			refresh(); 
@@ -466,16 +471,19 @@ std::string userInput (WINDOW* w, int max){
 		if(c==max-1){
 			mvwprintw(w,y+2, 2, "Characters are full, Max = %d",max); 
 		}
-		else str[c]=s;
+		//else str[c]=s;
+		else str +=s; 
 		refresh(); 
 		c++; 
 		wrefresh(w);
 	}	
-	if (s == 10 || c ==max){
-		str[c]='*'; 
-	}
-	string temp = string (str); 
-	return temp;
+	//if (s == 10 || c ==max){
+	//	str += ' '; //str[c]='*'; 
+	//}
+	//std::string temp = std::string (str); 
+	//return temp;
+	//str.erase(str.end()-1, str.end()); 
+	return str; 
 }
 
 
@@ -483,7 +491,7 @@ std::string userInput (WINDOW* w, int max){
 
 
 
-void print_menu(WINDOW *w, int h, int n, string s[],int d){ 
+void GUI::print_menu(WINDOW *w, int h, int n, std::string s[],int d){ 
 	int x,y,i, min_depth, printRange, miniRange; 
 	x=2;
 	y=3; 
@@ -507,7 +515,7 @@ void print_menu(WINDOW *w, int h, int n, string s[],int d){
 	wrefresh(w); 
 } 
 
-int menu_setup(WINDOW* w, int n, string s[], int d){ 
+int GUI::menu_setup(WINDOW* w, int n, std::string s[], int d){ 
 	int choice;
 	int h = 1;
 	int y, x; 

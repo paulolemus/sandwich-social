@@ -60,6 +60,10 @@ public:
     int centerX(WINDOW *w);  //returns the center x location of the window
 
     std::string payload(WINDOW* w, char s);
+    void print_menu(WINDOW *w, int h, int n, string s[],int d); 
+    int menu_selector(int n, int c, int* highlight, int a, int b);
+    int menu_setup(WINDOW* w, int n, string s[], int d); 
+    std::string userInput (WINDOW* w, int max);
 
 };
 

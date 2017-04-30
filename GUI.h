@@ -416,7 +416,110 @@ std::string GUI::payload(WINDOW* w, char s){
     return temp; 
 }
 
+int menu_selector(int n, int c, int* highlight, int a, int b){
+	int choice= 0; 
+	int n_choices = n; 
+	switch(c){
+		case KEY_UP:
+			if(*highlight ==1) *highlight = n_choices; 
+			else (*highlight) --; 
+			break; 
+		case KEY_DOWN: 
+			if(*highlight == n_choices) *highlight = 1; 	
+			else (*highlight) ++; 
+			break; 
+		case 10: // 10 = int for enter
+			choice =* highlight; 
+			return choice; 
+		default:
+			mvwprintw(stdscr, a, b,  "Press enter to select");
+			refresh(); 
+			break; 
+	}
+	return 0; 
+}
 
+		
+
+
+std::string userInput (WINDOW* w, int max){
+	char str[max];
+	char s; 
+	int y, x, c; 
+	while(s!=10 && c<max){
+		s =wgetch(w);
+		getyx(w, y, x); 
+		while(s == 127){
+			s= ' ';
+			x --;
+			c--;   
+			mvwprintw(w, y, x, "%c",s);
+			wmove(w,y,x); 
+			refresh(); 
+			s=wgetch(w);
+		}
+		mvwprintw(w, y, x, "%c", s);
+		if(c==max-1){
+			mvwprintw(w,y+2, 2, "Characters are full, Max = %d",max); 
+		}
+		else str[c]=s;
+		refresh(); 
+		c++; 
+		wrefresh(w);
+	}	
+	if (s == 10 || c ==max){
+		str[c]='*'; 
+	}
+	string temp = string (str); 
+	return temp;
+}
+
+
+
+
+
+
+void print_menu(WINDOW *w, int h, int n, string s[],int d){ 
+	int x,y,i, min_depth, printRange, miniRange; 
+	x=2;
+	y=3; 
+	min_depth = n + 4; //choices + header + box edges
+	box(w, 0, 0); 
+	mvwprintw(w, 1, 1, "PRESS ENTER TO SELECT AN OPTION BELOW:"); 
+	mvwprintw(w, 2, 1, "--------------------------------------"); 
+
+	if (d < min_depth)  printRange = d - 4;
+	else printRange = d;    
+
+	for (i=0; i< n; i++){
+		if(h == i+1){ //highlighter = present choice
+			wattron(w, A_REVERSE);
+			mvwprintw(w, y, x, "%s", s[i].c_str());
+			wattroff(w, A_REVERSE); 
+		}   
+		else mvwprintw(w, y, x, "%s", s[i].c_str()); 
+		y++; 
+	}   
+	wrefresh(w); 
+} 
+
+int menu_setup(WINDOW* w, int n, string s[], int d){ 
+	int choice;
+	int h = 1;
+	int y, x; 
+	getmaxyx(stdscr, y, x); 
+	print_menu(w, h, n, s, d); 
+	//print_menu(menuwin, highlight, n_choices, choices, menuDepth);
+	while(1){
+		int c = wgetch(w); 
+		//choice = menu_selector(n_choices, c, &highlight, yMax-1, menuXbeg); 
+		choice = menu_selector(n, c, &h, y-1, 5);  
+		print_menu(w, h, n, s, d); 
+		//print_menu(menuwin, highlight, n_choices, choices, menuDepth); 
+		if(choice!=0)break; //user make a choice, break loop
+	}
+	return choice; 
+}
 
 
 

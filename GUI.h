@@ -64,6 +64,7 @@ public:
     int menu_selector(int n, int c, int* highlight, int a, int b);
     int menu_setup(WINDOW* w, int n, std::string s[], int d); 
     std::string userInput (WINDOW* w, int max);
+    std::string submit_selection(WINDOW* w, int choice);
 
 };
 
@@ -521,17 +522,49 @@ int GUI::menu_setup(WINDOW* w, int n, std::string s[], int d){
 	int y, x; 
 	getmaxyx(stdscr, y, x); 
 	print_menu(w, h, n, s, d); 
-	//print_menu(menuwin, highlight, n_choices, choices, menuDepth);
 	while(1){
 		int c = wgetch(w); 
-		//choice = menu_selector(n_choices, c, &highlight, yMax-1, menuXbeg); 
 		choice = menu_selector(n, c, &h, y-1, 5);  
-		print_menu(w, h, n, s, d); 
-		//print_menu(menuwin, highlight, n_choices, choices, menuDepth); 
+		print_menu(w, h, n, s, d);  
 		if(choice!=0)break; //user make a choice, break loop
 	}
 	return choice; 
 }
+	
+std::string GUI::submit_selection(WINDOW* w, int choice){
+	switch(choice){
+		case 1:
+		        return sandwich::GUI::Type::POST_TO_WALL;
+			break;	
+		case 2: 
+			return sandwich::GUI::Type::VIEW_FRIENDS;
+			break;
+		case 3: 
+			return sandwich::GUI::Type::ADD_FRIEND;
+			break; 
+		case 4: 
+			return sandwich::GUI::Type::EDIT_PROFILE;
+			break;
+		case 5: 
+			return sandwich::GUI::Type::VIEW_FRIEND;
+			break;
+		case 6: 
+			return sandwich::GUI::Type::REMOVE_FRIEND;
+			break;
+		case 7: 		
+			return sandwich::GUI::Type::HOME;
+			break;	
+		case 8:
+			return sandwich::GUI::Type::LOGOUT;
+			break;		
+		default: 
+			mvwprintw(w, 12,8, "Press enter to select");
+			wrefresh(w); 
+			break; 
+	}
+	return sandwich::GUI::Type::HOME; 
+}
+
 
 
 

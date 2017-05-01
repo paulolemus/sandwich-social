@@ -66,14 +66,14 @@ TEST(FileIO, readfriends){
 	ASSERT_EQ(fl1.size(),3);
 	ASSERT_EQ(fl2.size(),3);
 
-	for(int counter1 = 0; counter1 < fl1.size(); counter1++){
+	for(unsigned int counter1 = 0; counter1 < fl1.size(); counter1++){
 		ASSERT_EQ(fl1[counter1].size(),3);
 		ASSERT_EQ(fl2[counter1].size(),3);
 	}
 
 
-	for(int counter1 = 0; counter1 < fl1.size(); counter1++){
-		for(int counter2 = 0; counter2 < fl1[counter1].size(); counter2++){
+	for(unsigned int counter1 = 0; counter1 < fl1.size(); counter1++){
+		for(unsigned int counter2 = 0; counter2 < fl1[counter1].size(); counter2++){
 			ASSERT_EQ(fl1[counter1][counter2], fl2[counter1][counter2]);
 		}
 	}

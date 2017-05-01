@@ -67,6 +67,7 @@ Post::Post(std::string message) : message(message) {
 
     // Save contents into string
     time = ctime(&currTime);
+    time = time.substr(0, time.size() - 1);
 }
 Post::Post(std::string message, std::string time) :
     message(message), time(time) {}
@@ -74,8 +75,8 @@ Post::Post(std::string message, std::string time) :
 // Getters
 const std::string& Post::getMsg()  const { return message; }
 const std::string& Post::getTime() const { return time; }
-const char*  Post::getCMsg()  const { return message.c_str(); }
-const char*  Post::getCTime() const { return time.c_str(); }
+const char* Post::getCMsg()  const { return message.c_str(); }
+const char* Post::getCTime() const { return time.c_str(); }
 
 // Setters
 void Post::setMsg(std::string& message) {

@@ -90,6 +90,7 @@ GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
 GUI::~GUI() {
     if(isendwin() == FALSE) {
         endwin();
+        std::cout << "Called endwin" << std::endl;
     }
 }
 
@@ -230,11 +231,11 @@ GUI::Type GUI::homeScreen() {
     refresh(); 
     int x, y; 
     getmaxyx(stdscr, y, x); 
+
     //top and bottom windows based on the get max returns
-    WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
-    WINDOW* bottomMenuDisplay = newwin(y * 0.25, x-10, y * 0.625 + 3, 5); 
-    //box for the top window
-    WINDOW * topBox = newwin(y * 0.625, x - 10, 0, 5); 
+    WINDOW* topDisplay        = newwin(y * 0.625 - 4, x - 14, 2, 7); 
+    WINDOW* bottomMenuDisplay = newwin(y * 0.25, x - 10, y * 0.625 + 3, 5); 
+    WINDOW* topBox            = newwin(y * 0.625, x - 10, 0, 5); 
     //create boxes for the box windows
     box(topBox, 0, 0); 
     box(bottomMenuDisplay, 0, 0); 
@@ -242,17 +243,13 @@ GUI::Type GUI::homeScreen() {
     keypad(bottomMenuDisplay, true); 
 
     centerText(topDisplay, 3, "Welcome to your Homescreen");
-    //std::string nAAAme = cUser->getUsername(); 
-    //mvwprintw(topDisplay,((y-4)*.25)+7,2, "%s ",nAAAme.c_str() ); 
 
     wrefresh(topBox); 
     wrefresh(bottomMenuDisplay); 
     wrefresh(topDisplay); 
     refresh();  
     int choice = menu_setup(bottomMenuDisplay, y * 0.25);
-    //std::cout << cUser->getName()<< "\n"; 
-    //int s = getch(); 	
-    //return sandwich::GUI::Type::LOGOUT;
+
     return submit_selection(bottomMenuDisplay, choice); 
 }
 
@@ -267,10 +264,9 @@ void GUI::postWallScreen() {
     int x, y; 
     getmaxyx(stdscr, y, x); 
     //top and bottom windows based on the get max returns
-    WINDOW * topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
+    WINDOW * topDisplay        = newwin(y * 0.625 - 4, x - 14, 2, 7); 
     WINDOW * bottomMenuDisplay = newwin(y * 0.25, x - 10, y * 0.625 + 3, 5); 
-    //box for the top window
-    WINDOW * topBox = newwin(y * 0.625, x - 10, 0, 5); 
+    WINDOW * topBox            = newwin(y * 0.625, x - 10, 0, 5); 
     //create boxes for the box windows
     box(topBox, 0, 0); 
     box(bottomMenuDisplay, 0, 0); 
@@ -278,7 +274,7 @@ void GUI::postWallScreen() {
     keypad(bottomMenuDisplay, true); 
 
     centerText(topDisplay, 3, "Write your new post (Max characters: 100):");
-    WINDOW *postWin = newwin(4, 50, (y - 4) * 0.25, centerX(topDisplay) - 15); 
+    WINDOW* postWin = newwin(4, 50, (y - 4) * 0.25, centerX(topDisplay) - 15);
     wbkgd(postWin, COLOR_PAIR(1)); 
 
     wrefresh(topBox);
@@ -288,17 +284,16 @@ void GUI::postWallScreen() {
     refresh();
 
     std::string postInput = userInput(postWin, 100); 
-    sandwich::Post post(postInput); 
-    std::string t = post.getTime();
-    std::string m = post.getMsg(); 
-    mvwprintw(topDisplay,(y - 4) * 0.25 + 6, 2, "You Posted: ");
-    mvwprintw(topDisplay,(y - 4) * 0.25 + 7, 2, "%s ---- %s", t.c_str(), m.c_str()); 
+    sandwich::Post post(postInput);
+    currUser->addPost(post);
+
+    mvwprintw(topDisplay,(y - 4) * 0.25 + 6, 2, "At %s, you posted: ", post.getCTime());
+    mvwprintw(topDisplay,(y - 4) * 0.25 + 7, 2, "--%s", post.getCMsg()); 
+    mvwprintw(topDisplay,(y - 4) * 0.25 + 9, 2, "Press any key to continue"); 
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
 
-
-    int choice = menu_setup(bottomMenuDisplay, y*.25);
     getch();
 }
 

@@ -191,10 +191,11 @@ GUI::Type GUI::loginScreen() {
         if(sandwich::User::validateStr(loginName)  && 
            sandwich::User::validateStr(nameString) && 
            sandwich::User::validateStr(bioString) ) {
-
+		std::cout << "VALIDATED!";
             erase();
             refresh(); 
-
+	getch();
+	getch(); 
             currUser = new sandwich::User(loginName, nameString, bioString);
             userMap[currUser->getLower()] = currUser;
             trie.store(currUser->getUsername(), currUser);
@@ -203,7 +204,13 @@ GUI::Type GUI::loginScreen() {
             returnOption = sandwich::GUI::Type::HOME;
         }
         else {
-            returnOption = sandwich::GUI::Type::LOGOUT;
+		std::cout << "NOT VALIDATED";
+		getch();
+		getch();
+		getch();
+getch();getch();
+
+returnOption = sandwich::GUI::Type::LOGOUT;
         }
 
         delwin(nameWindow);

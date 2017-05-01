@@ -27,37 +27,16 @@
 
 namespace sandwich {
 
-
-bool validuser(std::string a, std::string b, std::string c){
-    if(a.substr(0,10) == "username: "){
-	if(b.substr(0,10) == "name    : "){
-            if(c.substr(0,10) == "bio     : "){
-	     	return 1;
-	    }
-	}
-    }
-    return 0;
-}
-
-std::vector<std::string> extract(std::string a, std::string b, std::string c){
-	std::vector<std::string> v1;
-	std::string vs1, vs2, vs3;
-	
-    vs1 = a.substr(10);
-    vs2 = b.substr(10);
-    vs3 = c.substr(10);
-    v1.push_back(vs1);
-    v1.push_back(vs2);
-    v1.push_back(vs3);
-    
-    return v1;
-}
-
-
 class FileIO {
 
     std::string userFileName;
     std::string friendsFileName;
+    const std::string validusername = "username: ";
+    const std::string validname =     "name    : ";
+    const std::string validbio =      "bio     : ";
+    const std::string validpost =     "POST: ";
+    const std::string validtime =     "TIME: ";
+    const std::string endpostflag =       "END_POSTS";
 
 public:
 
@@ -115,9 +94,8 @@ std::vector<sandwich::User*> FileIO::readUsers() {
     
     std::vector<sandwich::User*> users;
     std::string s1, s2, s3;
-    std::vector<std::string> v1;
     std::queue<std::string> que;
-    std::ifstream myfile("users.dat");
+    std::ifstream myfile(userFileName);
 
     if(myfile){//if file exists
     while(!myfile.eof() || !que.empty()){//getline until end of file
@@ -129,7 +107,7 @@ std::vector<sandwich::User*> FileIO::readUsers() {
 	que.pop();
 	}
 
-	if(s1.substr(0,10) == "username: "){
+	if(s1.substr(0,validusername.size()) == validusername){
 	    
 	    if(que.empty()){
 	    getline(myfile, s2);
@@ -138,7 +116,7 @@ std::vector<sandwich::User*> FileIO::readUsers() {
 	    que.pop();
 	    }
 
-	    if(s2.substr(0,10) == "name    : "){
+	    if(s2.substr(0,validname.size()) == validname){
 	        
 		if(que.empty()){
 		getline(myfile, s3);
@@ -147,13 +125,15 @@ std::vector<sandwich::User*> FileIO::readUsers() {
 		que.pop();
 		}
 
-		if(s3.substr(0,10) == "bio     : "){//valid user
-		   
-		    v1 = extract(s1, s2, s3);//extract substrings
-		    sandwich::User* U = new User(v1[0], v1[1], v1[2]);
+		if(s3.substr(0,validbio.size()) == validbio){//valid user
+		  
+		    s1 = s1.substr(validusername.size());//extract substrings
+	    	    s2 = s2.substr(validname.size());
+		    s3 = s3.substr(validbio.size());	    
+		    sandwich::User* U = new User(s1, s2, s3);
 		    users.push_back(U);//create new user and add to vector 
 		    
-		    while(s1 != "END_POSTS"){//post loop
+		    while(s1 != endpostflag){//post loop
 		        
 			if(que.empty()){
 			getline(myfile, s1);
@@ -162,7 +142,7 @@ std::vector<sandwich::User*> FileIO::readUsers() {
 			que.pop();
 			}
 
-			if(s1.substr(0,6) == "POST: "){
+			if(s1.substr(0,validpost.size()) == validpost){
 			    
 			    if(que.empty()){
 			    getline(myfile, s2);
@@ -171,10 +151,10 @@ std::vector<sandwich::User*> FileIO::readUsers() {
 			    que.pop();
 			    }
 
-			    if(s2.substr(0,6) == "TIME: "){//valid post
+			    if(s2.substr(0,validtime.size()) == validtime){//valid post
 
-			        s1 = s1.substr(6);//extract substrings
-				s2 = s2.substr(6);
+			        s1 = s1.substr(validpost.size());//extract substrings
+				s2 = s2.substr(validtime.size());
 				U->addPost({s1,s2});//new post
 				
 			    }else{
@@ -190,28 +170,6 @@ std::vector<sandwich::User*> FileIO::readUsers() {
 	 	que.push(s2);//enqueue
 	    }
 	}
-	    /*if(s1 == "START_POSTS"){//post branch ends when END_POSTS
-	    	
-		while(s1 != END_POSTS){
-		}
-	    }
-	   	 else{//reading user fields
-		     getline(myfile, s2);
-		     getline(myfile, s3);
-		     if(validuser(s1, s2, s3)){
-		     	v1 = extract(s1,s2,s3);
-			sandwich::User* U = new User(v1[0],v1[1],v1[2]);
-			users.push_back(U);
-		     }else{
-		     	std::cout << "ERROR: INVALID USER DATA" << std::endl;
-		     }	     
-			// }
-			//check valid username
-			//check valid name
-			//check valid bio
-			//make user
-			//push onto vector    
-	      }*/
 	 }
 	 myfile.close();//close file
     }    

@@ -565,15 +565,18 @@ std::string GUI::userInput (WINDOW * w, int max){
         s =wgetch(w);
         getyx(w, y, x); 
         while(s == 127){
-            s= ' ';
-            x --;
-            c--;  
-            str.erase(str.end()-1);	
-            mvwprintw(w, y, x, "%c",s);
-            wmove(w,y,x); 
-            refresh(); 
-            s=wgetch(w);
-        }
+            if(c==0) s= wgetch(w);
+	    else{
+		    s= ' ';
+		    x --;
+		    c--;  
+		    str.erase(str.end()-1);	
+		    mvwprintw(w, y, x, "%c",s);
+		    wmove(w,y,x); 
+		    refresh(); 
+		    s=wgetch(w);
+            }
+	}
         mvwprintw(w, y, x, "%c", s);
         if(c==max-1){
             mvwprintw(w,y+2, 2, "Characters are full, Max = %d",max); 

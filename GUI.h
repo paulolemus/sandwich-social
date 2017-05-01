@@ -137,7 +137,7 @@ GUI::Type GUI::loginScreen() {
     wrefresh(inputWindow);
     wmove(inputWindow,0,0);
 
-    std::string loginName = userInput(inputWindow, 28); 
+    std::string loginName = userInput(inputWindow, 26); 
     wrefresh(mainWindow); 
     refresh();
 
@@ -641,24 +641,32 @@ std::string GUI::userInput(WINDOW * w, int max){
     std::string str;
     char s=0; 
     int y, x, ylast, xlast,c=0; 
-    while(s!=10 && c<max){
-
+    while(s!=10){
         s =wgetch(w);
 	if (s == 27){
 		werase(w);
 		mvwprintw(w,0,0, "Press ESC to Select from the Menu or Enter to continue");
 		s = wgetch(w);
 		if (s == 27) return "back";
-		if (s == 127){
-			werase(w);
+		else if (s == 10){
+			wclear(w);
 			wmove(w,0,0);
+			wrefresh(w);
+			refresh();
+			str.clear();
+			s = wgetch(w);
 		}
 	}
         getyx(w, y, x); 
-        while(s == 127){
-            getyx(w, ylast, xlast);
-	    if(c==0) s= wgetch(w);
-	    else{
+ 	getmaxyx(w, ylast, xlast);
+ 	/*if(c==max-2){
+		mvwprintw(w,y, xlast-4, "-MAX");
+		refresh();
+		s = 127;
+	}*/
+	while(s == 127){
+		if(c==0) s= wgetch(w);
+		else{
 		    s= ' ';
 		    x --;
 		    c--;  
@@ -666,15 +674,25 @@ std::string GUI::userInput(WINDOW * w, int max){
 		    mvwprintw(w, y, x, "%c",s);
 		    wmove(w,y,x); 
 		    refresh(); 
+		    if(c==max-3){
+			    mvwprintw(w,y,xlast-4, "     ");
+			    refresh();	            
+		    }
 		    s=wgetch(w);
-            }
-	    }
-        
-	    mvwprintw(w, y, x, "%c", s);
-        if(c==max-1){
-            mvwprintw(w,y+2, 2, "Characters are full, Max = %d",max); 
-        }
-        else str +=s; 
+		}
+	}
+	if(c>max-3){
+		mvwprintw(w,y, xlast-4, "-MAX");
+		refresh();
+		s = ' ';
+		c--;	
+		str.erase(str.end()-1);
+		mvwprintw(w,y,x, "%c", s);
+		wmove(w,y,x);
+		refresh();
+	}
+	else mvwprintw(w, y, x, "%c", s);
+        str +=s; 
 	refresh(); 
         c++; 
         wrefresh(w);

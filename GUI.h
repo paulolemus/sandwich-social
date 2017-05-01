@@ -396,6 +396,13 @@ void GUI::addFriendScreen() {
     refresh(); 
     std::string nameString = userInput(nameWindow, 26, false); 
 
+    for (unsigned int i =0; i<nameString.size(); i++){
+	    if(nameString[i] >= 'A' && nameString[i] <= 'Z'){
+		    nameString[i] = nameString[i] +32;
+	    }
+    }
+
+
     int ymax, xmax, ybeg, xbeg=0;
     getmaxyx(nameWindow, ymax, xmax); 
     getbegyx(nameWindow, ybeg, xbeg); 
@@ -413,6 +420,7 @@ void GUI::addFriendScreen() {
    // }
     
 
+    sandwich::User* friendCopy;
 
     if(trie.search(nameString)){
 //	auto temp = trie.getComplete(prefix);
@@ -424,15 +432,17 @@ void GUI::addFriendScreen() {
     		}
     //          // clear the currently displayed friends here
     		 for(auto friendPtr : friendList) {
-    			mvwprintw(topDisplay, i+20, 0,"%s is almost your friend", friendPtr->getUsername().c_str());
-			i++;
-	//		sandwich::User*& friendCopy = friendList[i];
+ 			if(friendPtr->getUsername() == nameString){
+	 			 mvwprintw(topDisplay, i+20, 0,"%s is almost your friend", friendPtr->getUsername().c_str());
+		       		 i++;
+				 friendCopy = friendPtr;
+		 	}
 		}
     //      display friendPtr->getName().c_str()
     //      display friendPtr->getBio().c_str()
     //      draw line to deparate users
     // }
-        //currUser->addFriend(friendCopy);
+       currUser->addFriend(friendCopy);
 
 	wrefresh(topDisplay); 
     } 
@@ -448,75 +458,88 @@ void GUI::addFriendScreen() {
  */
 void GUI::viewFriendScreen() {
 
-    int x, y; 
-    getmaxyx(stdscr, y, x); 
-    curs_set(0);
+	int x, y; 
+	getmaxyx(stdscr, y, x); 
+	curs_set(0);
 
-    //top and bottom windows based on the get max returns
-    WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
-    WINDOW* topBox     = newwin(y * 0.625, x-10, 0, 5); 
-    //create boxes for the box windows
-    box(topBox, 0, 0);
-    keypad(topDisplay, true);
-    keypad(topBox,     true);
-    //setup keypad and refresh all windows
-    wrefresh(topBox); 
-    wrefresh(topDisplay); 
-    refresh(); 
+	//top and bottom windows based on the get max returns
+	WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
+	WINDOW* topBox     = newwin(y * 0.625, x-10, 0, 5); 
+	//create boxes for the box windows
+	box(topBox, 0, 0);
+	keypad(topDisplay, true);
+	keypad(topBox,     true);
+	//setup keypad and refresh all windows
+	wrefresh(topBox); 
+	wrefresh(topDisplay); 
+	refresh(); 
 
-    centerText(topDisplay, (y - 4) * 0.25, "View a special Friend's page");
-    wrefresh(topBox);
-    wrefresh(topDisplay);
-    refresh();
-    WINDOW* nameWindow = newwin(1, 30, centerY(topDisplay) + 4, centerX(topDisplay) - 7);
-    wbkgd(nameWindow, COLOR_PAIR(1)); 
-    wmove(nameWindow, 0, 0);
-    wrefresh(topBox);
-    wrefresh(topDisplay);
-   
+	centerText(topDisplay, (y - 4) * 0.25, "View a special Friend's page");
+	wrefresh(topBox);
+	wrefresh(topDisplay);
+	refresh();
+	WINDOW* nameWindow = newwin(1, 30, centerY(topDisplay) + 4, centerX(topDisplay) - 7);
+	wbkgd(nameWindow, COLOR_PAIR(1)); 
+	wmove(nameWindow, 0, 0);
+	wrefresh(topBox);
+	wrefresh(topDisplay);
 
-    wrefresh(nameWindow);
-    refresh(); 
-    
-    std::string friendUsername = userInput(nameWindow, 26, false); 
-    wrefresh(nameWindow);
-    wrefresh(topDisplay);
-    refresh(); 
-    /*
-    sandwich::User* newFriend = nullptr;
-    auto friendList = currUser->getFriends();
-    if(friendList.size() < 1) {
-          mvwprintw(topDisplay, centerY(topDisplay)+5, 0, "No friends");
-    }
-    
-    for(unsigned int i = 0; i < friendList.size(); ++i) {
-         if(friendList[i]->getUsername() == friendUsername) {
-             newFriend = friendList[i];
-              i = friendList.size();
-          }
-     }
-    
-    if(newFriend == nullptr) {
-           mvwprintw(topDisplay, centerY(topDisplay)+5, 0, "Could not find friend");
-    }
-    else {
-           mvwprintw(topDisplay, centerY(topDisplay)+5, 0, "friend found %s", newFriend->getUsername().c_str());
-    */
+	int yDisp, xDisp, index, yMax;
+	getmaxyx(topDisplay, yDisp, xDisp);
+	std::vector<std::string> userData;
+	std::string borderStr;
+	for(int i = 0; i < xDisp; ++i) {
+		borderStr += '-';
+	}
 
-    //      display friend->getUsername().c_str();
-    //      display friend->getName().c_str();
-    //      display friend->getBio().c_str();
-    //
-    //      auto posts = friend->getPosts();
-    //      for(auto post : posts) {
-    //          display "at " + post.getCTime() ", friend->getUsername.c_str() said:"
-    //          display post.getCMsg();
-    //          display post dividing line
-    //      }
-   // }
-    delwin(topDisplay);
-    delwin(nameWindow);
-    delwin(topBox);
+
+	wrefresh(nameWindow);
+	refresh(); 
+
+	std::string friendUsername = userInput(nameWindow, 26, false); 
+	wrefresh(nameWindow);
+	wrefresh(topDisplay);
+	refresh(); 
+
+	const sandwich::User* newFriend = nullptr;
+	auto friendList = currUser->getFriends();
+	if(friendList.size() < 1) {
+		mvwprintw(topDisplay, centerY(topDisplay)+5, 0, "No friends");
+	}
+
+	for(unsigned int i = 0; i < friendList.size(); ++i) {
+		if(friendList[i]->getUsername() == friendUsername) {
+			newFriend = friendList[i];
+			i = friendList.size();
+		}
+	}
+
+	if(newFriend == nullptr) {
+		mvwprintw(topDisplay, centerY(topDisplay)+5, 0, "Could not find friend");
+	}
+	else {
+		wclear(topDisplay);
+		wclear(nameWindow);
+		mvwprintw(topDisplay, 5, 0, "friend found %s", newFriend->getUsername().c_str());
+
+
+		//      display friend->getUsername().c_str();
+		//      display friend->getName().c_str();
+		//      display friend->getBio().c_str();
+		//
+		//      auto posts = friend->getPosts();
+		//      for(auto post : posts) {
+		//          display "at " + post.getCTime() ", friend->getUsername.c_str() said:"
+		//          display post.getCMsg();
+		//          display post dividing line
+	}
+	// }
+	wrefresh(topDisplay);
+	getch();
+
+	delwin(topDisplay);
+	delwin(nameWindow);
+	delwin(topBox);
 }
 
 /* This screen will allow you to edit your bio to fit your liking
@@ -759,7 +782,7 @@ std::string GUI::trieAutoComplete(std::string s, WINDOW* w){
 	mvwprintw(trieWindow, ybeg+1+j, 0, "%s", prefix.c_str()); 
  	wrefresh(trieWindow);
 	refresh();
-	getch();
+//	getch();
 	auto friendList = trie.getComplete(s);
 	for(auto friendPtr : friendList) {
 		int i =0;

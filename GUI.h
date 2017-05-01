@@ -94,6 +94,8 @@ GUI::~GUI() {
     }
 }
 
+// Login screen is done. All that is left is minor optimizations and a bit 
+// of cleaning, but all the functionality is there. 
 GUI::Type GUI::loginScreen() {
 
     //create a start user for testing
@@ -138,10 +140,6 @@ GUI::Type GUI::loginScreen() {
     std::string loginName = userInput(inputWindow, 28); 
     wrefresh(mainWindow); 
     refresh();
-
-    if(loginName[loginName.size() - 1] == '\n') {
-        loginName = loginName.substr(0, loginName.size() - 1);
-    }
 
     // variable to hold return option
     sandwich::GUI::Type returnOption;
@@ -188,6 +186,7 @@ GUI::Type GUI::loginScreen() {
         std::string bioString = userInput(bioWindow, 100);
         //set bio
 
+        // Add a new user with the obtained information
         if(sandwich::User::validateStr(loginName)  && 
            sandwich::User::validateStr(nameString) && 
            sandwich::User::validateStr(bioString) ) {

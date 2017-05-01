@@ -135,7 +135,9 @@ GUI::Type GUI::loginScreen() {
     wrefresh(mainWindow); 
     wmove(inputWindow, 0, 0);
 
-    std::string loginName = userInput(inputWindow, 28); 
+    std::string loginName = userInput(inputWindow, 26); 
+    wrefresh(mainWindow); 
+    refresh();
 
     // variable to hold return option
     sandwich::GUI::Type returnOption;
@@ -163,7 +165,7 @@ GUI::Type GUI::loginScreen() {
         WINDOW* nameWindow = newwin(1, 30, centerY(mainWindow) + 4, centerX(mainWindow) - 7);
         wbkgd(nameWindow, COLOR_PAIR(1)); 
 
-        centerText(mainWindow, (y - 4) * 0.75, "Short Bio (Max 150 characters): ");
+        centerText(mainWindow, (y - 4) * 0.75, "Short Bio (Max 100 characters): ");
         WINDOW* bioWindow = newwin(4, 50, (y - 4) * 0.75 + 6, centerX(mainWindow) - 15); 
         wbkgd(bioWindow, COLOR_PAIR(1)); 
 
@@ -178,7 +180,7 @@ GUI::Type GUI::loginScreen() {
         wrefresh(nameWindow); 
         wmove(bioWindow, 0, 0); 
         wrefresh(bioWindow); 
-        std::string bioString = userInput(bioWindow, 150);
+        std::string bioString = userInput(bioWindow, 104);
         //set bio
 
         // Add a new user with the obtained information
@@ -273,7 +275,7 @@ void GUI::postWallScreen() {
     wrefresh(postWin); 
     refresh();
 
-    std::string postInput = userInput(postWin, 100); 
+    std::string postInput = userInput(postWin, 104); 
     sandwich::Post post(postInput);
     currUser->addPost(post);
 
@@ -491,7 +493,7 @@ void GUI::editProfileScreen() {
     centerText(topDisplay, 0, "Edit your bio");
     mvwprintw(topDisplay, 2, 0, "Name: %s", nameString.c_str());
     mvwprintw(topDisplay, 3, 0, "Bio: %s", bioString.c_str());
-    centerText(topDisplay, 5, "Edit your bio in the box below");
+    centerText(topDisplay, 5, "Edit your bio in the box below (Max characters:100)");
 
     WINDOW* bioWindow = newwin(4, 50, 9, centerX(topDisplay) - 15); 
     wbkgd(bioWindow, COLOR_PAIR(1)); 
@@ -501,7 +503,7 @@ void GUI::editProfileScreen() {
     wrefresh(topDisplay);
     refresh();
 
-    bioString = userInput(bioWindow, 150);
+    bioString = userInput(bioWindow, 104);
     currUser->setBio(bioString);
     std::string newBioString = currUser->getBio();
     mvwprintw(topDisplay, 12, 0, "New Bio: %s", newBioString.c_str());  
@@ -623,42 +625,61 @@ int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
 
 std::string GUI::userInput(WINDOW * w, int max){
     std::string str;
-    char s = 0; 
-    int y, x, ylast, xlast,c = 0; 
-    while(s != 10 && c < max){
-
-        s = wgetch(w);
-	    if (s == 27){
-		    werase(w);
-		    mvwprintw(w, 0, 0, "Press ESC to Select from the Menu or Enter to continue");
-		    s = wgetch(w);
-		    if (s == 27) return "back";
-		    if (s == 127){
-			    werase(w);
-			    wmove(w, 0, 0);
-		    }
-	    }
+    char s=0; 
+    int y, x, ylast, xlast,c=0; 
+    while(s!=10){
+        s =wgetch(w);
+	if (s == 27){
+		werase(w);
+		mvwprintw(w,0,0, "Press ESC to Select from the Menu or Enter to continue");
+		s = wgetch(w);
+		if (s == 27) return "back";
+		else if (s == 10){
+			wclear(w);
+			wmove(w,0,0);
+			wrefresh(w);
+			refresh();
+			str.clear();
+			s = wgetch(w);
+		}
+	}
         getyx(w, y, x); 
-        while(s == 127){
-            getyx(w, ylast, xlast);
-	        if(c == 0) s = wgetch(w);
-            else {
-                s = ' ';
-                x--;
-                c--;  
-                str.erase(str.end()-1);	
-                mvwprintw(w, y, x, "%c",s);
-                wmove(w,y,x); 
-                wrefresh(w); 
-                s = wgetch(w);
-            }
-	    }
-        
-	    mvwprintw(w, y, x, "%c", s);
-        if(c == max - 1){
-            mvwprintw(w, y + 2, 2, "Characters are full, Max = %d", max); 
-        }
-        else str += s;
+ 	getmaxyx(w, ylast, xlast);
+ 	/*if(c==max-2){
+		mvwprintw(w,y, xlast-4, "-MAX");
+		refresh();
+		s = 127;
+	}*/
+	while(s == 127){
+		if(c==0) s= wgetch(w);
+		else{
+		    s= ' ';
+		    x --;
+		    c--;  
+		    str.erase(str.end()-1);	
+		    mvwprintw(w, y, x, "%c",s);
+		    wmove(w,y,x); 
+		    refresh(); 
+		    if(c==max-3){
+			    mvwprintw(w,y,xlast-4, "     ");
+			    refresh();	            
+		    }
+		    s=wgetch(w);
+		}
+	}
+	if(c>max-3){
+		mvwprintw(w,y, xlast-4, "-MAX");
+		refresh();
+		s = ' ';
+		c--;	
+		str.erase(str.end()-1);
+		mvwprintw(w,y,x, "%c", s);
+		wmove(w,y,x);
+		refresh();
+	}
+	else mvwprintw(w, y, x, "%c", s);
+        str +=s; 
+	refresh(); 
         c++; 
         wrefresh(w);
     }	

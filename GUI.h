@@ -99,101 +99,88 @@ GUI::Type GUI::loginScreen() {
     //create a start user for testing
     std::string username = "jack";
     sandwich::User* tester = new sandwich::User(username, "name", "bio"); 
-
     //create insert the username into the Map paired with the tester
     userMap.insert({tester->getLower(), tester});
     //store the user in the trie by its user name
     trie.store(tester->getLower(), tester); 
 
     int y,x; 
-    getmaxyx(stdscr, y, x); 
-    WINDOW *b = newwin(y, x-10, 0, 5);
-    box(b,0,0);
+    getmaxyx(stdscr, y, x); //returns the max x & y values of the screen  
+
+    WINDOW *mainWindow = newwin(y-4, x-14, 2, 7); 
+    WINDOW *inputWindow = newwin(1, 30, centerY(mainWindow)+6, centerX(mainWindow)-7); 
+    WINDOW *outerBox = newwin(y, x-10, 0, 5);
+    box(outerBox,0,0);
     refresh(); 
-    wrefresh(b); 
+    wrefresh(mainWindow); 
+    wrefresh(outerBox);
+    wrefresh(inputWindow); 
+	
+    wcolor_set (inputWindow,2, NULL); 	
+    wbkgd(inputWindow,COLOR_PAIR(1)); 
+    wmove(inputWindow, 0,0); 
+    centerText(mainWindow, (y-4)*.25, "WELCOME TO SANDWICH SOCIAL"); 
+    centerText(mainWindow, (y-4)*.5, "Input your username to login or start a new account"); 	
+    refresh();  
+    wrefresh(mainWindow); 
+    wrefresh(outerBox); 
+    wrefresh(inputWindow);
+    wmove(inputWindow,0,0);
+    
+    std::string loginName = userInput(inputWindow, 28); 
+    wrefresh(mainWindow); 
+    refresh();
 
-    WINDOW *w = newwin(y-4, x-14, 2, 7); 
-    WINDOW* input = newwin(1, 30, centerY(w)+6, centerX(w)-7);
-    wcolor_set (input,2, NULL); 	
-    //wattron(input, COLOR_PAIR(1)); 
-    //werase(input); 
-    wbkgd(input,COLOR_PAIR(1)); 
-    //mvwprintw(input,0,0, "                              "); 
-    wmove(input, 0,0); 
-    //wattroff(input, COLOR_PAIR(1)); 
-    centerText(w, (y-4)*.25, "WELCOME TO SANDWICH SOCIAL"); 
-    centerText(w, (y-4)*.5, "Input your username to login or start a new account"); 	
-    //refresh(); 
-    wrefresh(w); 
-    wrefresh(input); 
-    //int c = wgetch(w);
-    char s=0;
-    wmove(input,0,0);
-    //std::string temp = payload(input, s); 
-    std::string temp = userInput(input, 28); 
-	//mvwprintw(w, centerY(w)+8, centerX(w)-7,  "%s",temp.c_str()); 
-    //s=wgetch(w);
-    wrefresh(w); 
-    refresh(); 	
-    if(trie.search(temp)){
+    if(trie.search(loginName)){
 
-        for(unsigned int i = 0; i < temp.size(); ++i) {
-            if(temp[i] >= 'A' && temp[i] <= 'Z') temp[i] = temp[i] + 32;
+        for(unsigned int i = 0; i < loginName.size(); ++i) {
+            if(loginName[i] >= 'A' && loginName[i] <= 'Z') loginName[i] = loginName[i] + 32;
         }
-        currUser = userMap[temp];
+        currUser = userMap[loginName];
         return sandwich::GUI::Type::HOME;
     }
     else{
-        werase(w);
+        werase(mainWindow);
         std::string newusrIntro = "Thanks for joining Sandwich Social ";
 
-        if(sandwich::User::validateStr(temp)){ 
+        if(sandwich::User::validateStr(loginName)){ 
             //std::cout << "validated";
         }
-        newusrIntro += temp;
-        //newusrIntro += "!!";
-        centerText(w, (y-4)*.25, newusrIntro); 
-        centerText(w, ((y-4)*.25)+1, "Input your information below: "); 	
-        mvwprintw(w, centerY(w)+2, centerX(w)-20, "Name: ");
-        WINDOW *name = newwin(1, 30, centerY(w)+4, centerX(w)-7);
-        wbkgd(name, COLOR_PAIR(1)); 
-        //wcolor_set(name, 1, NULL); 
-        //mvwprintw(name,0,0, "                              "); 
-        centerText(w, (y-4)*.75, "Short Bio (Max 150 characters): ");
-        WINDOW *bio = newwin(4, 50, ((y-4)*.75)+6, centerX(w)-15); 
-        wbkgd(bio, COLOR_PAIR(1)); 
-        //wcolor_set(bio, 2, NULL); 
-        wrefresh(w); 
-        wrefresh(name);
-        wrefresh(bio);
-        wmove(name, 0,0);
-        wrefresh(name); 
-        std::string newname= userInput(name, 28); 
-        wrefresh(name); 
-	//newname = payload(name, s); 
+        newusrIntro += loginName;
+        centerText(mainWindow, (y-4)*.25, newusrIntro); 
+        centerText(mainWindow, ((y-4)*.25)+1, "Input your information below: "); 	
+
+	mvwprintw(mainWindow, centerY(mainWindow)+2, centerX(mainWindow)-20, "Name: ");
+ 	WINDOW *nameWindow = newwin(1, 30, centerY(mainWindow)+4, centerX(mainWindow)-7);
+        wbkgd(nameWindow, COLOR_PAIR(1)); 
+
+	centerText(mainWindow, (y-4)*.75, "Short Bio (Max 150 characters): ");
+        WINDOW *bioWindow = newwin(4, 50, ((y-4)*.75)+6, centerX(mainWindow)-15); 
+        wbkgd(bioWindow, COLOR_PAIR(1)); 
+        wrefresh(mainWindow); 
+        wrefresh(nameWindow);
+        wrefresh(bioWindow);
+
+	wmove(nameWindow, 0,0);
+        wrefresh(nameWindow); 
+        std::string nameString= userInput(nameWindow, 28); 
+        wrefresh(nameWindow); 
         //set name
-        //refresh
-        wrefresh(w); 
-        wrefresh(name); 
-        wmove(bio, 0,0); 
-        wrefresh(bio); 
-        //s = wgetch(bio); 
-        std::string biostring = userInput(bio, 100);
-        //biostring = payload(bio, s); 
+        wrefresh(mainWindow); 
+        wrefresh(nameWindow); 
+        wmove(bioWindow, 0,0); 
+        wrefresh(bioWindow); 
+        std::string bioString = userInput(bioWindow, 100);
+        //set bio
 
-        //do same for bio
-
-        if(sandwich::User::validateStr(temp)    && 
-                sandwich::User::validateStr(newname) && 
-                sandwich::User::validateStr(biostring)){ 
+        if(sandwich::User::validateStr(loginName)    && 
+                sandwich::User::validateStr(nameString) && 
+                sandwich::User::validateStr(bioString)){ 
 
             erase();
             refresh(); 
-            //std::cout << "temp works: " << temp << "\n";
-            //std::cout << "newname works: " << newname << "\n"; 
-            //std::cout << "bio works: " << biostring<< "\n"; 
 
-            currUser = new sandwich::User(temp, newname, biostring);
+            currUser = new sandwich::User(loginName, nameString, bioString);
             userMap[currUser->getLower()] = currUser;
             trie.store(currUser->getUsername(), currUser);
             trie.store(currUser->getName(), currUser);

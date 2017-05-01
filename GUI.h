@@ -188,15 +188,8 @@ GUI::Type GUI::loginScreen() {
 
         // Add a new user with the obtained information
         if(sandwich::User::validateStr(loginName)  && 
-<<<<<<< HEAD
-           sandwich::User::validateStr(nameString) && 
-           sandwich::User::validateStr(bioString) ) {
-            erase();
-            refresh(); 
-=======
            sandwich::User::validateStr(nameString) ) {
 
->>>>>>> c88ce8649ef9024afb7bbe5eb51febb2a8d2f819
             currUser = new sandwich::User(loginName, nameString, bioString);
             userMap[currUser->getLower()] = currUser;
             trie.store(currUser->getUsername(), currUser);
@@ -205,11 +198,7 @@ GUI::Type GUI::loginScreen() {
             returnOption = sandwich::GUI::Type::HOME;
         }
         else {
-<<<<<<< HEAD
 	     returnOption = sandwich::GUI::Type::LOGOUT;
-=======
-            returnOption = sandwich::GUI::Type::LOGOUT;
->>>>>>> c88ce8649ef9024afb7bbe5eb51febb2a8d2f819
         }
 
         delwin(nameWindow);
@@ -298,10 +287,6 @@ void GUI::postWallScreen() {
     wrefresh(bottomMenuDisplay); 
     wrefresh(postWin); 
     refresh();
-<<<<<<< HEAD
-=======
-    int choice = menu_setup(bottomMenuDisplay, y * 0.25);
->>>>>>> c88ce8649ef9024afb7bbe5eb51febb2a8d2f819
 
     std::string postInput = userInput(postWin, 100); 
     sandwich::Post post(postInput); 
@@ -351,9 +336,6 @@ void GUI::viewFriendsScreen() {
     refresh();
 
     std::string name = currUser->getUsername(); 
-<<<<<<< HEAD
-    // auto friendList = currUser->getFriends(); 
-=======
     std::vector<const sandwich::User*> friendList  = currUser->getFriends(); 
 
     if(friendList.size() < 1) {
@@ -366,7 +348,6 @@ void GUI::viewFriendsScreen() {
         //friendPtr->getBio().c_str();
         //draw a line separating friends
     }
->>>>>>> c88ce8649ef9024afb7bbe5eb51febb2a8d2f819
 
     mvwprintw(topDisplay,((y-4)*.25)+7,2, "%s ", name.c_str()); 
     //	    centerText(topDisplay, ((y-4)*.25)+3, "Sorry you have no friends");

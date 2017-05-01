@@ -497,14 +497,18 @@ void GUI::editProfileScreen() {
     wrefresh(bottomMenuDisplay); 
     refresh(); 
     wrefresh(topDisplay); 
-    int choice = menu_setup(bottomMenuDisplay, y*.25);
 
     centerText(topDisplay, (y-4)*.25, "Edit your bio");
+
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
 
  
+    int choice = menu_setup(bottomMenuDisplay, y*.25);
+//    wrefresh(bottomMenuDisplay); 
+    
+    
     // Pseudocode
     // 1. Display currUser username, name, and bio, then draw line
     // 2. Display currUser's posts
@@ -706,7 +710,8 @@ int GUI::menu_setup(WINDOW* w, int d){
     getmaxyx(stdscr, y, x); 
     print_menu(w, h, n, s, d); 
     while(1){
-        int c = wgetch(w); 
+        curs_set(0);
+	int c = wgetch(w); 
         choice = menu_selector(n, c, &h, y-1, 5);  
         print_menu(w, h, n, s, d);  
         if(choice!=0)break; //user make a choice, break loop

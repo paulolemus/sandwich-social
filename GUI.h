@@ -188,13 +188,8 @@ GUI::Type GUI::loginScreen() {
 
         // Add a new user with the obtained information
         if(sandwich::User::validateStr(loginName)  && 
-           sandwich::User::validateStr(nameString) && 
-           sandwich::User::validateStr(bioString) ) {
-		std::cout << "VALIDATED!";
-            erase();
-            refresh(); 
-	getch();
-	getch(); 
+           sandwich::User::validateStr(nameString) ) {
+
             currUser = new sandwich::User(loginName, nameString, bioString);
             userMap[currUser->getLower()] = currUser;
             trie.store(currUser->getUsername(), currUser);
@@ -203,13 +198,7 @@ GUI::Type GUI::loginScreen() {
             returnOption = sandwich::GUI::Type::HOME;
         }
         else {
-		std::cout << "NOT VALIDATED";
-		getch();
-		getch();
-		getch();
-getch();getch();
-
-returnOption = sandwich::GUI::Type::LOGOUT;
+            returnOption = sandwich::GUI::Type::LOGOUT;
         }
 
         delwin(nameWindow);

@@ -120,7 +120,7 @@ GUI::Type GUI::loginScreen() {
     wrefresh(w); 
     wrefresh(input); 
     //int c = wgetch(w);
-    char s=wgetch(w);
+    char s=0;
     wmove(input,0,0);
     //std::string temp = payload(input, s); 
     std::string temp = userInput(input, 28); 
@@ -161,7 +161,7 @@ GUI::Type GUI::loginScreen() {
         wrefresh(bio);
         wmove(name, 0,0);
         wrefresh(name); 
-        s = wgetch(name); 
+        //s = wgetch(name); 
         std::string newname= userInput(name, 28); 
         wrefresh(name); 
 	//newname = payload(name, s); 
@@ -334,6 +334,13 @@ void GUI::viewFriendsScreen() {
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
+
+    auto friendList = currUser->getFriends(); 
+    if(friendList.size() <1){
+	 centerText(topDisplay, ((y-4)*.25)+3, "Sorry you have no friends");
+    }
+
+
     getch();
     getch();
 

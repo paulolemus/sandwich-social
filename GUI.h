@@ -558,41 +558,37 @@ int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
 
 std::string GUI::userInput (WINDOW * w, int max){
     std::string str;
-    //char str[max];
     char s=0; 
-    int y, x, c=0; 
+    int y, x, ylast, xlast,c=0; 
     while(s!=10 && c<max){
+
         s =wgetch(w);
         getyx(w, y, x); 
         while(s == 127){
-            if(c==0) s= wgetch(w);
+            getyx(w, ylast, xlast);
+	    if(c==0) s= wgetch(w);
 	    else{
 		    s= ' ';
 		    x --;
 		    c--;  
 		    str.erase(str.end()-1);	
-		    mvwprintw(w, y, x, "%c",s);
+		    mvwprintw(w, y+2, x, "y: %d and ylast: %d", y,ylast);
+		    mvwprintw(w, y, 0, "%c",s);
 		    wmove(w,y,x); 
 		    refresh(); 
 		    s=wgetch(w);
             }
 	}
-        mvwprintw(w, y, x, "%c", s);
+        
+	mvwprintw(w, y, x, "%c", s);
         if(c==max-1){
             mvwprintw(w,y+2, 2, "Characters are full, Max = %d",max); 
         }
-        //else str[c]=s;
         else str +=s; 
         refresh(); 
         c++; 
         wrefresh(w);
     }	
-    //if (s == 10 || c ==max){
-    //	str += ' '; //str[c]='*'; 
-    //}
-    //std::string temp = std::string (str); 
-    //return temp;
-    //str.erase(str.end()-1, str.end()); 
     return str; 
 }
 

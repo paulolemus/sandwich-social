@@ -182,7 +182,7 @@ GUI::Type GUI::loginScreen() {
         wrefresh(nameWindow); 
         wmove(bioWindow, 0, 0); 
         wrefresh(bioWindow); 
-        std::string bioString = userInput(bioWindow, 100);
+        std::string bioString = userInput(bioWindow, 150);
         //set bio
 
         // Add a new user with the obtained information
@@ -498,8 +498,26 @@ void GUI::editProfileScreen() {
     refresh(); 
     wrefresh(topDisplay); 
 
-    centerText(topDisplay, (y-4)*.25, "Edit your bio");
+    std::string nameString = currUser->getUsername(); 
+    std::string bioString = currUser->getBio(); 
 
+    centerText(topDisplay, 0, "Edit your bio");
+    mvwprintw(topDisplay, 2, 0, "Name: %s", nameString.c_str());
+    mvwprintw(topDisplay, 3, 0, "Bio: %s", bioString.c_str());
+    centerText(topDisplay, 5, "Edit your bio in the box below");
+
+    WINDOW* bioWindow = newwin(4, 50, 9, centerX(topDisplay) - 15); 
+    wbkgd(bioWindow, COLOR_PAIR(1)); 
+    wmove(bioWindow, 0, 0); 
+    wrefresh(bioWindow); 
+    wrefresh(topBox);
+    wrefresh(topDisplay);
+    refresh();
+
+    bioString = userInput(bioWindow, 150);
+    currUser->setBio(bioString);
+    std::string newBioString = currUser->getBio();
+    mvwprintw(topDisplay, 12, 0, "New Bio: %s", newBioString.c_str());  
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();

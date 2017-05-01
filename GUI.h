@@ -207,7 +207,6 @@ GUI::Type GUI::loginScreen() {
     delwin(mainWindow);
     delwin(inputWindow);
     delwin(outerBox);
-    refresh();
     return returnOption;
 }
 
@@ -312,7 +311,7 @@ void GUI::viewFriendsScreen() {
     // if User has no friends
     if(friendList.size() < 1) {
         centerText(topDisplay, y / 4, "You have no friends");
-        centerText(topDisplay, y / 4 - 1, "Press any key to return");
+        centerText(topDisplay, y / 4 + 1, "Press any key to return");
         wrefresh(topDisplay);
     }
     // populate all friends to screen
@@ -321,7 +320,7 @@ void GUI::viewFriendsScreen() {
         getmaxyx(topDisplay, yDisp, xDisp);
         std::vector<std::string> userData;
         std::string borderStr;
-        for(unsigned int i = 0; i < xDisp; ++i) {
+        for(int i = 0; i < xDisp; ++i) {
             borderStr += '-';
         }
 

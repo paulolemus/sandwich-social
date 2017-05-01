@@ -713,7 +713,7 @@ void GUI::print_menu(WINDOW *w, int h, int n, std::string s[],int d){
 } 
 
 int GUI::menu_setup(WINDOW* w, int d){ 
-    std::string s[8] = {"Post to Wall", "View Friend List", "Add Friend", "Edit Profile", "View Friend", "Delete Friend","Home", "Logout"}; 
+    std::string s[7] = {"Post to Wall", "View Friend List", "Add Friend", "Edit Your Bio", "View Friend", "Delete Friend", "Logout"}; 
     int n = sizeof(s)/sizeof(std::string); //makes sure this automatically updates if something is added to the list of choices
 
 
@@ -752,10 +752,7 @@ GUI::Type GUI::submit_selection(WINDOW* w, int choice){
         case 6: 
             return sandwich::GUI::Type::REMOVE_FRIEND;
             break;
-        case 7: 		
-            return sandwich::GUI::Type::HOME;
-            break;	
-        case 8:
+        case 7:
             return sandwich::GUI::Type::LOGOUT;
             break;		
         default: 

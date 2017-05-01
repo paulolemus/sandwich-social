@@ -68,7 +68,8 @@ int main(int argc, char** argv) {
                     break;
                 case sandwich::GUI::Type::HOME:
                 case sandwich::GUI::Type::LOGOUT:
-                case sandwich::GUI::Type::QUIT:
+                    gui.logoutScreen(); 
+//                case sandwich::GUI::Type::QUIT:
                     break; 
                 default:
                     std::cout << "enum not working\n\n"; 

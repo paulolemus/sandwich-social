@@ -13,6 +13,7 @@
 #ifndef SANDWICH_GUI_H_
 #define SANDWICH_GUI_H_
 
+#include <algorithm>
 #include <ncurses.h>
 #include <unordered_map>
 #include "User.h"
@@ -572,7 +573,7 @@ std::string GUI::userInput (WINDOW * w, int max){
 		    x --;
 		    c--;  
 		    str.erase(str.end()-1);	
-		    mvwprintw(w, y, 0, "%c",s);
+		    mvwprintw(w, y, x, "%c",s);
 		    wmove(w,y,x); 
 		    refresh(); 
 		    s=wgetch(w);
@@ -588,6 +589,7 @@ std::string GUI::userInput (WINDOW * w, int max){
         c++; 
         wrefresh(w);
     }	
+    str.erase(std::remove(str.begin(),str.end(), '\n'), str.end());
     return str; 
 }
 

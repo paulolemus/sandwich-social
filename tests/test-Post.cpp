@@ -43,7 +43,7 @@ TEST(Post, getTime) {
     sandwich::Post post(message);
     ASSERT_EQ(post.getMsg(), message);
     std::string time = post.getTime();
-    std::cout << "time post was made: " << time;
+    std::cout << "time post was made: " << time << std::endl;
 }
 
 // Check that setting a message works, and we can 
@@ -90,6 +90,12 @@ TEST(Post, post_in_vector) {
 
     ASSERT_EQ(posts.size(), 1);
     ASSERT_EQ(posts[0].getMsg(), message);
+}
+
+TEST(Post, timestamp_check) {
+    sandwich::Post post("test");
+    std::string checkStr  = post.getTime();
+    EXPECT_NE(checkStr[checkStr.size() - 1], '\n');
 }
 
 

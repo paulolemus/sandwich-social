@@ -35,7 +35,7 @@ TEST(GUI, testFunction) {
     ASSERT_EQ(user->getLower(), username);
     ASSERT_TRUE(trie.search(username));
     ASSERT_TRUE(userMap[user->getLower()] == user);
-    
+    endwin();
 }
 
 int main(int argc, char** argv) {

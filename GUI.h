@@ -462,26 +462,25 @@ void GUI::addFriendScreen() {
 }
 
 /* View friend screen allows you to view a particular friend entirely.
-* This will display the friend's name, username, and entire history 
+* This will display the friend's name, username, and entire history
 * of posts.
 */
 void GUI::viewFriendScreen() {
 
-    int x, y; 
-    getmaxyx(stdscr, y, x); 
-    curs_set(0);
+    int x, y;
+    getmaxyx(stdscr, y, x);
+    curs_set(1);
 
     //top and bottom windows based on the get max returns
-    WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
-    WINDOW* topBox     = newwin(y * 0.625, x-10, 0, 5); 
+    WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7);
+    WINDOW* topBox     = newwin(y * 0.625, x-10, 0, 5);
     //create boxes for the box windows
     box(topBox, 0, 0);
     keypad(topDisplay, true);
-    keypad(topBox,     true);
-    //setup keypad and refresh all windows
-    wrefresh(topBox); 
-    wrefresh(topDisplay); 
-    refresh(); 
+    // Refreshes
+    wrefresh(topBox);
+    wrefresh(topDisplay);
+    refresh();
 
     centerText(topDisplay, (y - 4) * 0.25, "View a special Friend's page");
     wrefresh(topBox);
@@ -489,14 +488,13 @@ void GUI::viewFriendScreen() {
     refresh();
 
     WINDOW* nameWindow = newwin(1, 30, centerY(topDisplay) + 4, centerX(topDisplay) - 7);
-    wbkgd(nameWindow, COLOR_PAIR(1)); 
+    wbkgd(nameWindow, COLOR_PAIR(1));
     wmove(nameWindow, 0, 0);
+
     wrefresh(topBox);
     wrefresh(topDisplay);
-
-
     wrefresh(nameWindow);
-    refresh(); 
+    refresh();
 
     std::string friendUsername = userInput(nameWindow, 26, false); 
     wrefresh(nameWindow);

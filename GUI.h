@@ -168,7 +168,7 @@ GUI::Type GUI::loginScreen() {
         WINDOW* nameWindow = newwin(1, 30, centerY(mainWindow) + 4, centerX(mainWindow) - 7);
         wbkgd(nameWindow, COLOR_PAIR(1)); 
 
-        centerText(mainWindow, (y - 4) * 0.75, "Short Bio (Max 150 characters): ");
+        centerText(mainWindow, (y - 4) * 0.75, "Short Bio (Max 100 characters): ");
         WINDOW* bioWindow = newwin(4, 50, (y - 4) * 0.75 + 6, centerX(mainWindow) - 15); 
         wbkgd(bioWindow, COLOR_PAIR(1)); 
         wrefresh(mainWindow); 
@@ -184,7 +184,7 @@ GUI::Type GUI::loginScreen() {
         wrefresh(nameWindow); 
         wmove(bioWindow, 0, 0); 
         wrefresh(bioWindow); 
-        std::string bioString = userInput(bioWindow, 150);
+        std::string bioString = userInput(bioWindow, 104);
         //set bio
 
         // Add a new user with the obtained information
@@ -279,7 +279,7 @@ void GUI::postWallScreen() {
     wrefresh(postWin); 
     refresh();
 
-    std::string postInput = userInput(postWin, 100); 
+    std::string postInput = userInput(postWin, 104); 
     sandwich::Post post(postInput);
     currUser->addPost(post);
 
@@ -490,7 +490,7 @@ void GUI::editProfileScreen() {
     centerText(topDisplay, 0, "Edit your bio");
     mvwprintw(topDisplay, 2, 0, "Name: %s", nameString.c_str());
     mvwprintw(topDisplay, 3, 0, "Bio: %s", bioString.c_str());
-    centerText(topDisplay, 5, "Edit your bio in the box below");
+    centerText(topDisplay, 5, "Edit your bio in the box below (Max characters:100)");
 
     WINDOW* bioWindow = newwin(4, 50, 9, centerX(topDisplay) - 15); 
     wbkgd(bioWindow, COLOR_PAIR(1)); 
@@ -500,7 +500,7 @@ void GUI::editProfileScreen() {
     wrefresh(topDisplay);
     refresh();
 
-    bioString = userInput(bioWindow, 150);
+    bioString = userInput(bioWindow, 104);
     currUser->setBio(bioString);
     std::string newBioString = currUser->getBio();
     mvwprintw(topDisplay, 12, 0, "New Bio: %s", newBioString.c_str());  

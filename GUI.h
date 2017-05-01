@@ -572,7 +572,6 @@ std::string GUI::userInput (WINDOW * w, int max){
 		    x --;
 		    c--;  
 		    str.erase(str.end()-1);	
-		    mvwprintw(w, y+2, x, "y: %d and ylast: %d", y,ylast);
 		    mvwprintw(w, y, 0, "%c",s);
 		    wmove(w,y,x); 
 		    refresh(); 

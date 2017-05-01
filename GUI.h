@@ -190,11 +190,8 @@ GUI::Type GUI::loginScreen() {
         if(sandwich::User::validateStr(loginName)  && 
            sandwich::User::validateStr(nameString) && 
            sandwich::User::validateStr(bioString) ) {
-		std::cout << "VALIDATED!";
             erase();
             refresh(); 
-	getch();
-	getch(); 
             currUser = new sandwich::User(loginName, nameString, bioString);
             userMap[currUser->getLower()] = currUser;
             trie.store(currUser->getUsername(), currUser);
@@ -203,13 +200,7 @@ GUI::Type GUI::loginScreen() {
             returnOption = sandwich::GUI::Type::HOME;
         }
         else {
-		std::cout << "NOT VALIDATED";
-		getch();
-		getch();
-		getch();
-getch();getch();
-
-returnOption = sandwich::GUI::Type::LOGOUT;
+	     returnOption = sandwich::GUI::Type::LOGOUT;
         }
 
         delwin(nameWindow);
@@ -299,7 +290,6 @@ void GUI::postWallScreen() {
     wrefresh(bottomMenuDisplay); 
     wrefresh(postWin); 
     refresh();
-    int choice = menu_setup(bottomMenuDisplay, y*.25);
 
     std::string postInput = userInput(postWin, 100); 
     sandwich::Post post(postInput); 
@@ -310,6 +300,9 @@ void GUI::postWallScreen() {
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
+
+
+    int choice = menu_setup(bottomMenuDisplay, y*.25);
     getch();
     getch();
 }
@@ -356,10 +349,10 @@ void GUI::viewFriendsScreen() {
     wrefresh(topDisplay);
     refresh();
 
-    //  std::string name = currUser->getUsername(); 
+    std::string name = currUser->getUsername(); 
     // auto friendList = currUser->getFriends(); 
 
-    //	    mvwprintw(topDisplay,((y-4)*.25)+7,2, "%s ", name.c_str()); 
+    mvwprintw(topDisplay,((y-4)*.25)+7,2, "%s ", name.c_str()); 
     //	    centerText(topDisplay, ((y-4)*.25)+3, "Sorry you have no friends");
 
 
@@ -433,7 +426,32 @@ void GUI::addFriendScreen() {
  * of posts.
  */
 void GUI::viewFriendScreen() {
+    erase(); 
+    refresh(); 
+    int x, y; 
+    getmaxyx(stdscr, y, x); 
+    //top and bottom windows based on the get max returns
+    WINDOW * topDisplay = newwin((y*.625)-4, x-14, 2, 7); 
+    WINDOW * bottomMenuDisplay = newwin(y*.25, x-10, (y*.625)+3, 5); 
+    //box for the top window
+    WINDOW * topBox = newwin((y*.625), x-10,0, 5); 
+    //create boxes for the box windows
+    box(topBox, 0,0); 
+    box(bottomMenuDisplay, 0,0); 
+    //setup keypad and refresh all windows
+    keypad(bottomMenuDisplay, true); 
+    wrefresh(topBox); 
+    wrefresh(bottomMenuDisplay); 
+    refresh(); 
+    wrefresh(topDisplay); 
+    int choice = menu_setup(bottomMenuDisplay, y*.25);
 
+    centerText(topDisplay, (y-4)*.25, "View a special Friend's page");
+    wrefresh(topBox);
+    wrefresh(topDisplay);
+    refresh();
+
+ 
 
     // std::string friendUsername; // populate this
     // sandwich::User* friend = nullptr;
@@ -472,7 +490,32 @@ void GUI::viewFriendScreen() {
 /* This screen will allow you to edit your bio to fit your liking
 */
 void GUI::editProfileScreen() {
+    erase(); 
+    refresh(); 
+    int x, y; 
+    getmaxyx(stdscr, y, x); 
+    //top and bottom windows based on the get max returns
+    WINDOW * topDisplay = newwin((y*.625)-4, x-14, 2, 7); 
+    WINDOW * bottomMenuDisplay = newwin(y*.25, x-10, (y*.625)+3, 5); 
+    //box for the top window
+    WINDOW * topBox = newwin((y*.625), x-10,0, 5); 
+    //create boxes for the box windows
+    box(topBox, 0,0); 
+    box(bottomMenuDisplay, 0,0); 
+    //setup keypad and refresh all windows
+    keypad(bottomMenuDisplay, true); 
+    wrefresh(topBox); 
+    wrefresh(bottomMenuDisplay); 
+    refresh(); 
+    wrefresh(topDisplay); 
+    int choice = menu_setup(bottomMenuDisplay, y*.25);
 
+    centerText(topDisplay, (y-4)*.25, "Edit your bio");
+    wrefresh(topBox);
+    wrefresh(topDisplay);
+    refresh();
+
+ 
     // Pseudocode
     // 1. Display currUser username, name, and bio, then draw line
     // 2. Display currUser's posts
@@ -482,7 +525,32 @@ void GUI::editProfileScreen() {
 /* This screen allows you to remove a friend by username
 */
 void GUI::removeFriendScreen() {
+    erase(); 
+    refresh(); 
+    int x, y; 
+    getmaxyx(stdscr, y, x); 
+    //top and bottom windows based on the get max returns
+    WINDOW * topDisplay = newwin((y*.625)-4, x-14, 2, 7); 
+    WINDOW * bottomMenuDisplay = newwin(y*.25, x-10, (y*.625)+3, 5); 
+    //box for the top window
+    WINDOW * topBox = newwin((y*.625), x-10,0, 5); 
+    //create boxes for the box windows
+    box(topBox, 0,0); 
+    box(bottomMenuDisplay, 0,0); 
+    //setup keypad and refresh all windows
+    keypad(bottomMenuDisplay, true); 
+    wrefresh(topBox); 
+    wrefresh(bottomMenuDisplay); 
+    refresh(); 
+    wrefresh(topDisplay); 
+    int choice = menu_setup(bottomMenuDisplay, y*.25);
 
+    centerText(topDisplay, (y-4)*.25, "Which friend would you like to remove?");
+    wrefresh(topBox);
+    wrefresh(topDisplay);
+    refresh();
+
+ 
     // Pseudocode
     // 1. Enter search bar
     // 2. on enter, get users vector of friends and see if any
@@ -555,14 +623,13 @@ std::string GUI::payload(WINDOW* w, char s){
 
 int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
     int choice= 0; 
-    int n_choices = n; 
     switch(c){
         case KEY_UP:
-            if(*highlight ==1) *highlight = n_choices; 
+            if(*highlight ==1) *highlight = n; 
             else (*highlight) --; 
             break; 
         case KEY_DOWN: 
-            if(*highlight == n_choices) *highlight = 1; 	
+            if(*highlight == n) *highlight = 1; 	
             else (*highlight) ++; 
             break; 
         case 10: // 10 = int for enter
@@ -586,6 +653,16 @@ std::string GUI::userInput(WINDOW * w, int max){
     while(s!=10 && c<max){
 
         s =wgetch(w);
+	if (s == 27){
+		werase(w);
+		mvwprintw(w,0,0, "Press ESC to Select from the Menu or Enter to continue");
+		s = wgetch(w);
+		if (s == 27) return "back";
+		if (s == 127){
+			werase(w);
+			wmove(w,0,0);
+		}
+	}
         getyx(w, y, x); 
         while(s == 127){
             getyx(w, ylast, xlast);
@@ -607,7 +684,7 @@ std::string GUI::userInput(WINDOW * w, int max){
             mvwprintw(w,y+2, 2, "Characters are full, Max = %d",max); 
         }
         else str +=s; 
-        refresh(); 
+	refresh(); 
         c++; 
         wrefresh(w);
     }	
@@ -649,7 +726,7 @@ int GUI::menu_setup(WINDOW* w, int d){
     int n = sizeof(s)/sizeof(std::string); //makes sure this automatically updates if something is added to the list of choices
 
 
-    int choice;
+    int choice=0;
     int h = 1;
     int y, x; 
     getmaxyx(stdscr, y, x); 
@@ -690,7 +767,7 @@ GUI::Type GUI::submit_selection(WINDOW* w, int choice){
             return sandwich::GUI::Type::LOGOUT;
             break;		
         default: 
-            mvwprintw(w, 12,8, "Press enter to select");
+            mvwprintw(w, 10,8, "Press enter to select");
             wrefresh(w); 
             break; 
     }

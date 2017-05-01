@@ -106,6 +106,7 @@ GUI::Type GUI::loginScreen() {
     //store the user in the trie by its user name
     trie.store(tester->getUsername(), tester); 
     trie.store(tester->getName(),     tester); 
+    tester->addFriend(new sandwich::User("fred", "Freddy G", "I love singing!"));
 
     int y, x; 
     getmaxyx(stdscr, y, x); //returns the max x & y values of the screen  
@@ -290,38 +291,62 @@ void GUI::postWallScreen() {
  */
 void GUI::viewFriendsScreen() {
 
-    int x, y; 
+    int x, y;
     getmaxyx(stdscr, y, x);
     curs_set(0);
 
     //top and bottom windows based on the get max returns
-    WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
-    WINDOW* topBox     = newwin(y * 0.625, x - 10, 0, 5); 
+    WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7);
+    WINDOW* topBox     = newwin(y * 0.625, x - 10, 0, 5);
     wclear(topDisplay);
     //create boxes for the box windows
-    box(topBox, 0, 0); 
+    box(topBox, 0, 0);
     //setup keypad and refresh all windows
 
-    centerText(topDisplay, (y - 4) * 0.25, "View Friend List");
+    centerText(topDisplay, 1, "Friends List");
 
-    std::vector<const sandwich::User*> friendList  = currUser->getFriends(); 
+    std::vector<const sandwich::User*> friendList = currUser->getFriends();
 
+    // if User has no friends
     if(friendList.size() < 1) {
-        // display "You have no friends";
+        centerText(topDisplay, y / 4, "You have no friends");
+        centerText(topDisplay, y / 4 - 1, "Press any key to return");
+        wrefresh(topDisplay);
     }
-    for(auto friendPtr : friendList) {
-        // display these fields
-        friendPtr->getUsername().c_str();
-        friendPtr->getName().c_str();
-        friendPtr->getBio().c_str();
-        //draw a line separating friends
+    // populate all friends to screen
+    else {
+        int yDisp, xDisp, index, yMax;
+        getmaxyx(topDisplay, yDisp, xDisp);
+        std::vector<std::string> userData;
+        std::string borderStr;
+        for(unsigned int i = 0; i < xDisp; ++i) {
+            borderStr += '-';
+        }
+
+        // Fill userData will strings for each user
+        for(auto friendPtr : friendList) {
+            userData.push_back(borderStr);
+            userData.push_back("Username: " + friendPtr->getUsername());
+            userData.push_back("Name    : " + friendPtr->getName());
+            userData.push_back("Bio     : " + friendPtr->getBio());
+        }
+
+        index = 0;
+        yMax = userData.size() > xDisp - 2 ? xDisp : userData.size();
+        // Print everything to screen
+        do {
+            werase(topDisplay);
+            for(int i = 0; i < yMax; ++i) {
+                centerText(topDisplay, 1, "Friends List");
+                mvwprintw(topDisplay, i + 2, 0, "%s", userData[index + i].c_str());
+            }
+            wrefresh(topDisplay);
+        } while(getch() != 'q');
     }
 
-    mvwprintw(topDisplay,((y-4)*.25)+7,2, "%s ", currUser->getUsername().c_str()); 
-    //	    centerText(topDisplay, ((y-4)*.25)+3, "Sorry you have no friends");
-    wrefresh(topBox);
-    wrefresh(topDisplay);
     getch();
+    delwin(topDisplay);
+    delwin(topBox);
 }
 
 /* Add friend screen allows the user to search through friends
@@ -544,9 +569,6 @@ void GUI::centerText(WINDOW *w, int yLoc, std::string text){
     indent = width - len; 
     indent /=2;
     mvwprintw(w, yLoc, indent, text.c_str()); 	
-    //	mvaddstr(yLoc, indent, text.c_str()); 
-    //	refresh(); 
-
 }
 
 int GUI::centerY(WINDOW *w){

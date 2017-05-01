@@ -366,26 +366,6 @@ void GUI::viewFriendsScreen() {
  */
 void GUI::addFriendScreen() {
 
-    // Code for searching for friends:
-    // Note: Put this in a loop so that every time the user 
-    // enters or deletes a character, the following code can be ran
-    // and all the possible friends can be displayed.
-    //
-    // std::string prefix; // This is the string you update
-    // auto friendList = trie.getComplete(prefix);
-    // if(friendList.size() < 1) {
-    //      display "No matching users. Please broaden your search"
-    // }
-    //          // clear the currently displayed friends here
-    // for(auto friendPtr : friendList) {
-    //      display friendPtr->getUsername().c_str()
-    //      display friendPtr->getName().c_str()
-    //      display friendPtr->getBio().c_str()
-    //      draw line to deparate users
-    // }
-    //
-    //std::vector<const sandwich::User*> friendList = currUser->getFriends();
-
     int x, y; 
     getmaxyx(stdscr, y, x); 
     //top and bottom windows based on the get max returns
@@ -478,86 +458,101 @@ void GUI::viewFriendScreen() {
 
 	int x, y; 
 	getmaxyx(stdscr, y, x); 
-	curs_set(0);
+	curs_set(1);
 
-	//top and bottom windows based on the get max returns
+	// Create windows to be used for user input and display
 	WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
-	WINDOW* topBox     = newwin(y * 0.625, x-10, 0, 5); 
-	//create boxes for the box windows
-	box(topBox, 0, 0);
-	keypad(topDisplay, true);
-	keypad(topBox,     true);
-	//setup keypad and refresh all windows
-	wrefresh(topBox); 
-	wrefresh(topDisplay); 
-	refresh(); 
-
-	centerText(topDisplay, (y - 4) * 0.25, "View a special Friend's page");
-	wrefresh(topBox);
-	wrefresh(topDisplay);
-	refresh();
 	WINDOW* nameWindow = newwin(1, 30, centerY(topDisplay) + 4, centerX(topDisplay) - 7);
 	wbkgd(nameWindow, COLOR_PAIR(1)); 
 	wmove(nameWindow, 0, 0);
-	wrefresh(topBox);
+	keypad(topDisplay, true);
+
+	centerText(topDisplay, (y - 4) * 0.25, "Enter friend's username below");
+	refresh();
 	wrefresh(topDisplay);
-
-	int yDisp, xDisp, index, yMax;
-	getmaxyx(topDisplay, yDisp, xDisp);
-	std::vector<std::string> userData;
-	std::string borderStr;
-	for(int i = 0; i < xDisp; ++i) {
-		borderStr += '-';
-	}
-
-
 	wrefresh(nameWindow);
-	refresh(); 
 
-	std::string friendUsername = userInput(nameWindow, 26, false); 
-	wrefresh(nameWindow);
-	wrefresh(topDisplay);
-	refresh(); 
+    // Get user input and check if we are friends with the user
+    auto friends = currUser->getFriends();
+    std::string inputUsername = userInput(nameWindow, 26, false);
 
-	const sandwich::User* newFriend = nullptr;
-	auto friendList = currUser->getFriends();
-	if(friendList.size() < 1) {
-		mvwprintw(topDisplay, centerY(topDisplay)+5, 0, "No friends");
-	}
+    // Convert the username string to lowercase
+    for(unsigned int i = 0; i < inputUsername.size(); ++i) {
+        if(inputUsername[i] >= 'A' && inputUsername[i] <= 'Z') {
+            inputUsername[i] = inputUsername[i] + 32;
+        }
+    }
+    
+    // Locate friend in the friends vector
+    const sandwich::User* theFriend = nullptr;
+    for(unsigned int i = 0; i < friends.size(); ++i) {
+        if(friends[i]->getLower() == inputUsername) {
+            theFriend = friends[i];
+            i = friends.size();
+        }
+    }
 
-	for(unsigned int i = 0; i < friendList.size(); ++i) {
-		if(friendList[i]->getUsername() == friendUsername) {
-			newFriend = friendList[i];
-			i = friendList.size();
-		}
-	}
+    getmaxyx(topDisplay, y, x);
 
-	if(newFriend == nullptr) {
-		mvwprintw(topDisplay, centerY(topDisplay)+5, 0, "Could not find friend");
-	}
-	else {
-		wclear(topDisplay);
-		wclear(nameWindow);
-		mvwprintw(topDisplay, 5, 0, "friend found %s", newFriend->getUsername().c_str());
+    // Display corresponding results
+    if(theFriend == nullptr) {
+        centerText(topDisplay, y * 0.7, "Friend not found :(");
+        centerText(topDisplay, y * 0.7 + 1, "Press any key to continue");
+        wrefresh(topDisplay);
+        wrefresh(nameWindow);
+        getch();
+    }
+    else {
+        // initialize some information to be used in loop
+        curs_set(0);
+        keypad(topDisplay, true);
 
+        std::string border;
+        for(int i = 0; i < x; ++i) border += '-';
 
-		//      display friend->getUsername().c_str();
-		//      display friend->getName().c_str();
-		//      display friend->getBio().c_str();
-		//
-		//      auto posts = friend->getPosts();
-		//      for(auto post : posts) {
-		//          display "at " + post.getCTime() ", friend->getUsername.c_str() said:"
-		//          display post.getCMsg();
-		//          display post dividing line
-	}
-	// }
-	wrefresh(topDisplay);
-	getch();
+        std::vector<std::string> postInfo;
+        std::vector<sandwich::Post> posts = theFriend->getPosts();
 
-	delwin(topDisplay);
-	delwin(nameWindow);
-	delwin(topBox);
+        for(int i = posts.size() - 1; i >= 0; --i) {
+            postInfo.push_back("At " + posts[i].getTime() + ", " + theFriend->getUsername() + " said:");
+            postInfo.push_back(posts[i].getMsg());
+            postInfo.push_back(border);
+        }
+
+        int input, index = 0;
+        int yMax  = postInfo.size() > y - 5 ? y - 5 : postInfo.size();
+        do {
+            // Print everything to screen
+            werase(topDisplay);
+            centerText(topDisplay, 0, "Use arrows to scroll, 'q' to quit");
+            mvwprintw(topDisplay, 1, 0, border.c_str());
+            mvwprintw(topDisplay, 2, 0, "Username: %s", theFriend->getUsername().c_str());
+            mvwprintw(topDisplay, 3, 0, "Name    : %s", theFriend->getName().c_str());
+            mvwprintw(topDisplay, 4, 0, "Bio     : %s", theFriend->getBio().c_str());
+            mvwprintw(topDisplay, 5, 0, border.c_str());
+            for(int i = 0; i < yMax; ++i) {
+                mvwprintw(topDisplay, i + 5, 0, "%s", postInfo[index + i].c_str());
+            }
+            refresh();
+            wrefresh(topDisplay);
+
+            // Get next character for scrolling
+            input = wgetch(topDisplay);
+            switch(input) {
+                case KEY_UP: // key up
+                    if(index > 0) index--; 
+                    break;
+                case KEY_DOWN: // key down
+                    if(index + yMax < postInfo.size()) index++;
+                    break;
+                default:
+                    break;
+            }
+        } while(input != 'q');
+    }
+    // Cleanup
+    delwin(topDisplay);
+    delwin(nameWindow);
 }
 
 /* This screen will allow you to edit your bio to fit your liking

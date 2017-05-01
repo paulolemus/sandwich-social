@@ -121,26 +121,20 @@ GUI::Type GUI::loginScreen() {
     WINDOW* mainWindow  = newwin(y - 4, x - 14, 2, 7); 
     WINDOW* inputWindow = newwin(1, 30, centerY(mainWindow) + 6, centerX(mainWindow) - 7); 
     WINDOW* outerBox    = newwin(y, x - 10, 0, 5);
-    box(outerBox,0,0);
-    refresh(); 
-    wrefresh(mainWindow); 
-    wrefresh(outerBox);
-    wrefresh(inputWindow); 
+    box(outerBox, 0, 0);
 
-    wcolor_set(inputWindow, 2, NULL); 	
-    wbkgd(inputWindow,COLOR_PAIR(1)); 
-    wmove(inputWindow, 0,0); 
+    wcolor_set(inputWindow, 2, NULL);
+    wbkgd(inputWindow,COLOR_PAIR(1));
+    wmove(inputWindow, 0,0);
     centerText(mainWindow, (y - 4) * 0.25, "WELCOME TO SANDWICH SOCIAL"); 
     centerText(mainWindow, (y - 4) * 0.5, "Input your username to login or start a new account"); 	
+
     refresh();  
-    wrefresh(mainWindow); 
     wrefresh(outerBox); 
-    wrefresh(inputWindow);
-    wmove(inputWindow,0,0);
+    wrefresh(mainWindow); 
+    wmove(inputWindow, 0, 0);
 
     std::string loginName = userInput(inputWindow, 28); 
-    wrefresh(mainWindow); 
-    refresh();
 
     // variable to hold return option
     sandwich::GUI::Type returnOption;
@@ -171,15 +165,14 @@ GUI::Type GUI::loginScreen() {
         centerText(mainWindow, (y - 4) * 0.75, "Short Bio (Max 150 characters): ");
         WINDOW* bioWindow = newwin(4, 50, (y - 4) * 0.75 + 6, centerX(mainWindow) - 15); 
         wbkgd(bioWindow, COLOR_PAIR(1)); 
-        wrefresh(mainWindow); 
-        wrefresh(nameWindow);
-        wrefresh(bioWindow);
 
         wmove(nameWindow, 0, 0);
-        wrefresh(nameWindow); 
+        wrefresh(mainWindow); 
+        wrefresh(bioWindow);
+        wrefresh(nameWindow);
+
         std::string nameString = userInput(nameWindow, 28); 
         wrefresh(nameWindow); 
-        //set name
         wrefresh(mainWindow); 
         wrefresh(nameWindow); 
         wmove(bioWindow, 0, 0); 
@@ -250,8 +243,8 @@ GUI::Type GUI::homeScreen() {
     wrefresh(bottomMenuDisplay); 
     wrefresh(topDisplay); 
     refresh();  
-    int choice = menu_setup(bottomMenuDisplay, y * 0.25);
 
+    int choice = menu_setup(bottomMenuDisplay, y * 0.25);
     return submit_selection(bottomMenuDisplay, choice); 
 }
 
@@ -297,30 +290,20 @@ void GUI::postWallScreen() {
  */
 void GUI::viewFriendsScreen() {
 
-    erase(); 
-    refresh(); 
     int x, y; 
     getmaxyx(stdscr, y, x);
     curs_set(0);
 
     //top and bottom windows based on the get max returns
     WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
-    //box for the top window
-    WINDOW* topBox = newwin(y * 0.625, x - 10, 0, 5); 
+    WINDOW* topBox     = newwin(y * 0.625, x - 10, 0, 5); 
+    wclear(topDisplay);
     //create boxes for the box windows
     box(topBox, 0, 0); 
     //setup keypad and refresh all windows
-    wrefresh(topBox); 
-    refresh(); 
-    wrefresh(topDisplay);
-    
 
     centerText(topDisplay, (y - 4) * 0.25, "View Friend List");
-    wrefresh(topBox);
-    wrefresh(topDisplay);
-    refresh();
 
-    std::string name = currUser->getUsername(); 
     std::vector<const sandwich::User*> friendList  = currUser->getFriends(); 
 
     if(friendList.size() < 1) {
@@ -334,11 +317,10 @@ void GUI::viewFriendsScreen() {
         //draw a line separating friends
     }
 
-    mvwprintw(topDisplay,((y-4)*.25)+7,2, "%s ", name.c_str()); 
+    mvwprintw(topDisplay,((y-4)*.25)+7,2, "%s ", currUser->getUsername().c_str()); 
     //	    centerText(topDisplay, ((y-4)*.25)+3, "Sorry you have no friends");
     wrefresh(topBox);
     wrefresh(topDisplay);
-    refresh();
     getch();
 }
 
@@ -391,8 +373,6 @@ void GUI::addFriendScreen() {
     wrefresh(topDisplay);
     refresh();
     getch();
-    getch();
-
 }
 
 /* View friend screen allows you to view a particular friend entirely.
@@ -400,31 +380,27 @@ void GUI::addFriendScreen() {
  * of posts.
  */
 void GUI::viewFriendScreen() {
-    erase(); 
-    refresh(); 
+
     int x, y; 
     getmaxyx(stdscr, y, x); 
-    //top and bottom windows based on the get max returns
-    WINDOW * topDisplay = newwin((y*.625)-4, x-14, 2, 7); 
-    WINDOW * bottomMenuDisplay = newwin(y*.25, x-10, (y*.625)+3, 5); 
-    //box for the top window
-    WINDOW * topBox = newwin((y*.625), x-10,0, 5); 
-    //create boxes for the box windows
-    box(topBox, 0,0); 
-    box(bottomMenuDisplay, 0,0); 
-    //setup keypad and refresh all windows
-    keypad(bottomMenuDisplay, true); 
-    wrefresh(topBox); 
-    wrefresh(bottomMenuDisplay); 
-    refresh(); 
-    wrefresh(topDisplay); 
-    int choice = menu_setup(bottomMenuDisplay, y*.25);
+    curs_set(0);
 
-    centerText(topDisplay, (y-4)*.25, "View a special Friend's page");
+    //top and bottom windows based on the get max returns
+    WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
+    WINDOW* topBox     = newwin(y * 0.625, x-10, 0, 5); 
+    //create boxes for the box windows
+    box(topBox, 0, 0);
+    keypad(topDisplay, true);
+    keypad(topBox,     true);
+    //setup keypad and refresh all windows
+    wrefresh(topBox); 
+    wrefresh(topDisplay); 
+    refresh(); 
+
+    centerText(topDisplay, (y - 4) * 0.25, "View a special Friend's page");
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
-
  
 
     // std::string friendUsername; // populate this
@@ -625,43 +601,42 @@ int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
 
 std::string GUI::userInput(WINDOW * w, int max){
     std::string str;
-    char s=0; 
-    int y, x, ylast, xlast,c=0; 
-    while(s!=10 && c<max){
+    char s = 0; 
+    int y, x, ylast, xlast,c = 0; 
+    while(s != 10 && c < max){
 
-        s =wgetch(w);
-	if (s == 27){
-		werase(w);
-		mvwprintw(w,0,0, "Press ESC to Select from the Menu or Enter to continue");
-		s = wgetch(w);
-		if (s == 27) return "back";
-		if (s == 127){
-			werase(w);
-			wmove(w,0,0);
-		}
-	}
+        s = wgetch(w);
+	    if (s == 27){
+		    werase(w);
+		    mvwprintw(w, 0, 0, "Press ESC to Select from the Menu or Enter to continue");
+		    s = wgetch(w);
+		    if (s == 27) return "back";
+		    if (s == 127){
+			    werase(w);
+			    wmove(w, 0, 0);
+		    }
+	    }
         getyx(w, y, x); 
         while(s == 127){
             getyx(w, ylast, xlast);
-	    if(c==0) s= wgetch(w);
-	    else{
-		    s= ' ';
-		    x --;
-		    c--;  
-		    str.erase(str.end()-1);	
-		    mvwprintw(w, y, x, "%c",s);
-		    wmove(w,y,x); 
-		    refresh(); 
-		    s=wgetch(w);
+	        if(c == 0) s = wgetch(w);
+            else {
+                s = ' ';
+                x--;
+                c--;  
+                str.erase(str.end()-1);	
+                mvwprintw(w, y, x, "%c",s);
+                wmove(w,y,x); 
+                wrefresh(w); 
+                s = wgetch(w);
             }
 	    }
         
 	    mvwprintw(w, y, x, "%c", s);
-        if(c==max-1){
-            mvwprintw(w,y+2, 2, "Characters are full, Max = %d",max); 
+        if(c == max - 1){
+            mvwprintw(w, y + 2, 2, "Characters are full, Max = %d", max); 
         }
-        else str +=s; 
-	refresh(); 
+        else str += s;
         c++; 
         wrefresh(w);
     }	

@@ -53,11 +53,14 @@ public:
     void viewFriendScreen();
     void editProfileScreen();
     void removeFriendScreen();
+    void logoutScreen(); 
 
     void testFunc();
     void centerText(WINDOW *w, int yLoc, std::string text); //centers text in the input window
     int centerY(WINDOW *w); //returns the center y location of the window
     int centerX(WINDOW *w);  //returns the center x location of the window
+
+    sandwich::User*& getCurrentUser(); 
 
     std::string payload(WINDOW* w, char s);
     void print_menu(WINDOW *w, int h, int n, std::string s[],int d); 
@@ -67,6 +70,10 @@ public:
     Type submit_selection(WINDOW* w, int choice);
 
 };
+
+sandwich::User*& GUI::getCurrentUser(){
+	return currUser;
+}
 
 GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
         sandwich::Trie<sandwich::User*>&                  trie,
@@ -161,7 +168,6 @@ GUI::Type GUI::loginScreen() {
         wrefresh(bio);
         wmove(name, 0,0);
         wrefresh(name); 
-        //s = wgetch(name); 
         std::string newname= userInput(name, 28); 
         wrefresh(name); 
 	//newname = payload(name, s); 
@@ -232,17 +238,19 @@ GUI::Type GUI::homeScreen() {
     box(bottomMenuDisplay, 0,0); 
     //setup keypad and refresh all windows
     keypad(bottomMenuDisplay, true); 
+    
+    sandwich::User*& cUser = getCurrentUser(); 
+    centerText(topDisplay, 3, "Welcome to your Homescreen");
+    //std::string nAAAme = cUser->getUsername(); 
+    //mvwprintw(topDisplay,((y-4)*.25)+7,2, "%s ",nAAAme.c_str() ); 
+   
     wrefresh(topBox); 
     wrefresh(bottomMenuDisplay); 
-    refresh(); 
     wrefresh(topDisplay); 
+    refresh();  
     int choice = menu_setup(bottomMenuDisplay, y*.25);
-    
-    //sandwich::User* cUser = getCurrentUser(); 
-    
-    
     //std::cout << cUser->getName()<< "\n"; 
-    int s = getch(); 	
+    //int s = getch(); 	
     //return sandwich::GUI::Type::LOGOUT;
     return submit_selection(bottomMenuDisplay, choice); 
 }
@@ -267,19 +275,18 @@ void GUI::postWallScreen() {
     box(bottomMenuDisplay, 0,0); 
     //setup keypad and refresh all windows
     keypad(bottomMenuDisplay, true); 
-    wrefresh(topBox); 
-    wrefresh(bottomMenuDisplay); 
-    refresh(); 
-    wrefresh(topDisplay); 
-    int choice = menu_setup(bottomMenuDisplay, y*.25);
 
     centerText(topDisplay, 3, "Write your new post (Max characters: 100):");
     WINDOW *postWin = newwin(4, 50, (y-4)*.25, centerX(topDisplay)-15); 
     wbkgd(postWin, COLOR_PAIR(1)); 
+
     wrefresh(topBox);
     wrefresh(topDisplay);
+    wrefresh(bottomMenuDisplay); 
+    wrefresh(postWin); 
     refresh();
-
+    int choice = menu_setup(bottomMenuDisplay, y*.25);
+    
     std::string postInput = userInput(postWin, 100); 
     sandwich::Post post(postInput); 
     std::string t = post.getTime();
@@ -335,11 +342,17 @@ void GUI::viewFriendsScreen() {
     wrefresh(topDisplay);
     refresh();
 
-    auto friendList = currUser->getFriends(); 
-    if(friendList.size() <1){
-	 centerText(topDisplay, ((y-4)*.25)+3, "Sorry you have no friends");
-    }
+  //  std::string name = currUser->getUsername(); 
+   // auto friendList = currUser->getFriends(); 
+  
+//	    mvwprintw(topDisplay,((y-4)*.25)+7,2, "%s ", name.c_str()); 
+//	    centerText(topDisplay, ((y-4)*.25)+3, "Sorry you have no friends");
+    
 
+
+    wrefresh(topBox);
+    wrefresh(topDisplay);
+    refresh();
 
     getch();
     getch();
@@ -464,6 +477,19 @@ void GUI::removeFriendScreen() {
     //    Otherwise, do nothing.
 }
 
+void GUI::logoutScreen(){
+     erase(); 
+    refresh(); 
+    int x, y; 
+    getmaxyx(stdscr, y, x); 
+    //top and bottom windows based on the get max returns
+    WINDOW * mainDisplay = newwin(y-4, x-14, 2, 7); 
+    centerText(mainDisplay, (y-4)*.25, "Goodbye");
+
+    wrefresh(mainDisplay); 
+    refresh(); 
+ 
+}
 
 
 void GUI::testFunc() {

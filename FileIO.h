@@ -195,18 +195,18 @@ std::vector<std::vector<std::string>> FileIO::readFriends() {
 	    getline(myfile, s1);
 	    if(s1.size()){//skip blank lines
 	    	if(s1[s1.size() - 1] == fuserflag){//new user
-		     if(friendtemp.size()){
+		     if(friendtemp.size()){//if friendtemp is not empty
 		     	friendList.push_back(friendtemp);//push temp vector of strings
 		     }
 		     friendtemp.clear();//clear temp vector
-		     s1 = s1.substr(0, s1.size() - 1);
-		     friendtemp.push_back(s1);
+		     s1 = s1.substr(0, s1.size() - 1);//get rid of : at end
+		     friendtemp.push_back(s1);//push onto temp vector
 	    	}else{
-		     friendtemp.push_back(s1);
+		     friendtemp.push_back(s1);//puhs onto temp vect
 	    	}
 	    }
 	}
-	if(friendtemp.size()){
+	if(friendtemp.size()){//if temp vector is not empty
 		friendList.push_back(friendtemp);
 	}
     

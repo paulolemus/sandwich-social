@@ -28,7 +28,7 @@ class GUI {
     sandwich::Trie<sandwich::User*>&                  trie;
     sandwich::User*&                                  currUser;
 
-public:
+    public:
     enum class Type : int {
         HOME,
         POST_TO_WALL,
@@ -107,11 +107,19 @@ GUI::Type GUI::loginScreen() {
     trie.store(tester->getUsername(), tester); 
     trie.store(tester->getName(),     tester); 
     tester->addFriend(new sandwich::User("fred", "Freddy G", "I love singing!"));
+    tester->addFriend(new sandwich::User("Tommy", "Tswizzle Swazzle", "thhang"));
+    tester->addFriend(new sandwich::User("Sarah", "Belleze", "<3 hiking <3 :3"));
+    tester->addFriend(new sandwich::User("tester1", "test1", "sfbsfgbdffgbfgb"));
+    tester->addFriend(new sandwich::User("tester2", "test2", "sdbfsfbvsdfgbbg"));
+    tester->addFriend(new sandwich::User("tester3", "test3", "bdbdbsgfbdfgbfg"));
+    tester->addFriend(new sandwich::User("tester4", "test4", "bdbdbsgsdbdfgbf"));
+    tester->addFriend(new sandwich::User("tester5", "test5", "bdbdasdfsddfgbg"));
 
     int y, x; 
     getmaxyx(stdscr, y, x); //returns the max x & y values of the screen  
     curs_set(1);
 
+    /*
     // Guard screeen size
     if (y < 50 || x < 75){
         endwin();
@@ -119,6 +127,7 @@ GUI::Type GUI::loginScreen() {
         std::cout << "Proper dimensions are y > 50 and x > 75\n";
         exit(1); 
     }
+    */
     WINDOW* mainWindow  = newwin(y - 4, x - 14, 2, 7); 
     WINDOW* inputWindow = newwin(1, 30, centerY(mainWindow) + 6, centerX(mainWindow) - 7); 
     WINDOW* outerBox    = newwin(y, x - 10, 0, 5);
@@ -185,7 +194,7 @@ GUI::Type GUI::loginScreen() {
 
         // Add a new user with the obtained information
         if(sandwich::User::validateStr(loginName)  && 
-           sandwich::User::validateStr(nameString) ) {
+                sandwich::User::validateStr(nameString) ) {
 
             currUser = new sandwich::User(loginName, nameString, bioString);
             userMap[currUser->getLower()] = currUser;
@@ -195,7 +204,7 @@ GUI::Type GUI::loginScreen() {
             returnOption = sandwich::GUI::Type::HOME;
         }
         else {
-	     returnOption = sandwich::GUI::Type::LOGOUT;
+            returnOption = sandwich::GUI::Type::LOGOUT;
         }
 
         delwin(nameWindow);
@@ -286,7 +295,7 @@ void GUI::postWallScreen() {
 
     getch();
 }
-	
+
 
 /* view friends screen lets the user view all of his/her
  * friends names and usernames
@@ -297,16 +306,17 @@ void GUI::viewFriendsScreen() {
     getmaxyx(stdscr, y, x);
     curs_set(0);
 
-    //top and bottom windows based on the get max returns
+    // Window initialization - enable keys, set up box, clear
     WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7);
     WINDOW* topBox     = newwin(y * 0.625, x - 10, 0, 5);
     wclear(topDisplay);
-    //create boxes for the box windows
     box(topBox, 0, 0);
-    //setup keypad and refresh all windows
+    keypad(topDisplay, true);
 
-    centerText(topDisplay, 1, "Friends List");
+    centerText(topDisplay, 0, "Friends List");
+    centerText(topDisplay, 1, "Use arrows to scroll, 'q' to quit");
 
+    // Grab all current friends from user
     std::vector<const sandwich::User*> friendList = currUser->getFriends();
 
     // if User has no friends
@@ -314,6 +324,7 @@ void GUI::viewFriendsScreen() {
         centerText(topDisplay, y / 4, "You have no friends");
         centerText(topDisplay, y / 4 + 1, "Press any key to return");
         wrefresh(topDisplay);
+        wgetch(topDisplay);
     }
     // populate all friends to screen
     else {
@@ -333,20 +344,35 @@ void GUI::viewFriendsScreen() {
             userData.push_back("Bio     : " + friendPtr->getBio());
         }
 
+        int input;
         index = 0;
-        yMax = userData.size() > xDisp - 2 ? xDisp : userData.size();
-        // Print everything to screen
+        yMax  = userData.size() > yDisp - 2 ? yDisp : userData.size();
         do {
+            // Print everything to screen
             werase(topDisplay);
+            centerText(topDisplay, 0, "Friends List");
+            centerText(topDisplay, 1, "Use arrows to scroll, 'q' to quit");
             for(int i = 0; i < yMax; ++i) {
-                centerText(topDisplay, 1, "Friends List");
                 mvwprintw(topDisplay, i + 2, 0, "%s", userData[index + i].c_str());
             }
+            refresh();
             wrefresh(topDisplay);
-        } while(getch() != 'q');
-    }
 
-    getch();
+            // Get next character for scrolling
+            input = wgetch(topDisplay);
+            switch(input) {
+                case KEY_UP: // key up
+                    if(index > 0) index--; 
+                    break;
+                case KEY_DOWN: // key down
+                    if(index < userData.size() - yDisp + 2) index++;
+                    break;
+                default:
+                    break;
+            }
+        } while(input != 'q');
+    }
+    // clean up
     delwin(topDisplay);
     delwin(topBox);
 }
@@ -428,7 +454,7 @@ void GUI::viewFriendScreen() {
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
- 
+
 
     // std::string friendUsername; // populate this
     // sandwich::User* friend = nullptr;
@@ -510,7 +536,7 @@ void GUI::editProfileScreen() {
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
-    
+
     // Pseudocode
     // 1. Display currUser username, name, and bio, then draw line
     // 2. Display currUser's posts
@@ -545,7 +571,7 @@ void GUI::removeFriendScreen() {
     wrefresh(topDisplay);
     refresh();
 
- 
+
     // Pseudocode
     // 1. Enter search bar
     // 2. on enter, get users vector of friends and see if any
@@ -629,57 +655,57 @@ std::string GUI::userInput(WINDOW * w, int max){
     int y, x, ylast, xlast,c=0; 
     while(s!=10){
         s =wgetch(w);
-	if (s == 27){
-		werase(w);
-		mvwprintw(w,0,0, "Press ESC to Select from the Menu or Enter to continue");
-		s = wgetch(w);
-		if (s == 27) return "back";
-		else if (s == 10){
-			wclear(w);
-			wmove(w,0,0);
-			wrefresh(w);
-			refresh();
-			str.clear();
-			s = wgetch(w);
-		}
-	}
+        if (s == 27){
+            werase(w);
+            mvwprintw(w,0,0, "Press ESC to Select from the Menu or Enter to continue");
+            s = wgetch(w);
+            if (s == 27) return "back";
+            else if (s == 10){
+                wclear(w);
+                wmove(w,0,0);
+                wrefresh(w);
+                refresh();
+                str.clear();
+                s = wgetch(w);
+            }
+        }
         getyx(w, y, x); 
- 	getmaxyx(w, ylast, xlast);
- 	/*if(c==max-2){
-		mvwprintw(w,y, xlast-4, "-MAX");
-		refresh();
-		s = 127;
-	}*/
-	while(s == 127){
-		if(c==0) s= wgetch(w);
-		else{
-		    s= ' ';
-		    x --;
-		    c--;  
-		    str.erase(str.end()-1);	
-		    mvwprintw(w, y, x, "%c",s);
-		    wmove(w,y,x); 
-		    refresh(); 
-		    if(c==max-3){
-			    mvwprintw(w,y,xlast-4, "     ");
-			    refresh();	            
-		    }
-		    s=wgetch(w);
-		}
-	}
-	if(c>max-3){
-		mvwprintw(w,y, xlast-4, "-MAX");
-		refresh();
-		s = ' ';
-		c--;	
-		str.erase(str.end()-1);
-		mvwprintw(w,y,x, "%c", s);
-		wmove(w,y,x);
-		refresh();
-	}
-	else mvwprintw(w, y, x, "%c", s);
+        getmaxyx(w, ylast, xlast);
+        /*if(c==max-2){
+          mvwprintw(w,y, xlast-4, "-MAX");
+          refresh();
+          s = 127;
+          }*/
+        while(s == 127){
+            if(c==0) s= wgetch(w);
+            else{
+                s= ' ';
+                x --;
+                c--;  
+                str.erase(str.end()-1);	
+                mvwprintw(w, y, x, "%c",s);
+                wmove(w,y,x); 
+                refresh(); 
+                if(c==max-3){
+                    mvwprintw(w,y,xlast-4, "     ");
+                    refresh();	            
+                }
+                s=wgetch(w);
+            }
+        }
+        if(c>max-3){
+            mvwprintw(w,y, xlast-4, "-MAX");
+            refresh();
+            s = ' ';
+            c--;	
+            str.erase(str.end()-1);
+            mvwprintw(w,y,x, "%c", s);
+            wmove(w,y,x);
+            refresh();
+        }
+        else mvwprintw(w, y, x, "%c", s);
         str +=s; 
-	refresh(); 
+        refresh(); 
         c++; 
         wrefresh(w);
     }	
@@ -727,7 +753,7 @@ int GUI::menu_setup(WINDOW* w, int d){
     getmaxyx(stdscr, y, x); 
     print_menu(w, h, n, s, d); 
     while(1){
-	    int c = wgetch(w); 
+        int c = wgetch(w); 
         choice = menu_selector(n, c, &h, y-1, 5);  
         print_menu(w, h, n, s, d);  
         if(choice!=0)break; //user make a choice, break loop

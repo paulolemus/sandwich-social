@@ -31,7 +31,7 @@ TEST_FLAGS := -Wall -Wextra -pedantic --std=c++11 -g \
 #############################################################################
 ## Add all new targets below this line
 
-all: sandwich-social
+all: clean sandwich-social 
 
 sandwich-social: sandwich-social.cpp
 	$(CXX) $^ -o $@ $(LIBS) $(CXX_FLAGS)

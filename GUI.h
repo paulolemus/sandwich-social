@@ -107,6 +107,12 @@ GUI::Type GUI::loginScreen() {
     int y,x; 
     getmaxyx(stdscr, y, x); //returns the max x & y values of the screen  
 
+    if (y<50 || x <75){
+	    std::cout << "Please Enlarge Your Screen and Start Program Again" << std::endl; 
+	    move(0,0);
+	    std::cout << "Proper dimensions are y > 50 and x > 75\n";
+	    abort(); 
+	}
     WINDOW *mainWindow = newwin(y-4, x-14, 2, 7); 
     WINDOW *inputWindow = newwin(1, 30, centerY(mainWindow)+6, centerX(mainWindow)-7); 
     WINDOW *outerBox = newwin(y, x-10, 0, 5);
@@ -121,6 +127,8 @@ GUI::Type GUI::loginScreen() {
     wmove(inputWindow, 0,0); 
     centerText(mainWindow, (y-4)*.25, "WELCOME TO SANDWICH SOCIAL"); 
     centerText(mainWindow, (y-4)*.5, "Input your username to login or start a new account"); 	
+    //mvwprintw(mainWindow, 0,0, "y = %d", y);   
+    //mvwprintw(mainWindow, 2,0, "x = %d", x); 
     refresh();  
     wrefresh(mainWindow); 
     wrefresh(outerBox); 

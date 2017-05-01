@@ -75,7 +75,8 @@ public:
     std::vector<const sandwich::User*> getFriends();
 
     // Special
-    static bool validateStr(const std::string& str);
+    static bool        validateStr(const std::string& str);
+    static std::string lowercaseify( std::string str);
     bool operator== (const User& other) const;
     bool operator<  (const User& other) const;
 
@@ -172,6 +173,16 @@ bool User::validateStr(const std::string& str) {
         if(!isalpha(str[i]) && str[i] != ' ') return false;
     }
     return true;
+}
+
+// Convert the given string to lowercase and return
+std::string User::lowercaseify(std::string str) {
+    for(unsigned int i = 0; i < str.size(); ++i) {
+        if(str[i] >= 'A' && str[i] <= 'Z') {
+            str[i] = str[i] + 32;
+        }
+    }
+    return str;
 }
 
 // Used to check if two accounts are equal to each other

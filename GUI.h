@@ -141,10 +141,6 @@ GUI::Type GUI::loginScreen() {
     wrefresh(mainWindow); 
     refresh();
 
-    if(loginName[loginName.size() - 1] == '\n') {
-        loginName = loginName.substr(0, loginName.size() - 1);
-    }
-
     // variable to hold return option
     sandwich::GUI::Type returnOption;
 

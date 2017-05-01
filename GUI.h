@@ -4,10 +4,9 @@
  * Date: 4/23/2017
  */
 
-/*
- *
- *
- *
+/* The GUI class. This class contains code for distinct screens
+ * that make up our UI. Each screen is mostly independent, so 
+ * we are able to launch each screen independent of any other.
  */
 
 #ifndef SANDWICH_GUI_H_
@@ -15,11 +14,12 @@
 
 #include <algorithm>
 #include <ncurses.h>
+#include <cstdlib>
 #include <unordered_map>
-#include "User.h"
-#include "Trie.h"
 #include <vector>
 #include <string>
+#include "User.h"
+#include "Trie.h"
 
 namespace sandwich {
 
@@ -42,8 +42,8 @@ public:
     };
 
     GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
-            sandwich::Trie<sandwich::User*>&                  trie,
-            sandwich::User*&                                  currUser);
+            sandwich::Trie<sandwich::User*>&              trie,
+            sandwich::User*&                              currUser);
 
     ~GUI(); 
     Type loginScreen();
@@ -66,7 +66,7 @@ public:
     void print_menu(WINDOW *w, int h, int n, std::string s[],int d); 
     int menu_selector(int n, int c, int* highlight, int a, int b);
     int menu_setup(WINDOW* w, int d); 
-    std::string userInput (WINDOW* w, int max);
+    std::string userInput(WINDOW* w, int max);
     Type submit_selection(WINDOW* w, int choice);
 
 };
@@ -78,7 +78,8 @@ GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
     userMap(userMap),
     trie(trie),
     currUser(currUser)
-{ //initializes the window, noecho, and cbreak at construction    
+{ 
+    //initializes the window, noecho, and cbreak at construction    
     initscr(); 
     noecho();
     cbreak();
@@ -88,7 +89,9 @@ GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
 }
 
 GUI::~GUI() {
-    endwin();// ends the window at destruction
+    if(isendwin() == FALSE) {
+        endwin();
+    }
 }
 
 GUI::Type GUI::loginScreen() {
@@ -99,33 +102,33 @@ GUI::Type GUI::loginScreen() {
     //create insert the username into the Map paired with the tester
     userMap.insert({tester->getLower(), tester});
     //store the user in the trie by its user name
-    trie.store(tester->getLower(), tester); 
+    trie.store(tester->getUsername(), tester); 
+    trie.store(tester->getName(),     tester); 
 
-    int y,x; 
+    int y, x; 
     getmaxyx(stdscr, y, x); //returns the max x & y values of the screen  
 
-    if (y<50 || x <75){
-	    std::cout << "Please Enlarge Your Screen and Start Program Again" << std::endl; 
-	    move(0,0);
-	    std::cout << "Proper dimensions are y > 50 and x > 75\n";
-	    abort(); 
-	}
-    WINDOW *mainWindow = newwin(y-4, x-14, 2, 7); 
-    WINDOW *inputWindow = newwin(1, 30, centerY(mainWindow)+6, centerX(mainWindow)-7); 
-    WINDOW *outerBox = newwin(y, x-10, 0, 5);
+    // Guard screeen size
+    if (y < 50 || x < 75){
+        endwin();
+        std::cout << "Please Enlarge Your Screen and Start Program Again\n";
+        std::cout << "Proper dimensions are y > 50 and x > 75\n";
+        exit(1); 
+    }
+    WINDOW* mainWindow  = newwin(y - 4, x - 14, 2, 7); 
+    WINDOW* inputWindow = newwin(1, 30, centerY(mainWindow) + 6, centerX(mainWindow) - 7); 
+    WINDOW* outerBox    = newwin(y, x - 10, 0, 5);
     box(outerBox,0,0);
     refresh(); 
     wrefresh(mainWindow); 
     wrefresh(outerBox);
     wrefresh(inputWindow); 
 
-    wcolor_set (inputWindow,2, NULL); 	
+    wcolor_set(inputWindow, 2, NULL); 	
     wbkgd(inputWindow,COLOR_PAIR(1)); 
     wmove(inputWindow, 0,0); 
-    centerText(mainWindow, (y-4)*.25, "WELCOME TO SANDWICH SOCIAL"); 
-    centerText(mainWindow, (y-4)*.5, "Input your username to login or start a new account"); 	
-    //mvwprintw(mainWindow, 0,0, "y = %d", y);   
-    //mvwprintw(mainWindow, 2,0, "x = %d", x); 
+    centerText(mainWindow, (y - 4) * 0.25, "WELCOME TO SANDWICH SOCIAL"); 
+    centerText(mainWindow, (y - 4) * 0.5, "Input your username to login or start a new account"); 	
     refresh();  
     wrefresh(mainWindow); 
     wrefresh(outerBox); 
@@ -136,51 +139,58 @@ GUI::Type GUI::loginScreen() {
     wrefresh(mainWindow); 
     refresh();
 
-    if(trie.search(loginName)){
-
-        for(unsigned int i = 0; i < loginName.size(); ++i) {
-            if(loginName[i] >= 'A' && loginName[i] <= 'Z') loginName[i] = loginName[i] + 32;
-        }
-        currUser = userMap[loginName];
-        return sandwich::GUI::Type::HOME;
+    if(loginName[loginName.size() - 1] == '\n') {
+        loginName = loginName.substr(0, loginName.size() - 1);
     }
+
+    // variable to hold return option
+    sandwich::GUI::Type returnOption;
+
+    // verify login is correct
+    if(!sandwich::User::validateStr(loginName)) {
+        returnOption = sandwich::GUI::Type::LOGOUT;
+    }
+    // Check if the user exists in the map or the tree
+    else if(userMap.find(sandwich::User::lowercaseify(loginName)) != userMap.end()){
+
+        currUser = userMap[sandwich::User::lowercaseify(loginName)];
+        returnOption = sandwich::GUI::Type::HOME;
+    }
+    // If not found, then allow user to create an account
     else{
         werase(mainWindow);
         std::string newusrIntro = "Thanks for joining Sandwich Social ";
 
-        if(sandwich::User::validateStr(loginName)){ 
-            //std::cout << "validated";
-        }
         newusrIntro += loginName;
-        centerText(mainWindow, (y-4)*.25, newusrIntro); 
-        centerText(mainWindow, ((y-4)*.25)+1, "Input your information below: "); 	
+        centerText(mainWindow, (y - 4) * 0.25, newusrIntro); 
+        centerText(mainWindow, (y - 4) * 0.25 + 1, "Input your information below: "); 	
 
-        mvwprintw(mainWindow, centerY(mainWindow)+2, centerX(mainWindow)-20, "Name: ");
-        WINDOW *nameWindow = newwin(1, 30, centerY(mainWindow)+4, centerX(mainWindow)-7);
+        mvwprintw(mainWindow, centerY(mainWindow) + 2, centerX(mainWindow) - 20, "Name: ");
+        WINDOW* nameWindow = newwin(1, 30, centerY(mainWindow) + 4, centerX(mainWindow) - 7);
         wbkgd(nameWindow, COLOR_PAIR(1)); 
 
-        centerText(mainWindow, (y-4)*.75, "Short Bio (Max 150 characters): ");
-        WINDOW *bioWindow = newwin(4, 50, ((y-4)*.75)+6, centerX(mainWindow)-15); 
+        centerText(mainWindow, (y - 4) * 0.75, "Short Bio (Max 150 characters): ");
+        WINDOW* bioWindow = newwin(4, 50, (y - 4) * 0.75 + 6, centerX(mainWindow) - 15); 
         wbkgd(bioWindow, COLOR_PAIR(1)); 
         wrefresh(mainWindow); 
         wrefresh(nameWindow);
         wrefresh(bioWindow);
 
-        wmove(nameWindow, 0,0);
+        wmove(nameWindow, 0, 0);
         wrefresh(nameWindow); 
-        std::string nameString= userInput(nameWindow, 28); 
+        std::string nameString = userInput(nameWindow, 28); 
         wrefresh(nameWindow); 
         //set name
         wrefresh(mainWindow); 
         wrefresh(nameWindow); 
-        wmove(bioWindow, 0,0); 
+        wmove(bioWindow, 0, 0); 
         wrefresh(bioWindow); 
         std::string bioString = userInput(bioWindow, 100);
         //set bio
 
-        if(sandwich::User::validateStr(loginName)    && 
-                sandwich::User::validateStr(nameString) && 
-                sandwich::User::validateStr(bioString)){ 
+        if(sandwich::User::validateStr(loginName)  && 
+           sandwich::User::validateStr(nameString) && 
+           sandwich::User::validateStr(bioString) ) {
 
             erase();
             refresh(); 
@@ -190,17 +200,23 @@ GUI::Type GUI::loginScreen() {
             trie.store(currUser->getUsername(), currUser);
             trie.store(currUser->getName(), currUser);
 
-            getch(); 
+            returnOption = sandwich::GUI::Type::HOME;
+        }
+        else {
+            returnOption = sandwich::GUI::Type::LOGOUT;
         }
 
-        refresh();
-        getch(); 
+        delwin(nameWindow);
+        delwin(bioWindow);
+    } // end else
 
-        return sandwich::GUI::Type::HOME; 	
-    }	
-
-
-    int a = getch(); 
+    // cleanup
+    erase();
+    delwin(mainWindow);
+    delwin(inputWindow);
+    delwin(outerBox);
+    refresh();
+    return returnOption;
 }
 
 
@@ -557,7 +573,7 @@ int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
 
 
 
-std::string GUI::userInput (WINDOW * w, int max){
+std::string GUI::userInput(WINDOW * w, int max){
     std::string str;
     char s=0; 
     int y, x, ylast, xlast,c=0; 
@@ -578,9 +594,9 @@ std::string GUI::userInput (WINDOW * w, int max){
 		    refresh(); 
 		    s=wgetch(w);
             }
-	}
+	    }
         
-	mvwprintw(w, y, x, "%c", s);
+	    mvwprintw(w, y, x, "%c", s);
         if(c==max-1){
             mvwprintw(w,y+2, 2, "Characters are full, Max = %d",max); 
         }

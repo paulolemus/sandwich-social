@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
 
     while(nextScreen != sandwich::GUI::Type::QUIT) {
 
-        while(nextScreen != sandwich::GUI::Type::LOGOUT ||
+        while(nextScreen != sandwich::GUI::Type::LOGOUT &&
               nextScreen != sandwich::GUI::Type::QUIT) {
 
             nextScreen = gui.homeScreen();

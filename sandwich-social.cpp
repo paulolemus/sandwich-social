@@ -12,7 +12,6 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
-
 #include <ncurses.h>
 
 #include "Trie.h"
@@ -20,7 +19,7 @@
 #include "User.h"
 //#include "FileIO.h"
 #include "GUI.h"
-//#include "tempGui.h"
+
 int main(int argc, char** argv) {
 
     /* userMap will hold usernames as keys and User* as values.
@@ -68,8 +67,7 @@ int main(int argc, char** argv) {
                     break;
                 case sandwich::GUI::Type::HOME:
                 case sandwich::GUI::Type::LOGOUT:
-                    gui.logoutScreen(); 
-//                case sandwich::GUI::Type::QUIT:
+                case sandwich::GUI::Type::QUIT:
                     break; 
                 default:
                     std::cout << "enum not working\n\n"; 
@@ -79,6 +77,5 @@ int main(int argc, char** argv) {
             nextScreen = gui.loginScreen();
         }
     }
-    getch(); 
     return 0;
 }

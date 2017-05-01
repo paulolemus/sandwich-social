@@ -109,6 +109,7 @@ GUI::Type GUI::loginScreen() {
 
     int y, x; 
     getmaxyx(stdscr, y, x); //returns the max x & y values of the screen  
+    curs_set(1);
 
     // Guard screeen size
     if (y < 50 || x < 75){
@@ -231,6 +232,7 @@ GUI::Type GUI::homeScreen() {
     refresh(); 
     int x, y; 
     getmaxyx(stdscr, y, x); 
+    curs_set(0);
 
     //top and bottom windows based on the get max returns
     WINDOW* topDisplay        = newwin(y * 0.625 - 4, x - 14, 2, 7); 
@@ -259,27 +261,21 @@ GUI::Type GUI::homeScreen() {
  * the user's feed, as well as all of his/her friend's feeds.
  */
 void GUI::postWallScreen() {
-    erase(); 
-    refresh(); 
+
     int x, y; 
     getmaxyx(stdscr, y, x); 
+    curs_set(1);
+
     //top and bottom windows based on the get max returns
-    WINDOW * topDisplay        = newwin(y * 0.625 - 4, x - 14, 2, 7); 
-    WINDOW * bottomMenuDisplay = newwin(y * 0.25, x - 10, y * 0.625 + 3, 5); 
-    WINDOW * topBox            = newwin(y * 0.625, x - 10, 0, 5); 
-    //create boxes for the box windows
-    box(topBox, 0, 0); 
-    box(bottomMenuDisplay, 0, 0); 
-    //setup keypad and refresh all windows
-    keypad(bottomMenuDisplay, true); 
+    WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
+    wclear(topDisplay);
 
     centerText(topDisplay, 3, "Write your new post (Max characters: 100):");
     WINDOW* postWin = newwin(4, 50, (y - 4) * 0.25, centerX(topDisplay) - 15);
+    wmove(postWin, 0, 0);
     wbkgd(postWin, COLOR_PAIR(1)); 
 
-    wrefresh(topBox);
     wrefresh(topDisplay);
-    wrefresh(bottomMenuDisplay); 
     wrefresh(postWin); 
     refresh();
 
@@ -288,9 +284,8 @@ void GUI::postWallScreen() {
     currUser->addPost(post);
 
     mvwprintw(topDisplay,(y - 4) * 0.25 + 6, 2, "At %s, you posted: ", post.getCTime());
-    mvwprintw(topDisplay,(y - 4) * 0.25 + 7, 2, "--%s", post.getCMsg()); 
+    mvwprintw(topDisplay,(y - 4) * 0.25 + 7, 2, "%s", post.getCMsg()); 
     mvwprintw(topDisplay,(y - 4) * 0.25 + 9, 2, "Press any key to continue"); 
-    wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
 
@@ -305,23 +300,20 @@ void GUI::viewFriendsScreen() {
     erase(); 
     refresh(); 
     int x, y; 
-    getmaxyx(stdscr, y, x); 
+    getmaxyx(stdscr, y, x);
+    curs_set(0);
+
     //top and bottom windows based on the get max returns
-    WINDOW* topDisplay        = newwin(y * 0.625 - 4, x - 14, 2, 7); 
-    WINDOW* bottomMenuDisplay = newwin(y * 0.25, x - 10, y * 0.625 + 3, 5); 
+    WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
     //box for the top window
     WINDOW* topBox = newwin(y * 0.625, x - 10, 0, 5); 
     //create boxes for the box windows
     box(topBox, 0, 0); 
-    box(bottomMenuDisplay, 0, 0); 
     //setup keypad and refresh all windows
-    keypad(bottomMenuDisplay, true); 
     wrefresh(topBox); 
-    wrefresh(bottomMenuDisplay); 
     refresh(); 
     wrefresh(topDisplay);
     
-    int choice = menu_setup(bottomMenuDisplay, y * 0.25);
 
     centerText(topDisplay, (y - 4) * 0.25, "View Friend List");
     wrefresh(topBox);
@@ -344,11 +336,9 @@ void GUI::viewFriendsScreen() {
 
     mvwprintw(topDisplay,((y-4)*.25)+7,2, "%s ", name.c_str()); 
     //	    centerText(topDisplay, ((y-4)*.25)+3, "Sorry you have no friends");
-
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
-
     getch();
 }
 
@@ -394,7 +384,7 @@ void GUI::addFriendScreen() {
     wrefresh(bottomMenuDisplay); 
     refresh(); 
     wrefresh(topDisplay); 
-    int choice = menu_setup(bottomMenuDisplay, y*.25);
+    int choice = menu_setup(bottomMenuDisplay, y * 0.25);
 
     centerText(topDisplay, (y-4)*.25, "List of Friends to add");
     wrefresh(topBox);
@@ -474,18 +464,19 @@ void GUI::viewFriendScreen() {
 /* This screen will allow you to edit your bio to fit your liking
 */
 void GUI::editProfileScreen() {
+
     erase(); 
     refresh(); 
     int x, y; 
     getmaxyx(stdscr, y, x); 
     //top and bottom windows based on the get max returns
-    WINDOW * topDisplay = newwin((y*.625)-4, x-14, 2, 7); 
-    WINDOW * bottomMenuDisplay = newwin(y*.25, x-10, (y*.625)+3, 5); 
+    WINDOW* topDisplay        = newwin(y * 0.625 - 4, x - 14, 2, 7); 
+    WINDOW* bottomMenuDisplay = newwin(y * 0.25, x - 10, y * 0.625 + 3, 5); 
     //box for the top window
-    WINDOW * topBox = newwin((y*.625), x-10,0, 5); 
+    WINDOW* topBox = newwin(y * 0.625, x - 10, 0, 5); 
     //create boxes for the box windows
-    box(topBox, 0,0); 
-    box(bottomMenuDisplay, 0,0); 
+    box(topBox, 0, 0); 
+    box(bottomMenuDisplay, 0, 0); 
     //setup keypad and refresh all windows
     keypad(bottomMenuDisplay, true); 
     wrefresh(topBox); 
@@ -494,7 +485,7 @@ void GUI::editProfileScreen() {
     wrefresh(topDisplay); 
 
     std::string nameString = currUser->getUsername(); 
-    std::string bioString = currUser->getBio(); 
+    std::string bioString  = currUser->getBio(); 
 
     centerText(topDisplay, 0, "Edit your bio");
     mvwprintw(topDisplay, 2, 0, "Name: %s", nameString.c_str());
@@ -516,11 +507,6 @@ void GUI::editProfileScreen() {
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
-
- 
-    int choice = menu_setup(bottomMenuDisplay, y*.25);
-//    wrefresh(bottomMenuDisplay); 
-    
     
     // Pseudocode
     // 1. Display currUser username, name, and bio, then draw line
@@ -735,14 +721,13 @@ int GUI::menu_setup(WINDOW* w, int d){
     int n = sizeof(s)/sizeof(std::string); //makes sure this automatically updates if something is added to the list of choices
 
 
-    int choice=0;
+    int choice = 0;
     int h = 1;
     int y, x; 
     getmaxyx(stdscr, y, x); 
     print_menu(w, h, n, s, d); 
     while(1){
-        curs_set(0);
-	int c = wgetch(w); 
+	    int c = wgetch(w); 
         choice = menu_selector(n, c, &h, y-1, 5);  
         print_menu(w, h, n, s, d);  
         if(choice!=0)break; //user make a choice, break loop

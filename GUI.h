@@ -42,8 +42,8 @@ public:
     };
 
     GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
-            sandwich::Trie<sandwich::User*>&              trie,
-            sandwich::User*&                              currUser);
+        sandwich::Trie<sandwich::User*>&                  trie,
+        sandwich::User*&                                  currUser);
 
     ~GUI(); 
     Type loginScreen();
@@ -292,15 +292,14 @@ void GUI::postWallScreen() {
     sandwich::Post post(postInput); 
     std::string t = post.getTime();
     std::string m = post.getMsg(); 
-    mvwprintw(topDisplay,((y - 4) * 0.25) + 6, 2, "You Posted: ");
-    mvwprintw(topDisplay,((y - 4) * 0.25) + 7, 2, "%s ---- %s", t.c_str(), m.c_str()); 
+    mvwprintw(topDisplay,(y - 4) * 0.25 + 6, 2, "You Posted: ");
+    mvwprintw(topDisplay,(y - 4) * 0.25 + 7, 2, "%s ---- %s", t.c_str(), m.c_str()); 
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
 
 
     int choice = menu_setup(bottomMenuDisplay, y*.25);
-    getch();
     getch();
 }
 

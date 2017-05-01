@@ -286,6 +286,7 @@ void GUI::postWallScreen() {
 
     getch();
 }
+	
 
 /* view friends screen lets the user view all of his/her
  * friends names and usernames

@@ -361,9 +361,9 @@ void GUI::viewFriendsScreen() {
     }
     for(auto friendPtr : friendList) {
         // display these fields
-        //friendPtr->getUsername();
-        //friendPtr->getName();
-        //friendPtr->getBio();
+        //friendPtr->getUsername().c_str();
+        //friendPtr->getName().c_str();
+        //friendPtr->getBio().c_str();
         //draw a line separating friends
     }
 >>>>>>> c88ce8649ef9024afb7bbe5eb51febb2a8d2f819

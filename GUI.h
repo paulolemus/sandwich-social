@@ -55,7 +55,6 @@ public:
     void viewFriendScreen();
     void editProfileScreen();
     void removeFriendScreen();
-    void logoutScreen(); 
 
     void testFunc();
     void centerText(WINDOW *w, int yLoc, std::string text); //centers text in the input window
@@ -548,21 +547,6 @@ void GUI::removeFriendScreen() {
     // 3. if there is a match, ask for confirmation and then remove.
     //    Otherwise, do nothing.
 }
-
-void GUI::logoutScreen(){
-    erase(); 
-    refresh(); 
-    int x, y; 
-    getmaxyx(stdscr, y, x); 
-    //top and bottom windows based on the get max returns
-    WINDOW * mainDisplay = newwin(y-4, x-14, 2, 7); 
-    centerText(mainDisplay, (y-4)*.25, "Goodbye");
-
-    wrefresh(mainDisplay); 
-    refresh(); 
-
-}
-
 
 void GUI::testFunc() {
 

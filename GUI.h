@@ -43,8 +43,8 @@ public:
     std::string mainMenu[7] = {"Post to Wall", "View Friend List", "Add Friend", "Edit Your Bio", "View Friend", "Delete Friend", "Logout"}; 
     int n_main = sizeof(mainMenu)/sizeof(std::string); 
     GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
-        sandwich::Trie<sandwich::User*>&                  trie,
-        sandwich::User*&                                  currUser);
+            sandwich::Trie<sandwich::User*>&                  trie,
+            sandwich::User*&                                  currUser);
 
     ~GUI(); 
     Type loginScreen();
@@ -102,6 +102,8 @@ GUI::~GUI() {
 // Login screen is done. All that is left is minor optimizations and a bit 
 // of cleaning, but all the functionality is there. 
 GUI::Type GUI::loginScreen() {
+
+    // Guard against small screen, create initial member
     checkScreenSize(); 
     memberListSetup(); 
 
@@ -175,7 +177,7 @@ GUI::Type GUI::loginScreen() {
 
         // Add a new user with the obtained information
         if(sandwich::User::validateStr(loginName)  && 
-           sandwich::User::validateStr(nameString) ) {
+                sandwich::User::validateStr(nameString) ) {
 
             currUser = new sandwich::User(loginName, nameString, bioString);
             userMap[currUser->getLower()] = currUser;
@@ -185,7 +187,7 @@ GUI::Type GUI::loginScreen() {
             returnOption = sandwich::GUI::Type::HOME;
         }
         else {
-	     returnOption = sandwich::GUI::Type::LOGOUT;
+            returnOption = sandwich::GUI::Type::LOGOUT;
         }
 
         delwin(nameWindow);
@@ -276,7 +278,7 @@ void GUI::postWallScreen() {
 
     getch();
 }
-	
+
 
 /* view friends screen lets the user view all of his/her
  * friends names and usernames
@@ -287,16 +289,17 @@ void GUI::viewFriendsScreen() {
     getmaxyx(stdscr, y, x);
     curs_set(0);
 
-    //top and bottom windows based on the get max returns
+    // Window initialization - enable keys, set up box, clear
     WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7);
     WINDOW* topBox     = newwin(y * 0.625, x - 10, 0, 5);
     wclear(topDisplay);
-    //create boxes for the box windows
     box(topBox, 0, 0);
-    //setup keypad and refresh all windows
+    keypad(topDisplay, true);
 
-    centerText(topDisplay, 1, "Friends List");
+    centerText(topDisplay, 0, "Friends List");
+    centerText(topDisplay, 1, "Use arrows to scroll, 'q' to quit");
 
+    // Grab all current friends from user
     std::vector<const sandwich::User*> friendList = currUser->getFriends();
 
     // if User has no friends
@@ -304,6 +307,7 @@ void GUI::viewFriendsScreen() {
         centerText(topDisplay, y / 4, "You have no friends");
         centerText(topDisplay, y / 4 + 1, "Press any key to return");
         wrefresh(topDisplay);
+        wgetch(topDisplay);
     }
     // populate all friends to screen
     else {
@@ -323,20 +327,35 @@ void GUI::viewFriendsScreen() {
             userData.push_back("Bio     : " + friendPtr->getBio());
         }
 
+        int input;
         index = 0;
-        yMax = userData.size() > xDisp - 2 ? xDisp : userData.size();
-        // Print everything to screen
+        yMax  = userData.size() > yDisp - 2 ? yDisp - 2 : userData.size();
         do {
+            // Print everything to screen
             werase(topDisplay);
+            centerText(topDisplay, 0, "Friends List");
+            centerText(topDisplay, 1, "Use arrows to scroll, 'q' to quit");
             for(int i = 0; i < yMax; ++i) {
-                centerText(topDisplay, 1, "Friends List");
                 mvwprintw(topDisplay, i + 2, 0, "%s", userData[index + i].c_str());
             }
+            refresh();
             wrefresh(topDisplay);
-        } while(getch() != 'q');
-    }
 
-    getch();
+            // Get next character for scrolling
+            input = wgetch(topDisplay);
+            switch(input) {
+                case KEY_UP: // key up
+                    if(index > 0) index--; 
+                    break;
+                case KEY_DOWN: // key down
+                    if(index + yMax < userData.size()) index++;
+                    break;
+                default:
+                    break;
+            }
+        } while(input != 'q');
+    }
+    // clean up
     delwin(topDisplay);
     delwin(topBox);
 }
@@ -380,9 +399,9 @@ void GUI::addFriendScreen() {
     centerText(topDisplay, 2, "List of Friends to add");
     int i =0;
     for (auto it = userMap.begin(); it != userMap.end(); it++){
-	    mvwprintw(topDisplay, i+4, 0, "Username: %s", it->first.c_str()); 
-	    mvwprintw(topDisplay, i+4, 30, "Name: %s", it->second->getName().c_str()); 
-	    i ++; 
+        mvwprintw(topDisplay, i+4, 0, "Username: %s", it->first.c_str()); 
+        mvwprintw(topDisplay, i+4, 30, "Name: %s", it->second->getName().c_str()); 
+        i ++; 
     }
 
     WINDOW* nameWindow = newwin(1, 30, centerY(topDisplay) + 4, centerX(topDisplay) - 7);
@@ -390,61 +409,60 @@ void GUI::addFriendScreen() {
     wmove(nameWindow, 0, 0);
     wrefresh(topBox);
     wrefresh(topDisplay);
-   
+
 
     wrefresh(nameWindow);
     refresh(); 
     std::string nameString = userInput(nameWindow, 26, false); 
 
     for (unsigned int i =0; i<nameString.size(); i++){
-	    if(nameString[i] >= 'A' && nameString[i] <= 'Z'){
-		    nameString[i] = nameString[i] +32;
-	    }
+        if(nameString[i] >= 'A' && nameString[i] <= 'Z'){
+            nameString[i] = nameString[i] +32;
+        }
     }
 
 
     int ymax, xmax, ybeg, xbeg=0;
     getmaxyx(nameWindow, ymax, xmax); 
     getbegyx(nameWindow, ybeg, xbeg); 
-   // WINDOW* trieWindow = newwin(5, xmax, ybeg+1, xbeg); 
+    // WINDOW* trieWindow = newwin(5, xmax, ybeg+1, xbeg); 
 
     std::string prefix;
-   // auto friendList = trie.getComplete(prefix);
-   // int t_size = temp.size();
-   // for(auto friendPtr : friendList) {
-    	
+    // auto friendList = trie.getComplete(prefix);
+    // int t_size = temp.size();
+    // for(auto friendPtr : friendList) {
+
     //	    mvwprintw(friendPtr->getUsername().c_str();
     //	friendPtr->getName().c_str();
     //	friendPtr->getBio().c_str();
     //      draw line to deparate users
-   // }
-    
+    // }
+
 
     sandwich::User* friendCopy;
 
     if(trie.search(nameString)){
-//	auto temp = trie.getComplete(prefix);
-//	auto tempString = temp.pop_back();
-	mvwprintw(topDisplay, i+12, 0, "User: %s found!", nameString.c_str());   
-	auto friendList = trie.getComplete(nameString);
-   		if(friendList.size() < 1) {
-    		//      display "No matching users. Please broaden your search"
-    		}
-    //          // clear the currently displayed friends here
-    		 for(auto friendPtr : friendList) {
- 			if(friendPtr->getUsername() == nameString){
-	 			 mvwprintw(topDisplay, i+20, 0,"%s is almost your friend", friendPtr->getUsername().c_str());
-		       		 i++;
-				 friendCopy = friendPtr;
-		 	}
-		}
-    //      display friendPtr->getName().c_str()
-    //      display friendPtr->getBio().c_str()
-    //      draw line to deparate users
-    // }
-       currUser->addFriend(friendCopy);
-
-	wrefresh(topDisplay); 
+        //	auto temp = trie.getComplete(prefix);
+        //	auto tempString = temp.pop_back();
+        mvwprintw(topDisplay, i+12, 0, "User: %s found!", nameString.c_str());   
+        auto friendList = trie.getComplete(nameString);
+        if(friendList.size() < 1) {
+            //      display "No matching users. Please broaden your search"
+        }
+        // clear the currently displayed friends here
+        for(auto friendPtr : friendList) {
+            if(friendPtr->getUsername() == nameString){
+                mvwprintw(topDisplay, i+20, 0,"%s is almost your friend", friendPtr->getUsername().c_str());
+                i++;
+                friendCopy = friendPtr;
+            }
+        }
+        //      display friendPtr->getName().c_str()
+        //      display friendPtr->getBio().c_str()
+        //      draw line to deparate users
+        // }
+        currUser->addFriend(friendCopy);
+        wrefresh(topDisplay); 
     } 
     getch();
     delwin(topDisplay);
@@ -453,9 +471,9 @@ void GUI::addFriendScreen() {
 }
 
 /* View friend screen allows you to view a particular friend entirely.
- * This will display the friend's name, username, and entire history 
- * of posts.
- */
+* This will display the friend's name, username, and entire history 
+* of posts.
+*/
 void GUI::viewFriendScreen() {
 
 	int x, y; 
@@ -588,7 +606,7 @@ void GUI::editProfileScreen() {
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
-    
+
     // Pseudocode
     // 1. Display currUser username, name, and bio, then draw line
     // 2. Display currUser's posts
@@ -623,7 +641,7 @@ void GUI::removeFriendScreen() {
     wrefresh(topDisplay);
     refresh();
 
- 
+
     // Pseudocode
     // 1. Enter search bar
     // 2. on enter, get users vector of friends and see if any
@@ -710,56 +728,56 @@ std::string GUI::userInput(WINDOW * w, int max, bool trieBool){
     // mvwprintw(w,0,0, "ybeg: %d and xbeg %d", y, x);
     while(s!=10){
         s =wgetch(w);
-	if (s == 27){
-		werase(w);
-		mvwprintw(w,0,0, "Press ESC to Select from the Menu or Enter to continue");
-		s = wgetch(w);
-		if (s == 27) return "back";
-		else if (s == 10){
-			wclear(w);
-			wmove(w,0,0);
-			wrefresh(w);
-			refresh();
-			str.clear();
-			s = wgetch(w);
-		}
-	}
+        if (s == 27){
+            werase(w);
+            mvwprintw(w,0,0, "Press ESC to Select from the Menu or Enter to continue");
+            s = wgetch(w);
+            if (s == 27) return "back";
+            else if (s == 10){
+                wclear(w);
+                wmove(w,0,0);
+                wrefresh(w);
+                refresh();
+                str.clear();
+                s = wgetch(w);
+            }
+        }
         getyx(w, y, x); 
-    
-	while(s == 127){
-		if(c==0) s= wgetch(w);
-		else{
-		    s= ' ';
-		    x --;
-		    c--;  
-		    str.erase(str.end()-1);	
-		    mvwprintw(w, y, x, "%c",s);
-		    wmove(w,y,x); 
-		    refresh(); 
-		    if(c==max-3){
-			    mvwprintw(w,y,xlast-4, "     ");
-			    refresh();	            
-		    }
-		    s=wgetch(w);
-		}
-	}
-	if(c>max-3){
-		mvwprintw(w,y, xlast-4, "-MAX");
-		refresh();
-		s = ' ';
-		c--;	
-		str.erase(str.end()-1);
-		mvwprintw(w,y,x, "%c", s);
-		wmove(w,y,x);
-		refresh();
-	}
-	else mvwprintw(w, y, x, "%c", s);
-	str +=s; 
-	if (trieBool){
-   		str = trieAutoComplete(str, w); 
-       	}
-	refresh(); 
- 	c++; 
+
+        while(s == 127){
+            if(c==0) s= wgetch(w);
+            else{
+                s= ' ';
+                x --;
+                c--;  
+                str.erase(str.end()-1);	
+                mvwprintw(w, y, x, "%c",s);
+                wmove(w,y,x); 
+                refresh(); 
+                if(c==max-3){
+                    mvwprintw(w,y,xlast-4, "     ");
+                    refresh();	            
+                }
+                s=wgetch(w);
+            }
+        }
+        if(c>max-3){
+            mvwprintw(w,y, xlast-4, "-MAX");
+            refresh();
+            s = ' ';
+            c--;	
+            str.erase(str.end()-1);
+            mvwprintw(w,y,x, "%c", s);
+            wmove(w,y,x);
+            refresh();
+        }
+        else mvwprintw(w, y, x, "%c", s);
+        str +=s; 
+        if (trieBool){
+            str = trieAutoComplete(str, w); 
+        }
+        refresh(); 
+        c++; 
         wrefresh(w);
     }	
     str.erase(std::remove(str.begin(),str.end(), '\n'), str.end());
@@ -823,24 +841,24 @@ void GUI::print_menu(WINDOW *w, int h, int n, std::string s[],int d){
         y++; 
     }   
     wrefresh(w); 
-} 
+    } 
 
-int GUI::menu_setup(WINDOW* w, int d, std::string inputArray[], int n){ 
+    int GUI::menu_setup(WINDOW* w, int d, std::string inputArray[], int n){ 
     int choice = 0;
     int h = 1;
     int y, x; 
     getmaxyx(stdscr, y, x); 
     print_menu(w, h, n, inputArray, d); 
     while(1){
-	    int c = wgetch(w); 
+        int c = wgetch(w); 
         choice = menu_selector(n, c, &h, y-1, 5);  
         print_menu(w, h, n, inputArray, d);  
         if(choice!=0)break; //user make a choice, break loop
     }
     return choice; 
-}
+    }
 
-GUI::Type GUI::submit_selection(WINDOW* w, int choice){
+    GUI::Type GUI::submit_selection(WINDOW* w, int choice){
     switch(choice){
         case 1:
             return sandwich::GUI::Type::POST_TO_WALL;
@@ -880,18 +898,24 @@ void GUI::memberListSetup(){
     //store the user in the trie by its user name
     trie.store(tester->getUsername(), tester); 
     trie.store(tester->getName(),     tester); 
-    
+
     sandwich::User* friend1 = new sandwich::User("fred", "Freddy G", "I love singing!");
     userMap.insert({friend1->getLower(), friend1});
     trie.store(friend1->getUsername(), friend1);
-    
+
     sandwich::User* friend2 = new sandwich::User("leroy", "LeRoy B", "I'm the real OG");
     userMap.insert({friend2->getLower(), friend2});
     trie.store(friend2->getUsername(), friend2);
-    
-    
+
+
     tester->addFriend(friend1);
     tester->addFriend(friend2);
+    tester->addFriend(new sandwich::User("test1", "tester1", "sdgsdfbsdf"));
+    tester->addFriend(new sandwich::User("test2", "tester2", "sddfdfbsdf"));
+    tester->addFriend(new sandwich::User("test3", "tester3", "sdgsdfbdsv"));
+    tester->addFriend(new sandwich::User("test4", "tester4", "sdgsdfbsds"));
+    tester->addFriend(new sandwich::User("test5", "tester5", "sdgsdfbdgs"));
+    tester->addFriend(new sandwich::User("test6", "tester6", "sdsasdfbsdf"));
 
     sandwich::User* tester2 = new sandwich::User("becky", "Rebecca L", "Becky with the good hair"); 
     userMap.insert({tester2->getLower(), tester2});
@@ -903,18 +927,17 @@ void GUI::memberListSetup(){
 
     tester2->addFriend(friend1);
     tester2->addFriend(friend3); 
-
 }
 
 void GUI::checkScreenSize(){
-	int y,x;
-	getmaxyx(stdscr, y, x); 
-    	if (y < 50 || x < 75){
-		endwin();
-		std::cout << "Please Enlarge Your Screen and Start Program Again\n";
-		std::cout << "Proper dimensions are y > 50 and x > 75\n";
-		exit(1); 
-	} 
+    int y,x;
+    getmaxyx(stdscr, y, x); 
+    if (y < 50 || x < 75){
+        endwin();
+        std::cout << "Please Enlarge Your Screen and Start Program Again\n";
+        std::cout << "Proper dimensions are y > 50 and x > 75\n";
+        exit(1); 
+    } 
 }
 
 } // namespace sandwich

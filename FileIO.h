@@ -171,7 +171,7 @@ std::vector<sandwich::User*> FileIO::readUsers() {
 			    que.pop();
 			    }
 
-			    if(s2 == "TIME: "){//valid post
+			    if(s2.substr(0,6) == "TIME: "){//valid post
 
 			        s1 = s1.substr(6);//extract substrings
 				s2 = s2.substr(6);

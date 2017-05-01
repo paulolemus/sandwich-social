@@ -32,11 +32,11 @@ class FileIO {
     std::string userFileName;
     std::string friendsFileName;
     const std::string validusername = "username: ";
-    const std::string validname =     "name    : ";
-    const std::string validbio =      "bio     : ";
-    const std::string validpost =     "POST: ";
-    const std::string validtime =     "TIME: ";
-    const std::string endpostflag =       "END_POSTS";
+    const std::string validname     = "name    : ";
+    const std::string validbio      = "bio     : ";
+    const std::string validpost     = "POST: ";
+    const std::string validtime     = "TIME: ";
+    const std::string endpostflag   = "END_POSTS";
 
 public:
 
@@ -56,11 +56,11 @@ public:
      */
     std::vector<sandwich::User*> readUsers();
     /* readFriends:
-     * Returns a vector of strings with the user
+     * Returns a vector of vectors of strings with the user
      * who the friends belong to, followed by the user's
      * friends
      */
-    std::vector<std::string> readFriends();
+    std::vector<std::vector<std::string>> readFriends();
 
     /* This takes a pointer to a user and then writes
      * all of its information to a text file.
@@ -181,9 +181,10 @@ std::vector<sandwich::User*> FileIO::readUsers() {
     return users;
 }
 
-std::vector<std::string> FileIO::readFriends() {
+std::vector<std::vector<std::string>> FileIO::readFriends() {
 
-    std::vector<std::string> friendList;
+    std::vector<std::vector<std::string>> friendList;
+    std::ifstream myfile(friendsFileName);
     return friendList;
 }
 

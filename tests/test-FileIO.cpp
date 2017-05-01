@@ -33,7 +33,7 @@ TEST(FileIO, readusers){
 	U2.push_back(new sandwich::User("jessieG","Jessie G","Hippy life | Yo yo dawg | 920"));
 	U2.push_back(new sandwich::User("YamaSama","Matt Y","Anime wo suuuuugoi desu nee"));
 
-	for(int counter = 0; counter < U2.size(); counter++){
+	for(unsigned int counter = 0; counter < U2.size(); counter++){
 		ASSERT_EQ(U2[counter]->getUsername(), U1[counter]->getUsername());
 		ASSERT_EQ(U2[counter]->getName(),     U1[counter]->getName());
 		ASSERT_EQ(U2[counter]->getBio(),      U1[counter]->getBio());

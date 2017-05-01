@@ -232,17 +232,16 @@ GUI::Type GUI::homeScreen() {
     int x, y; 
     getmaxyx(stdscr, y, x); 
     //top and bottom windows based on the get max returns
-    WINDOW * topDisplay = newwin((y*.625)-4, x-14, 2, 7); 
-    WINDOW * bottomMenuDisplay = newwin(y*.25, x-10, (y*.625)+3, 5); 
+    WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
+    WINDOW* bottomMenuDisplay = newwin(y * 0.25, x-10, y * 0.625 + 3, 5); 
     //box for the top window
-    WINDOW * topBox = newwin((y*.625), x-10,0, 5); 
+    WINDOW * topBox = newwin(y * 0.625, x - 10, 0, 5); 
     //create boxes for the box windows
-    box(topBox, 0,0); 
-    box(bottomMenuDisplay, 0,0); 
+    box(topBox, 0, 0); 
+    box(bottomMenuDisplay, 0, 0); 
     //setup keypad and refresh all windows
     keypad(bottomMenuDisplay, true); 
 
-    sandwich::User*& cUser = currUser;
     centerText(topDisplay, 3, "Welcome to your Homescreen");
     //std::string nAAAme = cUser->getUsername(); 
     //mvwprintw(topDisplay,((y-4)*.25)+7,2, "%s ",nAAAme.c_str() ); 
@@ -251,7 +250,7 @@ GUI::Type GUI::homeScreen() {
     wrefresh(bottomMenuDisplay); 
     wrefresh(topDisplay); 
     refresh();  
-    int choice = menu_setup(bottomMenuDisplay, y*.25);
+    int choice = menu_setup(bottomMenuDisplay, y * 0.25);
     //std::cout << cUser->getName()<< "\n"; 
     //int s = getch(); 	
     //return sandwich::GUI::Type::LOGOUT;
@@ -269,18 +268,18 @@ void GUI::postWallScreen() {
     int x, y; 
     getmaxyx(stdscr, y, x); 
     //top and bottom windows based on the get max returns
-    WINDOW * topDisplay = newwin((y*.625)-4, x-14, 2, 7); 
-    WINDOW * bottomMenuDisplay = newwin(y*.25, x-10, (y*.625)+3, 5); 
+    WINDOW * topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
+    WINDOW * bottomMenuDisplay = newwin(y * 0.25, x - 10, y * 0.625 + 3, 5); 
     //box for the top window
-    WINDOW * topBox = newwin((y*.625), x-10,0, 5); 
+    WINDOW * topBox = newwin(y * 0.625, x - 10, 0, 5); 
     //create boxes for the box windows
-    box(topBox, 0,0); 
-    box(bottomMenuDisplay, 0,0); 
+    box(topBox, 0, 0); 
+    box(bottomMenuDisplay, 0, 0); 
     //setup keypad and refresh all windows
     keypad(bottomMenuDisplay, true); 
 
     centerText(topDisplay, 3, "Write your new post (Max characters: 100):");
-    WINDOW *postWin = newwin(4, 50, (y-4)*.25, centerX(topDisplay)-15); 
+    WINDOW *postWin = newwin(4, 50, (y - 4) * 0.25, centerX(topDisplay) - 15); 
     wbkgd(postWin, COLOR_PAIR(1)); 
 
     wrefresh(topBox);
@@ -288,14 +287,14 @@ void GUI::postWallScreen() {
     wrefresh(bottomMenuDisplay); 
     wrefresh(postWin); 
     refresh();
-    int choice = menu_setup(bottomMenuDisplay, y*.25);
+    int choice = menu_setup(bottomMenuDisplay, y * 0.25);
 
     std::string postInput = userInput(postWin, 100); 
     sandwich::Post post(postInput); 
     std::string t = post.getTime();
     std::string m = post.getMsg(); 
-    mvwprintw(topDisplay,((y-4)*.25)+6,2, "You Posted: ");
-    mvwprintw(topDisplay,((y-4)*.25)+7,2, "%s ---- %s", t.c_str(), m.c_str()); 
+    mvwprintw(topDisplay,((y - 4) * 0.25) + 6, 2, "You Posted: ");
+    mvwprintw(topDisplay,((y - 4) * 0.25) + 7, 2, "%s ---- %s", t.c_str(), m.c_str()); 
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
@@ -308,60 +307,54 @@ void GUI::postWallScreen() {
  */
 void GUI::viewFriendsScreen() {
 
-    // Code for viewing list of friends
-    //
-    // auto friendList = currUser->getFriends();
-    // if(friendList.size() < 1) {
-    //      display "You have no friends"
-    // }
-    // for(auto friendPtr : friendList) {
-    //      display friendPtr->getUsername().c_str()
-    //      display friendPtr->getName().c_str()
-    //      display friendPtr->getBio().c_str()
-    //      draw line to deparate users
-    // }
     erase(); 
     refresh(); 
     int x, y; 
     getmaxyx(stdscr, y, x); 
     //top and bottom windows based on the get max returns
-    WINDOW * topDisplay = newwin((y*.625)-4, x-14, 2, 7); 
-    WINDOW * bottomMenuDisplay = newwin(y*.25, x-10, (y*.625)+3, 5); 
+    WINDOW* topDisplay        = newwin(y * 0.625 - 4, x - 14, 2, 7); 
+    WINDOW* bottomMenuDisplay = newwin(y * 0.25, x - 10, y * 0.625 + 3, 5); 
     //box for the top window
-    WINDOW * topBox = newwin((y*.625), x-10,0, 5); 
+    WINDOW* topBox = newwin(y * 0.625, x - 10, 0, 5); 
     //create boxes for the box windows
-    box(topBox, 0,0); 
-    box(bottomMenuDisplay, 0,0); 
+    box(topBox, 0, 0); 
+    box(bottomMenuDisplay, 0, 0); 
     //setup keypad and refresh all windows
     keypad(bottomMenuDisplay, true); 
     wrefresh(topBox); 
     wrefresh(bottomMenuDisplay); 
     refresh(); 
-    wrefresh(topDisplay); 
-    int choice = menu_setup(bottomMenuDisplay, y*.25);
+    wrefresh(topDisplay);
+    
+    int choice = menu_setup(bottomMenuDisplay, y * 0.25);
 
-    centerText(topDisplay, (y-4)*.25, "View Friend List");
+    centerText(topDisplay, (y - 4) * 0.25, "View Friend List");
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
 
-    //  std::string name = currUser->getUsername(); 
-    // auto friendList = currUser->getFriends(); 
+    std::string name = currUser->getUsername(); 
+    std::vector<const sandwich::User*> friendList  = currUser->getFriends(); 
+
+    if(friendList.size() < 1) {
+        // display "You have no friends";
+    }
+    for(auto friendPtr : friendList) {
+        // display these fields
+        //friendPtr->getUsername();
+        //friendPtr->getName();
+        //friendPtr->getBio();
+        //draw a line separating friends
+    }
 
     //	    mvwprintw(topDisplay,((y-4)*.25)+7,2, "%s ", name.c_str()); 
     //	    centerText(topDisplay, ((y-4)*.25)+3, "Sorry you have no friends");
 
-
-
     wrefresh(topBox);
     wrefresh(topDisplay);
     refresh();
 
     getch();
-    getch();
-
-
-
 }
 
 /* Add friend screen allows the user to search through friends

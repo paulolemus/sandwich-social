@@ -149,13 +149,13 @@ GUI::Type GUI::loginScreen() {
         returnOption = sandwich::GUI::Type::LOGOUT;
     }
     // Check if the user exists in the map or the tree
-    else if(userMap.find(sandwich::User::lowercaseify(loginName)) != userMap.end()){
+    else if(userMap.find(sandwich::User::lowercaseify(loginName)) != userMap.end()) {
 
         currUser = userMap[sandwich::User::lowercaseify(loginName)];
         returnOption = sandwich::GUI::Type::HOME;
     }
     // If not found, then allow user to create an account
-    else{
+    else {
         werase(mainWindow);
         std::string newusrIntro = "Thanks for joining Sandwich Social ";
 

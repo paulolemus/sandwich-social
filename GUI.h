@@ -380,7 +380,7 @@ void GUI::addFriendScreen() {
 	wrefresh(topWindow);
 	wrefresh(inputWindow);
 
-   // Populate a new Trie with the friends of just this user
+    // Populate a new Trie with the friends of just this user
     sandwich::Trie<const sandwich::User*> friendTrie;
     auto friendList = currUser->getFriends();
     for(auto person : friendList) {
@@ -388,24 +388,22 @@ void GUI::addFriendScreen() {
         friendTrie.store(person->getName(),     person);
     }
 
-
     
     // Populate a new Trie with the strangers to this user
     std::string username;
     std::string name;
     sandwich::Trie<const sandwich::User*> strangerTrie;
-    //int i =0; for debugging
+    int i =0; //for debugging
     sandwich::User* tempUser;
     //sandwich::Trie<const sandwich::User*> friendTrie;
 
 
     for (auto it = userMap.begin(); it != userMap.end(); it++){
-        if(it->first == currUser->getUsername()) it++; //skip current user
         username = it->first;
         name = it->second->getName();
         auto usernameMatches = friendTrie.getComplete(username);
         auto nameMatches = friendTrie.getComplete(name);
-        if (usernameMatches.size()<1 && nameMatches.size()<1){
+        if (usernameMatches.size()<1 && nameMatches.size()<1 && username !=currUser->getUsername()){
             //mvwprintw(topWindow, 16+i, 0, "Username: %s", username.c_str());       
             //mvwprintw(topWindow, 16+i, 30, "Name: %s", name.c_str()); 
             //i ++;
@@ -419,17 +417,9 @@ void GUI::addFriendScreen() {
         //    mvwprintw(topWindow, 25+i, 0, "found %s", username.c_str());
         //}
     }
-    
-    
+
     wrefresh(topWindow);
-    getch();
-
     
-   
-    
-
-    
-
     // Get all user input and populate the topWindow with user matches    
     std::string usernameInput;
     std::string border;
@@ -1057,12 +1047,12 @@ void GUI::print_menu(WINDOW *w, int h, int n, std::string s[],int d){
 void GUI::memberListSetup(){
     //create a start user for testing
     std::string username = "jack";
-    sandwich::User* tester = new sandwich::User(username, "name", "bio"); 
+    sandwich::User* tester = new sandwich::User("jack", "name", "bio"); 
     //create insert the username into the Map paired with the tester
     userMap.insert({tester->getLower(), tester});
     //store the user in the trie by its user name
-    trie.store(tester->getUsername(), tester); 
-    trie.store(tester->getName(),     tester); 
+    trie.store("jack", tester); 
+    //trie.store(tester->getName(),     tester); 
 
     sandwich::User* friend1 = new sandwich::User("fred", "Freddy G", "I love singing!");
     userMap.insert({friend1->getLower(), friend1});
@@ -1071,16 +1061,6 @@ void GUI::memberListSetup(){
     sandwich::User* friend2 = new sandwich::User("leroy", "LeRoy B", "I'm the real OG");
     userMap.insert({friend2->getLower(), friend2});
     trie.store(friend2->getUsername(), friend2);
-
-
-    tester->addFriend(friend1);
-    tester->addFriend(friend2);
-    tester->addFriend(new sandwich::User("test1", "tester1", "sdgsdfbsdf"));
-    tester->addFriend(new sandwich::User("test2", "tester2", "sddfdfbsdf"));
-    tester->addFriend(new sandwich::User("test3", "tester3", "sdgsdfbdsv"));
-    tester->addFriend(new sandwich::User("test4", "tester4", "sdgsdfbsds"));
-    tester->addFriend(new sandwich::User("test5", "tester5", "sdgsdfbdgs"));
-    tester->addFriend(new sandwich::User("test6", "tester6", "sdsasdfbsdf"));
 
     sandwich::User* tester2 = new sandwich::User("becky", "Rebecca L", "Becky with the good hair"); 
     userMap.insert({tester2->getLower(), tester2});
@@ -1091,7 +1071,41 @@ void GUI::memberListSetup(){
     trie.store(friend3->getUsername(), friend3);
 
     tester2->addFriend(friend1);
-    tester2->addFriend(friend3); 
+    tester2->addFriend(friend3);
+
+
+    // LOTS OF RANDOM non-friends FOR THE NETWORK
+    sandwich::User* user1 = new sandwich::User("carol", "Carolina Smith", "I secretly a cat lady");
+    userMap.insert({user1->getLower(), user1});
+    trie.store(user1->getUsername(), user1);
+
+    sandwich::User* user2 = new sandwich::User("jemima", "Aunt Jemima", "I'll creep on your page and tell you parents about everything you post but I make delicious pancakes");
+    userMap.insert({user2->getLower(), user2});
+    trie.store(user1->getUsername(), user2);
+
+    sandwich::User* user3 = new sandwich::User("thepitt", "Brad Pitt", "I'm getting old but I'm still a  #totalbabe");
+    userMap.insert({user3->getLower(), user3});
+    trie.store(user3->getUsername(), user3);
+
+    sandwich::User* user4 = new sandwich::User("saltbae", "Nusaret", "I'm instafamous #saltlife");
+    userMap.insert({user4->getLower(), user4});
+    trie.store(user4->getUsername(), user4);
+
+    tester->addFriend(friend1);
+    tester->addFriend(friend2);
+    tester->addFriend(user1);
+    tester->addFriend(user2);
+    tester->addFriend(user3);
+    tester->addFriend(user4);
+    tester->addFriend(new sandwich::User("test1", "tester1", "sdgsdfbsdf"));
+    tester->addFriend(new sandwich::User("test2", "tester2", "sddfdfbsdf"));
+    tester->addFriend(new sandwich::User("test3", "tester3", "sdgsdfbdsv"));
+    tester->addFriend(new sandwich::User("test4", "tester4", "sdgsdfbsds"));
+    tester->addFriend(new sandwich::User("test5", "tester5", "sdgsdfbdgs"));
+    tester->addFriend(new sandwich::User("test6", "tester6", "sdsasdfbsdf"));
+    
+
+
 }
 
 void GUI::checkScreenSize(){

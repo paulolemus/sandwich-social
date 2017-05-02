@@ -81,7 +81,13 @@ TEST(FileIO, readfriends){
 	
 }
 
+TEST(FileIO, writeusers){
+	
+	sandwich::FileIO f1(inputUserFile,inputFriendsFile);
+	sandwich::User* U1 = new User("","","");
+	f1.writeUser(U1);
 
+}
 
 
 int main(int argc, char** argv){

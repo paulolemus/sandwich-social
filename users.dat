@@ -2,8 +2,6 @@ username: pauloasdf
 name    : Paulo Lemus
 bio     : Everytime I turn a corner I take an L.
 
-START_POSTS
-
 POST: "That moment when peeing feels so good you start crying"
 TIME: timestamp here
 
@@ -13,8 +11,6 @@ username: jessieG
 name    : Jessie G
 bio     : Hippy life | Yo yo dawg | 920
 
-START_POSTS
-
 POST: Sup sup yo yo yo yo yo yo I got this freeesh mixtape hit up my soundcloud jessieG
 TIME: timestamp here
 
@@ -23,8 +19,6 @@ END_POSTS
 username: YamaSama
 name    : Matt Y
 bio     : Anime wo suuuuugoi desu nee
-
-START_POSTS
 
 POST: I prayed and then jesus took the wheel
 TIME: timestamp here

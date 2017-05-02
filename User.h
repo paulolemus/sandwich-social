@@ -66,7 +66,7 @@ public:
     void addPost   (const std::string& post);
     void addPost   (const Post& post);
     void removePost(const Post& post);
-    std::vector<sandwich::Post> getPosts();
+    std::vector<sandwich::Post> getPosts() const;
 
     // Friend operations
     bool addFriend   (const User* user);
@@ -128,7 +128,9 @@ void User::removePost(const Post& post) {
     }
 }
 
-std::vector<sandwich::Post> User::getPosts() { return posts; }
+std::vector<sandwich::Post> User::getPosts() const { 
+    return posts; 
+}
 
 
 // Check if we already have this friend. If we do,

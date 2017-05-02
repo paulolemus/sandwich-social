@@ -20,7 +20,7 @@
 //#include "FileIO.h"
 #include "GUI.h"
 
-int main(int argc, char** argv) {
+int main() {
 
     /* userMap will hold usernames as keys and User* as values.
      * The trie is used for autocompletion and User* retrieval.

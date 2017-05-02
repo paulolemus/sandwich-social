@@ -118,7 +118,6 @@ GUI::Type GUI::loginScreen() {
 
     wcolor_set(inputWindow, 2, NULL);
     wbkgd(inputWindow,COLOR_PAIR(1));
-    wmove(inputWindow, 0,0);
     centerText(mainWindow, (y - 4) * 0.25, "WELCOME TO SANDWICH SOCIAL"); 
     centerText(mainWindow, (y - 4) * 0.5, "Input your username to login or start a new account"); 	
 
@@ -146,34 +145,34 @@ GUI::Type GUI::loginScreen() {
     }
     // If not found, then allow user to create an account
     else {
+        // Initialize new windows used in the account creation screen
         werase(mainWindow);
-        std::string newusrIntro = "Thanks for joining Sandwich Social ";
+        WINDOW* nameWindow = newwin(1, 30, centerY(mainWindow) + 4, centerX(mainWindow) - 7);
+        WINDOW* bioWindow  = newwin(4, 50, (y - 4) * 0.75 + 6, centerX(mainWindow) - 15); 
+        wbkgd(nameWindow, COLOR_PAIR(1)); 
+        wbkgd(bioWindow,  COLOR_PAIR(1)); 
 
-        newusrIntro += loginName;
+        // Draw all account creations strings to screen
+        std::string newusrIntro = "Thanks for joining Sandwich Social " + loginName;
         centerText(mainWindow, (y - 4) * 0.25, newusrIntro); 
         centerText(mainWindow, (y - 4) * 0.25 + 1, "Input your information below: "); 	
-
-        mvwprintw(mainWindow, centerY(mainWindow) + 2, centerX(mainWindow) - 20, "Name: ");
-        WINDOW* nameWindow = newwin(1, 30, centerY(mainWindow) + 4, centerX(mainWindow) - 7);
-        wbkgd(nameWindow, COLOR_PAIR(1)); 
-
         centerText(mainWindow, (y - 4) * 0.75, "Short Bio (Max 100 characters): ");
-        WINDOW* bioWindow = newwin(4, 50, (y - 4) * 0.75 + 6, centerX(mainWindow) - 15); 
-        wbkgd(bioWindow, COLOR_PAIR(1)); 
-
+        mvwprintw(mainWindow, centerY(mainWindow) + 2, centerX(mainWindow) - 20, "Name: ");
         wmove(nameWindow, 0, 0);
+
+        // Update terminal
         wrefresh(mainWindow); 
         wrefresh(bioWindow);
         wrefresh(nameWindow);
 
+        // Get name from user input
         std::string nameString = userInput(nameWindow, 26, false); 
-        wrefresh(nameWindow); 
-        wrefresh(mainWindow); 
-        wrefresh(nameWindow); 
-        wmove(bioWindow, 0, 0); 
-        wrefresh(bioWindow); 
+        wrefresh(mainWindow);
+        wrefresh(nameWindow);
+        wmove(bioWindow, 0, 0);
+
+        // Get bio from user input
         std::string bioString = userInput(bioWindow, 104, false);
-        //set bio
 
         // Add a new user with the obtained information
         if(sandwich::User::validateStr(loginName)  && 
@@ -189,7 +188,6 @@ GUI::Type GUI::loginScreen() {
         else {
             returnOption = sandwich::GUI::Type::LOGOUT;
         }
-
         delwin(nameWindow);
         delwin(bioWindow);
     } // end else
@@ -215,6 +213,7 @@ GUI::Type GUI::loginScreen() {
  * 7. Logout
  */
 GUI::Type GUI::homeScreen() {
+
     erase(); 
     refresh(); 
     int x, y; 
@@ -225,14 +224,13 @@ GUI::Type GUI::homeScreen() {
     WINDOW* topDisplay        = newwin(y * 0.625 - 4, x - 14, 2, 7); 
     WINDOW* bottomMenuDisplay = newwin(y * 0.25, x - 10, y * 0.625 + 3, 5); 
     WINDOW* topBox            = newwin(y * 0.625, x - 10, 0, 5); 
-    //create boxes for the box windows
+    // Box, enable arrow keys, draw strings
     box(topBox, 0, 0); 
     box(bottomMenuDisplay, 0, 0); 
-    //setup keypad and refresh all windows
     keypad(bottomMenuDisplay, true); 
-
     centerText(topDisplay, 3, "Welcome to your Homescreen");
 
+    // Draw all changes to screen
     wrefresh(topBox); 
     wrefresh(bottomMenuDisplay); 
     wrefresh(topDisplay); 
@@ -255,12 +253,12 @@ void GUI::postWallScreen() {
 
     //top and bottom windows based on the get max returns
     WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
+    WINDOW* postWin    = newwin(4, 50, (y - 4) * 0.25, centerX(topDisplay) - 15);
+    wbkgd(postWin, COLOR_PAIR(1)); 
     wclear(topDisplay);
 
     centerText(topDisplay, 3, "Write your new post (Max characters: 100):");
-    WINDOW* postWin = newwin(4, 50, (y - 4) * 0.25, centerX(topDisplay) - 15);
     wmove(postWin, 0, 0);
-    wbkgd(postWin, COLOR_PAIR(1)); 
 
     wrefresh(topDisplay);
     wrefresh(postWin); 
@@ -275,7 +273,6 @@ void GUI::postWallScreen() {
     mvwprintw(topDisplay,(y - 4) * 0.25 + 9, 2, "Press any key to continue"); 
     wrefresh(topDisplay);
     refresh();
-
     getch();
 }
 
@@ -311,11 +308,11 @@ void GUI::viewFriendsScreen() {
     }
     // populate all friends to screen
     else {
-        int yDisp, xDisp, index, yMax;
+        unsigned int yDisp, xDisp, index, yMax;
         getmaxyx(topDisplay, yDisp, xDisp);
         std::vector<std::string> userData;
         std::string borderStr;
-        for(int i = 0; i < xDisp; ++i) {
+        for(unsigned int i = 0; i < xDisp; ++i) {
             borderStr += '-';
         }
 
@@ -335,7 +332,7 @@ void GUI::viewFriendsScreen() {
             werase(topDisplay);
             centerText(topDisplay, 0, "Friends List");
             centerText(topDisplay, 1, "Use arrows to scroll, 'q' to quit");
-            for(int i = 0; i < yMax; ++i) {
+            for(unsigned int i = 0; i < yMax; ++i) {
                 mvwprintw(topDisplay, i + 2, 0, "%s", userData[index + i].c_str());
             }
             refresh();
@@ -520,7 +517,7 @@ void GUI::viewFriendScreen() {
         }
 
         int input, index = 0;
-        int yMax  = postInfo.size() > y - 5 ? y - 5 : postInfo.size();
+        int yMax = postInfo.size() > y - 5 ? y - 5 : postInfo.size();
         do {
             // Print everything to screen
             werase(topDisplay);
@@ -611,38 +608,136 @@ void GUI::editProfileScreen() {
 /* This screen allows you to remove a friend by username
 */
 void GUI::removeFriendScreen() {
-    erase(); 
-    refresh(); 
-    int x, y; 
-    getmaxyx(stdscr, y, x); 
-    //top and bottom windows based on the get max returns
-    WINDOW * topDisplay = newwin((y*.625)-4, x-14, 2, 7); 
-    WINDOW * bottomMenuDisplay = newwin(y*.25, x-10, (y*.625)+3, 5); 
-    //box for the top window
-    WINDOW * topBox = newwin((y*.625), x-10,0, 5); 
-    //create boxes for the box windows
-    box(topBox, 0,0); 
-    box(bottomMenuDisplay, 0,0); 
-    //setup keypad and refresh all windows
-    keypad(bottomMenuDisplay, true); 
-    wrefresh(topBox); 
-    wrefresh(bottomMenuDisplay); 
-    refresh(); 
-    wrefresh(topDisplay); 
-    int choice = menu_setup(bottomMenuDisplay, y*.25, mainMenu, n_main);
 
-    centerText(topDisplay, (y-4)*.25, "Which friend would you like to remove?");
-    wrefresh(topBox);
-    wrefresh(topDisplay);
-    refresh();
+	int x, y; 
+	getmaxyx(stdscr, y, x); 
+	curs_set(1);
 
+	// Create Configure the top box which is used to take user input
+	WINDOW* topWindow   = newwin(y * 0.625 - 4, x - 14, 2, 7);
+	WINDOW* inputWindow = newwin(1, 80, 3, centerX(topWindow) - 35);
+    WINDOW* dataWindow  = newwin(y * 0.625 - 8, x - 14, 2 + 4, 7);
+    getmaxyx(topWindow, y, x);
+	wbkgd(inputWindow, COLOR_PAIR(1));
+	wmove(inputWindow, 0, 0);
 
-    // Pseudocode
-    // 1. Enter search bar
-    // 2. on enter, get users vector of friends and see if any
-    //    have a matching username.
-    // 3. if there is a match, ask for confirmation and then remove.
-    //    Otherwise, do nothing.
+	centerText(topWindow, 0, "Enter friend's name below");
+	refresh();
+	wrefresh(topWindow);
+	wrefresh(inputWindow);
+
+    // Populate a new Trie with the friends of just this user
+    sandwich::Trie<const sandwich::User*> friendTrie;
+    auto friendList = currUser->getFriends();
+    for(auto person : friendList) {
+        friendTrie.store(person->getUsername(), person);
+        friendTrie.store(person->getName(),     person);
+    }
+
+    // Get all user input and populate the topWindow with user matches    
+    std::string usernameInput;
+    std::string border;
+    for(int i = 0; i < getmaxx(dataWindow); ++i) border += '-';
+    int xMin = 0, xMax = 79, xCurr = 0;
+
+    int ch = wgetch(inputWindow);
+    while(ch != 10) { // 10 == "Enter"
+
+        // User input begin
+        if(ch == 27) { // esc
+            // TODO
+        }
+        else if(ch == 127) { // delete
+            if(xCurr > xMin) {
+                mvwaddch(inputWindow, 0, --xCurr, ' ');
+                if(usernameInput.size() > 0) usernameInput.pop_back();
+            }
+        }
+        else {
+            if(xCurr < xMax) {
+                mvwaddch(inputWindow, 0, xCurr++, ch);
+                usernameInput += ch;
+            }
+        }
+        // User input end
+        
+        // Match search begin
+        werase(dataWindow);
+        auto matches = friendTrie.getComplete(usernameInput);
+        if(matches.size() < 1) {
+            centerText(dataWindow, getmaxy(dataWindow) / 2, "No matches for your search!");
+        }
+        else {
+
+            // Print all user data to screen
+            int          line   = 0;
+            unsigned int mIndex = 0;
+            while(line < getmaxy(dataWindow) && mIndex < matches.size()) {
+                mvwprintw(dataWindow, line, 0, border.c_str());
+                line++;
+                if(line < getmaxy(dataWindow) && mIndex < matches.size()) {
+                    mvwprintw(dataWindow, line, 0, "Username: %s", matches[mIndex]->getUsername().c_str());
+                }
+                line++;
+                if(line < getmaxy(dataWindow) && mIndex < matches.size()) {
+                    mvwprintw(dataWindow, line, 0, "Name    : %s", matches[mIndex]->getName().c_str());
+                }
+                line++;
+                if(line < getmaxy(dataWindow) && mIndex < matches.size()) {
+                    mvwprintw(dataWindow, line, 0, "Bio     : %s", matches[mIndex]->getBio().c_str());
+                }
+                line++;
+                mIndex++;
+            }
+        }
+        // Match search end
+        wmove(inputWindow, 0, xCurr);
+        refresh();
+        wrefresh(dataWindow);
+        wrefresh(inputWindow);
+        ch = wgetch(inputWindow);
+    } // end while
+
+    // Delete friend if exists
+    wclear(dataWindow);
+    auto possibleUsers = friendTrie.get(usernameInput);
+    if(possibleUsers.size() < 1) {
+        centerText(dataWindow, getmaxy(dataWindow) / 2, "Could not find the friend");
+        centerText(dataWindow, getmaxy(dataWindow) / 2 + 1, "Press any key to continue");
+        wrefresh(dataWindow);
+        wgetch(dataWindow);
+    }
+    else {
+        // Convert usernameInput to lowercase
+        usernameInput = sandwich::User::lowercaseify(usernameInput);
+
+        // Delete the friend
+        bool isDeleted = false;
+        for(auto friendPtr : possibleUsers) {
+            if(friendPtr->getLower() == usernameInput) {
+                currUser->removeFriend(friendPtr);
+                isDeleted = true;
+            }
+        }
+        
+        if(isDeleted) {
+            centerText(dataWindow, getmaxy(dataWindow) / 2, usernameInput + " has been removed");
+            centerText(dataWindow, getmaxy(dataWindow) / 2 + 1, "Press any key to continue");
+            wrefresh(dataWindow);
+            wgetch(dataWindow);
+        }
+        else {
+            centerText(dataWindow, getmaxy(dataWindow) / 2, "Something went wrong");
+            centerText(dataWindow, getmaxy(dataWindow) / 2 + 1, "Press any key to continue");
+            wrefresh(dataWindow);
+            wgetch(dataWindow);
+        }
+    }
+    
+    // cleanup
+    delwin(topWindow);
+    delwin(inputWindow);
+    delwin(dataWindow);
 }
 
 void GUI::testFunc() {
@@ -710,9 +805,6 @@ int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
     }
     return 0; 
 }
-
-
-
 
 std::string GUI::userInput(WINDOW * w, int max, bool trieBool){
     std::string str;

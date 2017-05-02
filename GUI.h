@@ -447,7 +447,7 @@ void GUI::addFriendScreen() {
 
 	int x, y; 
 	getmaxyx(stdscr, y, x); 
-	curs_set(0);
+	curs_set(1);
 
 	// Create Configure the top box which is used to take user input
 	WINDOW* topWindow   = newwin(y * 0.625 - 4, x - 14, 2, 7);
@@ -460,7 +460,6 @@ void GUI::addFriendScreen() {
 	centerText(topWindow, 0, "Enter friend's USERNAME below");
 	refresh();
 	wrefresh(topWindow);
-	curs_set(1);
     wrefresh(inputWindow);
 
     // Populate a new Trie with the friends of just this user
@@ -613,51 +612,114 @@ void GUI::viewFriendScreen() {
 	getmaxyx(stdscr, y, x); 
 	curs_set(1);
 
-	// Create windows to be used for user input and display
-	WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
-	WINDOW* nameWindow = newwin(1, 30, centerY(topDisplay) + 4, centerX(topDisplay) - 7);
-	wbkgd(nameWindow, COLOR_PAIR(1)); 
-	wmove(nameWindow, 0, 0);
-	keypad(topDisplay, true);
-	centerText(topDisplay, (y - 4) * 0.25, "Enter friend's username below");
+	// Create Configure the top box which is used to take user input
+	WINDOW* topWindow   = newwin(y * 0.625 - 4, x - 14, 2, 7);
+	WINDOW* inputWindow = newwin(1, 80, 3, centerX(topWindow) - 35);
+    WINDOW* dataWindow  = newwin(y * 0.625 - 8, x - 14, 2 + 4, 7);
+    getmaxyx(topWindow, y, x);
+	wbkgd(inputWindow, COLOR_PAIR(1));
+	wmove(inputWindow, 0, 0);
+
+	centerText(topWindow, 0, "Enter friend's USERNAME below");
 	refresh();
-	wrefresh(topDisplay);
-	wrefresh(nameWindow);
+	wrefresh(topWindow);
+	wrefresh(inputWindow);
 
-    // Get user input and check if we are friends with the user
-    auto friends = currUser->getFriends();
-    std::string inputUsername = userInput(nameWindow, 26, false);
-
-    // Convert the username string to lowercase
-    for(unsigned int i = 0; i < inputUsername.size(); ++i) {
-        if(inputUsername[i] >= 'A' && inputUsername[i] <= 'Z') {
-            inputUsername[i] = inputUsername[i] + 32;
-        }
+    // Populate a new Trie with the friends of just this user
+    sandwich::Trie<const sandwich::User*> friendTrie;
+    auto friendList = currUser->getFriends();
+    for(auto person : friendList) {
+        friendTrie.store(person->getUsername(), person);
+        friendTrie.store(person->getName(),     person);
     }
-    
-    // Locate friend in the friends vector
+
+    // Get all user input and populate the topWindow with user matches    
+    std::string usernameInput;
+    std::string border;
+    for(int i = 0; i < getmaxx(dataWindow); ++i) border += '-';
+    int xMin = 0, xMax = 79, xCurr = 0;
+
+    int ch = wgetch(inputWindow);
+    while(ch != 10) { // 10 == "Enter"
+
+        // User input begin
+        if(ch == 27) { // esc
+            // TODO
+        }
+        else if(ch == 127) { // delete
+            if(xCurr > xMin) {
+                mvwaddch(inputWindow, 0, --xCurr, ' ');
+                if(usernameInput.size() > 0) usernameInput.pop_back();
+            }
+        }
+        else {
+            if(xCurr < xMax) {
+                mvwaddch(inputWindow, 0, xCurr++, ch);
+                usernameInput += ch;
+            }
+        }
+        // User input end
+        
+        // Match search begin
+        werase(dataWindow);
+        auto matches = friendTrie.getComplete(usernameInput);
+        if(matches.size() < 1) {
+            centerText(dataWindow, getmaxy(dataWindow) / 2, "No matches for your search!");
+        }
+        else {
+
+            // Print all user data to screen
+            int          line   = 0;
+            unsigned int mIndex = 0;
+            while(line < getmaxy(dataWindow) && mIndex < matches.size()) {
+                mvwprintw(dataWindow, line, 0, border.c_str());
+                line++;
+                if(line < getmaxy(dataWindow) && mIndex < matches.size()) {
+                    mvwprintw(dataWindow, line, 0, "Username: %s", matches[mIndex]->getUsername().c_str());
+                }
+                line++;
+                if(line < getmaxy(dataWindow) && mIndex < matches.size()) {
+                    mvwprintw(dataWindow, line, 0, "Name    : %s", matches[mIndex]->getName().c_str());
+                }
+                line++;
+                if(line < getmaxy(dataWindow) && mIndex < matches.size()) {
+                    mvwprintw(dataWindow, line, 0, "Bio     : %s", matches[mIndex]->getBio().c_str());
+                }
+                line++;
+                mIndex++;
+            }
+        }
+        // Match search end
+        wmove(inputWindow, 0, xCurr);
+        refresh();
+        wrefresh(dataWindow);
+        wrefresh(inputWindow);
+        ch = wgetch(inputWindow);
+    } // end while
+
+    // Get the user pointer
+    usernameInput = sandwich::User::lowercaseify(usernameInput);
     const sandwich::User* theFriend = nullptr;
-    for(unsigned int i = 0; i < friends.size(); ++i) {
-        if(friends[i]->getLower() == inputUsername) {
-            theFriend = friends[i];
-            i = friends.size();
+    auto possibleFriends = friendTrie.get(usernameInput);
+    for(unsigned int i = 0; i < possibleFriends.size(); ++i) {
+        if(possibleFriends[i]->getLower() == usernameInput) {
+            theFriend = possibleFriends[i];
+            i = possibleFriends.size();
         }
     }
-
-    getmaxyx(topDisplay, y, x);
 
     // Display corresponding results
     if(theFriend == nullptr) {
-        centerText(topDisplay, y * 0.7, "Friend not found :(");
-        centerText(topDisplay, y * 0.7 + 1, "Press any key to continue");
-        wrefresh(topDisplay);
-        wrefresh(nameWindow);
+        centerText(dataWindow, y * 0.7, "Friend not found :(");
+        centerText(dataWindow, y * 0.7 + 1, "Press any key to continue");
+        wrefresh(dataWindow);
         getch();
     }
     else {
         // initialize some information to be used in loop
+        werase(topWindow);
         curs_set(0);
-        keypad(topDisplay, true);
+        keypad(topWindow, true);
 
         std::string border;
         for(int i = 0; i < x; ++i) border += '-';
@@ -675,33 +737,33 @@ void GUI::viewFriendScreen() {
         int yMax = postInfo.size() > y - 5 ? y - 5 : postInfo.size();
         do {
             // Print everything to screen
-            werase(topDisplay);
-            wattron(topDisplay, COLOR_PAIR(2));
-            wattron(topDisplay, A_REVERSE);
-            centerText(topDisplay, 0, "Use arrows to scroll, 'q' to quit");
-            centerText(topDisplay, 2, "-------------------- User Info  --------------------");
-            mvwprintw(topDisplay, 3, 0, border.c_str());
-            wattroff(topDisplay, COLOR_PAIR(2));
-            wattron(topDisplay, COLOR_PAIR(1));
-            mvwprintw(topDisplay, 4, 0, "Username: %s", theFriend->getUsername().c_str());
-            mvwprintw(topDisplay, 5, 0, "Name    : %s", theFriend->getName().c_str());
-            mvwprintw(topDisplay, 6, 0, "Bio     : %s", theFriend->getBio().c_str());
-            wattroff(topDisplay, COLOR_PAIR(1));
-            wattron(topDisplay, COLOR_PAIR(2));
-            centerText(topDisplay, 8, "-------------------- Posts  --------------------");
-            mvwprintw(topDisplay, 9, 0, border.c_str());
-             wattroff(topDisplay, COLOR_PAIR(2));
-            wattron(topDisplay, COLOR_PAIR(1));
+            werase(topWindow);
+            wattron(topWindow, COLOR_PAIR(2));
+            wattron(topWindow, A_REVERSE);
+            centerText(topWindow, 0, "Use arrows to scroll, 'q' to quit");
+            centerText(topWindow, 2, "-------------------- User Info  --------------------");
+            mvwprintw(topWindow, 3, 0, border.c_str());
+            wattroff(topWindow, COLOR_PAIR(2));
+            wattron(topWindow, COLOR_PAIR(1));
+            mvwprintw(topWindow, 4, 0, "Username: %s", theFriend->getUsername().c_str());
+            mvwprintw(topWindow, 5, 0, "Name    : %s", theFriend->getName().c_str());
+            mvwprintw(topWindow, 6, 0, "Bio     : %s", theFriend->getBio().c_str());
+            wattroff(topWindow, COLOR_PAIR(1));
+            wattron(topWindow, COLOR_PAIR(2));
+            centerText(topWindow, 8, "-------------------- Posts  --------------------");
+            mvwprintw(topWindow, 9, 0, border.c_str());
+             wattroff(topWindow, COLOR_PAIR(2));
+            wattron(topWindow, COLOR_PAIR(1));
             for(int i = 0; i < yMax; ++i) {
-                mvwprintw(topDisplay, i + 11, 0, "%s", postInfo[index + i].c_str());
+                mvwprintw(topWindow, i + 11, 0, "%s", postInfo[index + i].c_str());
             }
-            wattroff(topDisplay, COLOR_PAIR(1));
-            wattroff(topDisplay, A_REVERSE);
+            wattroff(topWindow, COLOR_PAIR(1));
+            wattroff(topWindow, A_REVERSE);
             refresh();
-            wrefresh(topDisplay);
+            wrefresh(topWindow);
 
             // Get next character for scrolling
-            input = wgetch(topDisplay);
+            input = wgetch(topWindow);
             switch(input) {
                 case KEY_UP: // key up
                     if(index > 0) index--; 
@@ -715,8 +777,9 @@ void GUI::viewFriendScreen() {
         } while(input != 'q');
     }
     // Cleanup
-    delwin(topDisplay);
-    delwin(nameWindow);
+    delwin(topWindow);
+    delwin(inputWindow);
+    delwin(dataWindow);
 }
 
 /* This screen will allow you to edit your bio to fit your liking

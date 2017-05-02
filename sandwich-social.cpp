@@ -34,8 +34,9 @@ int main() {
 
     sandwich::User* currUser;
 
-
     sandwich::GUI gui(userMap, trie, currUser);
+    gui.checkScreenSize();
+    gui.memberListSetup();
 
     sandwich::GUI::Type nextScreen = gui.loginScreen();
 

@@ -20,6 +20,7 @@
 #include <string>
 #include "User.h"
 #include "Trie.h"
+#include <ctime>
 
 namespace sandwich {
 
@@ -89,7 +90,7 @@ GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
     cbreak();
     start_color(); //makes colors availiable for the GUI
     init_pair(1,COLOR_BLACK,COLOR_CYAN);// black letters with Cyan background
-    init_pair(2,COLOR_RED,COLOR_WHITE); //red letters with white background
+    init_pair(2,COLOR_BLACK,COLOR_GREEN); //red letters with white background
 }
 
 GUI::~GUI() {
@@ -104,8 +105,8 @@ GUI::~GUI() {
 GUI::Type GUI::loginScreen() {
 
     // Guard against small screen, create initial member
-    checkScreenSize(); 
-    memberListSetup(); 
+    //checkScreenSize(); 
+    //memberListSetup(); 
 
     int y, x; 
     getmaxyx(stdscr, y, x); //returns the max x & y values of the screen  
@@ -213,12 +214,15 @@ GUI::Type GUI::loginScreen() {
  * 7. Logout
  */
 GUI::Type GUI::homeScreen() {
+//The homescreen will show the latest post from all of the user's friends
 
-    erase(); 
-    refresh(); 
+    erase();
+    refresh();
     int x, y; 
     getmaxyx(stdscr, y, x); 
     curs_set(0);
+
+    // Create windows to be used for user input and display
 
     //top and bottom windows based on the get max returns
     WINDOW* topDisplay        = newwin(y * 0.625 - 4, x - 14, 2, 7); 
@@ -228,7 +232,7 @@ GUI::Type GUI::homeScreen() {
     box(topBox, 0, 0); 
     box(bottomMenuDisplay, 0, 0); 
     keypad(bottomMenuDisplay, true); 
-    centerText(topDisplay, 3, "Welcome to your Homescreen");
+	keypad(topDisplay, true);
 
     // Draw all changes to screen
     wrefresh(topBox); 
@@ -236,10 +240,81 @@ GUI::Type GUI::homeScreen() {
     wrefresh(topDisplay); 
     refresh();  
 
+    print_menu(bottomMenuDisplay, 1, n_main, mainMenu, y/4); 
+    wrefresh(bottomMenuDisplay);
+    //int choice = menu_setup(bottomMenuDisplay, y * 0.25, mainMenu, n_main);
+
+
+    auto friends = currUser->getFriends();
+    //std::string inputUsername = userInput(nameWindow, 26, false);
+    //pulled from delet a friend
+    std::vector<std::string> postInfo;        
+    std::vector<sandwich::Post> posts;
+    int yTop, xTop;
+    getmaxyx(topDisplay, yTop, xTop);
+    std::string border;
+    for(int i = 0; i < xTop; ++i) border += '-';
+
+    // Locate friend in the friends vector
+    const sandwich::User* theFriend = nullptr;
+    for(unsigned int i = 0; i < friends.size(); ++i) {
+        theFriend = friends[i];
+        posts = theFriend->getPosts();
+        int j = posts.size()-1;
+        postInfo.push_back("At " + posts[j].getTime() + ", " + theFriend->getUsername() + " said:");
+        postInfo.push_back(posts[j].getMsg());
+        postInfo.push_back(border);
+     
+    }
+
+ 
+    int input, index = 0;
+    int yMax = postInfo.size() > y - 5 ? y - 5 : postInfo.size();
+    do {
+        // Print everything to screen
+        wattron(topDisplay, A_REVERSE);
+        wattron(topDisplay, COLOR_PAIR(2)); 
+        centerText(topDisplay, 0, "Use arrows to scroll or press 'q' to select from the bottom menu");
+        centerText(topDisplay, 3, "Welcome to your Homescreen");
+        centerText(topDisplay, 4, "-------------------- Posts  --------------------");
+        mvwprintw(topDisplay, 5, 0, border.c_str());
+        wattroff(topDisplay, COLOR_PAIR(2)); 
+        wattron(topDisplay, COLOR_PAIR(1)); 
+        for(int i = 0; i < yMax; ++i) {
+            mvwprintw(topDisplay, i + 7, 0, "%s", postInfo[index + i].c_str());
+        }
+        wattroff(topDisplay, COLOR_PAIR(1));
+        wattroff(topDisplay, A_REVERSE);
+        refresh();
+        wrefresh(topDisplay);
+
+        // Get next character for scrolling
+        input = wgetch(topDisplay);
+        switch(input) {
+            case KEY_UP: // key up
+                if(index > 0) index--; 
+                break;
+            case KEY_DOWN: // key down
+                if(index + yMax < postInfo.size()) index++;
+                break;
+            default:
+                break;
+        }
+    } while(input != 'q');
+
+   
+
+    wmove(bottomMenuDisplay, 0,0);
+    curs_set(1); 
+    refresh();
+
     int choice = menu_setup(bottomMenuDisplay, y * 0.25, mainMenu, n_main);
     return submit_selection(bottomMenuDisplay, choice); 
-}
 
+
+    // Cleanup
+    delwin(topDisplay);
+}
 
 /* Post to wall screen allows user to write a text post
  * with a cap of 100 characters. This post will appear on
@@ -249,7 +324,7 @@ void GUI::postWallScreen() {
 
     int x, y; 
     getmaxyx(stdscr, y, x); 
-    curs_set(1);
+    curs_set(0);
 
     //top and bottom windows based on the get max returns
     WINDOW* topDisplay = newwin(y * 0.625 - 4, x - 14, 2, 7); 
@@ -259,10 +334,11 @@ void GUI::postWallScreen() {
 
     centerText(topDisplay, 3, "Write your new post (Max characters: 100):");
     wmove(postWin, 0, 0);
-
     wrefresh(topDisplay);
     wrefresh(postWin); 
     refresh();
+    curs_set(1);
+    wrefresh(postWin);
 
     std::string postInput = userInput(postWin, 104, false); 
     sandwich::Post post(postInput);
@@ -271,6 +347,7 @@ void GUI::postWallScreen() {
     mvwprintw(topDisplay,(y - 4) * 0.25 + 6, 2, "At %s, you posted: ", post.getCTime());
     mvwprintw(topDisplay,(y - 4) * 0.25 + 7, 2, "%s", post.getCMsg()); 
     mvwprintw(topDisplay,(y - 4) * 0.25 + 9, 2, "Press any key to continue"); 
+    curs_set(0);
     wrefresh(topDisplay);
     refresh();
     getch();
@@ -365,7 +442,7 @@ void GUI::addFriendScreen() {
 
 	int x, y; 
 	getmaxyx(stdscr, y, x); 
-	curs_set(1);
+	curs_set(0);
 
 	// Create Configure the top box which is used to take user input
 	WINDOW* topWindow   = newwin(y * 0.625 - 4, x - 14, 2, 7);
@@ -374,11 +451,12 @@ void GUI::addFriendScreen() {
     getmaxyx(topWindow, y, x);
 	wbkgd(inputWindow, COLOR_PAIR(1));
 	wmove(inputWindow, 0, 0);
-
+    
 	centerText(topWindow, 0, "Enter friend's USERNAME below");
 	refresh();
 	wrefresh(topWindow);
-	wrefresh(inputWindow);
+	curs_set(1);
+    wrefresh(inputWindow);
 
     // Populate a new Trie with the friends of just this user
     sandwich::Trie<const sandwich::User*> friendTrie;
@@ -393,11 +471,8 @@ void GUI::addFriendScreen() {
     std::string username;
     std::string name;
     sandwich::Trie<const sandwich::User*> strangerTrie;
-    int i =0; //for debugging
+    //int i =0; //for debugging
     sandwich::User* tempUser;
-    //sandwich::Trie<const sandwich::User*> friendTrie;
-
-
     for (auto it = userMap.begin(); it != userMap.end(); it++){
         username = it->first;
         name = it->second->getName();
@@ -510,6 +585,8 @@ void GUI::addFriendScreen() {
         }
     }
     centerText(dataWindow, getmaxy(dataWindow) / 2 + 1, "Press any key to continue");
+   	curs_set(0);
+
     wrefresh(dataWindow);
     refresh();
     wgetch(dataWindow);
@@ -537,7 +614,6 @@ void GUI::viewFriendScreen() {
 	wbkgd(nameWindow, COLOR_PAIR(1)); 
 	wmove(nameWindow, 0, 0);
 	keypad(topDisplay, true);
-
 	centerText(topDisplay, (y - 4) * 0.25, "Enter friend's username below");
 	refresh();
 	wrefresh(topDisplay);
@@ -595,15 +671,27 @@ void GUI::viewFriendScreen() {
         do {
             // Print everything to screen
             werase(topDisplay);
+            wattron(topDisplay, COLOR_PAIR(2));
+            wattron(topDisplay, A_REVERSE);
             centerText(topDisplay, 0, "Use arrows to scroll, 'q' to quit");
-            mvwprintw(topDisplay, 1, 0, border.c_str());
-            mvwprintw(topDisplay, 2, 0, "Username: %s", theFriend->getUsername().c_str());
-            mvwprintw(topDisplay, 3, 0, "Name    : %s", theFriend->getName().c_str());
-            mvwprintw(topDisplay, 4, 0, "Bio     : %s", theFriend->getBio().c_str());
-            mvwprintw(topDisplay, 5, 0, border.c_str());
+            centerText(topDisplay, 2, "-------------------- User Info  --------------------");
+            mvwprintw(topDisplay, 3, 0, border.c_str());
+            wattroff(topDisplay, COLOR_PAIR(2));
+            wattron(topDisplay, COLOR_PAIR(1));
+            mvwprintw(topDisplay, 4, 0, "Username: %s", theFriend->getUsername().c_str());
+            mvwprintw(topDisplay, 5, 0, "Name    : %s", theFriend->getName().c_str());
+            mvwprintw(topDisplay, 6, 0, "Bio     : %s", theFriend->getBio().c_str());
+            wattroff(topDisplay, COLOR_PAIR(1));
+            wattron(topDisplay, COLOR_PAIR(2));
+            centerText(topDisplay, 8, "-------------------- Posts  --------------------");
+            mvwprintw(topDisplay, 9, 0, border.c_str());
+             wattroff(topDisplay, COLOR_PAIR(2));
+            wattron(topDisplay, COLOR_PAIR(1));
             for(int i = 0; i < yMax; ++i) {
-                mvwprintw(topDisplay, i + 5, 0, "%s", postInfo[index + i].c_str());
+                mvwprintw(topDisplay, i + 11, 0, "%s", postInfo[index + i].c_str());
             }
+            wattroff(topDisplay, COLOR_PAIR(1));
+            wattroff(topDisplay, A_REVERSE);
             refresh();
             wrefresh(topDisplay);
 
@@ -799,6 +887,7 @@ void GUI::removeFriendScreen() {
     }
     centerText(dataWindow, getmaxy(dataWindow) / 2 + 1, "Press any key to continue");
     wrefresh(dataWindow);
+    curs_set(0);
     refresh();
     wgetch(dataWindow);
     
@@ -998,7 +1087,7 @@ void GUI::print_menu(WINDOW *w, int h, int n, std::string s[],int d){
     wrefresh(w); 
     } 
 
-    int GUI::menu_setup(WINDOW* w, int d, std::string inputArray[], int n){ 
+int GUI::menu_setup(WINDOW* w, int d, std::string inputArray[], int n){ 
     int choice = 0;
     int h = 1;
     int y, x; 
@@ -1011,9 +1100,9 @@ void GUI::print_menu(WINDOW *w, int h, int n, std::string s[],int d){
         if(choice!=0)break; //user make a choice, break loop
     }
     return choice; 
-    }
+}
 
-    GUI::Type GUI::submit_selection(WINDOW* w, int choice){
+GUI::Type GUI::submit_selection(WINDOW* w, int choice){
     switch(choice){
         case 1:
             return sandwich::GUI::Type::POST_TO_WALL;
@@ -1097,13 +1186,41 @@ void GUI::memberListSetup(){
     tester->addFriend(user2);
     tester->addFriend(user3);
     tester->addFriend(user4);
+    /*
+    //this is giving seg faults because they're not in the map
     tester->addFriend(new sandwich::User("test1", "tester1", "sdgsdfbsdf"));
     tester->addFriend(new sandwich::User("test2", "tester2", "sddfdfbsdf"));
     tester->addFriend(new sandwich::User("test3", "tester3", "sdgsdfbdsv"));
     tester->addFriend(new sandwich::User("test4", "tester4", "sdgsdfbsds"));
     tester->addFriend(new sandwich::User("test5", "tester5", "sdgsdfbdgs"));
     tester->addFriend(new sandwich::User("test6", "tester6", "sdsasdfbsdf"));
+    */
+    //giving the users some posts
+    std::string postInput = "My first default Post" ;
+    sandwich::Post post(postInput);
+    //currUser->addPost(post);    
+    sandwich::User* tempUser;
+    for (auto it = userMap.begin(); it != userMap.end(); it++){
+        tempUser = userMap[it->first];
+        tempUser->addPost(post);
+    }
     
+    time_t now = time(NULL);
+    time_t now2 = time(NULL);
+
+    //delay script
+    while (difftime(now2, now) ==0)  now2 = time(NULL);
+    
+    sandwich::Post post1("OMG I like tacos and pizza");
+    friend1->addPost(post1);
+
+    while (difftime(now2, now) ==0)  now2 = time(NULL);
+    sandwich::Post post2("I can't believe it's not butter");
+    friend2->addPost(post2);
+
+    while (difftime(now2, now) ==0)  now2 = time(NULL);
+    sandwich::Post post3("Soccer game at 10! See you there!");
+    friend1->addPost(post3); 
 
 
 }

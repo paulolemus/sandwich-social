@@ -703,9 +703,6 @@ void GUI::removeFriendScreen() {
     auto possibleUsers = friendTrie.get(usernameInput);
     if(possibleUsers.size() < 1) {
         centerText(dataWindow, getmaxy(dataWindow) / 2, "Could not find the friend");
-        centerText(dataWindow, getmaxy(dataWindow) / 2 + 1, "Press any key to continue");
-        wrefresh(dataWindow);
-        wgetch(dataWindow);
     }
     else {
         // Convert usernameInput to lowercase
@@ -719,20 +716,16 @@ void GUI::removeFriendScreen() {
                 isDeleted = true;
             }
         }
-        
         if(isDeleted) {
             centerText(dataWindow, getmaxy(dataWindow) / 2, usernameInput + " has been removed");
-            centerText(dataWindow, getmaxy(dataWindow) / 2 + 1, "Press any key to continue");
-            wrefresh(dataWindow);
-            wgetch(dataWindow);
         }
         else {
             centerText(dataWindow, getmaxy(dataWindow) / 2, "Something went wrong");
-            centerText(dataWindow, getmaxy(dataWindow) / 2 + 1, "Press any key to continue");
-            wrefresh(dataWindow);
-            wgetch(dataWindow);
         }
     }
+    centerText(dataWindow, getmaxy(dataWindow) / 2 + 1, "Press any key to continue");
+    wrefresh(dataWindow);
+    wgetch(dataWindow);
     
     // cleanup
     delwin(topWindow);

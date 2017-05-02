@@ -82,10 +82,24 @@ TEST(FileIO, readfriends){
 }
 
 TEST(FileIO, writeusers){
-	
-	sandwich::FileIO f1(inputUserFile,inputFriendsFile);
-	sandwich::User* U1 = new User("","","");
+	const std::string inputUsertempFile = "usertemp.dat";
+	sandwich::FileIO f1(inputUsertempFile,inputFriendsFile);
+	sandwich::User* U1 = new User("pauloasdf","Paulo Lemus","Everytime I turn a corner I take an L.");
+	sandwich::User* U2 = new User("jessieG","Jessie G","Hippy life | Yo yo dawg | 920");
+	sandwich::User* U3 = new User("YamaSama","Matt Y","Anime wo suuuuugoi desu nee");
 	f1.writeUser(U1);
+	f1.writeUser(U2);
+	f1.writeUser(U3);
+
+
+}
+
+TEST(FileIO, writefriends){
+
+	sandwich::FileIO f1(inputUserFile, inputFriendsFile);
+	f1.writeFriends(U1);
+	f1.writeFriends(U2);
+	f1.writeFriends(U3);
 
 }
 

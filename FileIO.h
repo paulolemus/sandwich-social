@@ -220,8 +220,16 @@ std::vector<std::vector<std::string>> FileIO::readFriends() {
 }
 
 void FileIO::writeUser(const sandwich::User* const user) {
+    
+     std::ofstream myfile;
 
+     if(myfile){
+     
+     }else{
+     	std::cout << "ERROR: FILE NOT FOUND" << std::endl;
+     }
 }
+
 void FileIO::writeFriends(const sandwich::User* const user) {
 
 }

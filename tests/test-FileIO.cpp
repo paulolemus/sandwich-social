@@ -78,7 +78,7 @@ TEST(FileIO, readfriends){
 		}
 	}
 }
-
+/*
 TEST(FileIO, writeusers){
 	
 	const std::string inputUsertempFile = "usertemp.dat";
@@ -185,7 +185,7 @@ TEST(FileIO, writefriends){
 
 }
 
-
+*/
 int main(int argc, char** argv){
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();

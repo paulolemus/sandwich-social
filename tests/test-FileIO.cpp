@@ -77,8 +77,6 @@ TEST(FileIO, readfriends){
 			ASSERT_EQ(fl1[counter1][counter2], fl2[counter1][counter2]);
 		}
 	}
-
-	
 }
 
 TEST(FileIO, writeusers){

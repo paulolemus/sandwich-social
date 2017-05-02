@@ -1,5 +1,5 @@
 /* File: FileIO.h
- * Name:
+ * Name: Matthew Y
  * Team: Sandwich
  * Date: 4/22/2017
  */
@@ -39,7 +39,7 @@ class FileIO {
     const std::string endpostflag   = "END_POSTS";
     const char fuserflag            = ':';
 
-public:
+    public:
 
     FileIO();
     FileIO(std::string userFileName, std::string friendsFileName);
@@ -92,92 +92,92 @@ void FileIO::setFriendsFileName(const std::string friendsFileName) {
 }
 
 std::vector<sandwich::User*> FileIO::readUsers() {
-    
+
     std::vector<sandwich::User*> users;
     std::string s1, s2, s3;
     std::queue<std::string> que;
     std::ifstream myfile(userFileName);
 
     if(myfile){//if file exists
-    while(!myfile.eof() || !que.empty()){//getline until end of file
-	
-	if(que.empty()){
-	getline(myfile, s1);
-	}else{
-	s1 = que.front();//get from queue
-	que.pop();
-	}
+        while(!myfile.eof() || !que.empty()){//getline until end of file
 
-	if(s1.substr(0,validusername.size()) == validusername){
-	    
-	    if(que.empty()){
-	    getline(myfile, s2);
-	    }else{
-	    s2 = que.front();//get from queue
-	    que.pop();
-	    }
+            if(que.empty()){
+                getline(myfile, s1);
+            } else {
+                s1 = que.front();//get from queue
+                que.pop();
+            }
 
-	    if(s2.substr(0,validname.size()) == validname){
-	        
-		if(que.empty()){
-		getline(myfile, s3);
-		}else{
-		s3 = que.front();//get from stack
-		que.pop();
-		}
+            if(s1.substr(0, validusername.size()) == validusername){
 
-		if(s3.substr(0,validbio.size()) == validbio){//valid user
-		  
-		    s1 = s1.substr(validusername.size());//extract substrings
-	    	    s2 = s2.substr(validname.size());
-		    s3 = s3.substr(validbio.size());	    
-		    sandwich::User* U = new User(s1, s2, s3);
-		    users.push_back(U);//create new user and add to vector 
-		    
-		    while(s1 != endpostflag){//post loop
-		        
-			if(que.empty()){
-			getline(myfile, s1);
-			}else{
-			s1 = que.front();
-			que.pop();
-			}
+                if(que.empty()){
+                    getline(myfile, s2);
+                }else{
+                    s2 = que.front();//get from queue
+                    que.pop();
+                }
 
-			if(s1.substr(0,validpost.size()) == validpost){
-			    
-			    if(que.empty()){
-			    getline(myfile, s2);
-			    }else{
-			    s2 = que.front();
-			    que.pop();
-			    }
+                if(s2.substr(0, validname.size()) == validname){
 
-			    if(s2.substr(0,validtime.size()) == validtime){//valid post
+                    if(que.empty()){
+                        getline(myfile, s3);
+                    }else{
+                        s3 = que.front();//get from stack
+                        que.pop();
+                    }
 
-			        s1 = s1.substr(validpost.size());//extract substrings
-				s2 = s2.substr(validtime.size());
-				U->addPost({s1,s2});//new post
-				
-			    }else{
-			    	que.push(s2);
-			    }
-			}
-		    }
-		}else{
-		    que.push(s2);//enqueue both
-	    	    que.push(s3);	    
-		}
-	    }else{
-	 	que.push(s2);//enqueue
-	    }
-	}
-	 }
-	 myfile.close();//close file
+                    if(s3.substr(0, validbio.size()) == validbio){//valid user
+
+                        s1 = s1.substr(validusername.size());//extract substrings
+                        s2 = s2.substr(validname.size());
+                        s3 = s3.substr(validbio.size());	    
+                        sandwich::User* U = new User(s1, s2, s3);
+                        users.push_back(U);//create new user and add to vector 
+
+                        while(s1 != endpostflag){//post loop
+
+                            if(que.empty()){
+                                getline(myfile, s1);
+                            }else{
+                                s1 = que.front();
+                                que.pop();
+                            }
+
+                            if(s1.substr(0, validpost.size()) == validpost){
+
+                                if(que.empty()){
+                                    getline(myfile, s2);
+                                }else{
+                                    s2 = que.front();
+                                    que.pop();
+                                }
+
+                                if(s2.substr(0, validtime.size()) == validtime){//valid post
+
+                                    s1 = s1.substr(validpost.size());//extract substrings
+                                    s2 = s2.substr(validtime.size());
+                                    U->addPost({s1, s2});//new post
+
+                                }else{
+                                    que.push(s2);
+                                }
+                            }
+                        }
+                    }else{
+                        que.push(s2);//enqueue both
+                        que.push(s3);	    
+                    }
+                }else{
+                    que.push(s2);//enqueue
+                }
+            }
+        }
+        myfile.close();//close file
     }    
-	
+
     else{
-    	std::cout << "ERROR: FILE NOT FOUND" << std::endl;
-    
+        std::cout << "ERROR: FILE NOT FOUND" << std::endl;
+
     }
     return users;
 }
@@ -188,46 +188,46 @@ std::vector<std::vector<std::string>> FileIO::readFriends() {
     std::vector<std::string> friendtemp;
     std::string s1;
     std::ifstream myfile(friendsFileName);
-   friendtemp.clear(); 
+    friendtemp.clear(); 
 
-    if(myfile){
-	while(!myfile.eof()){
-	    getline(myfile, s1);
-	    if(s1.size()){//skip blank lines
-	    	if(s1[s1.size() - 1] == fuserflag){//new user
-		     if(friendtemp.size()){//if friendtemp is not empty
-		     	friendList.push_back(friendtemp);//push temp vector of strings
-		     }
-		     friendtemp.clear();//clear temp vector
-		     s1 = s1.substr(0, s1.size() - 1);//get rid of : at end
-		     friendtemp.push_back(s1);//push onto temp vector
-	    	}else{
-		     friendtemp.push_back(s1);//puhs onto temp vect
-	    	}
-	    }
-	}
-	if(friendtemp.size()){//if temp vector is not empty
-		friendList.push_back(friendtemp);
-	}
-    
+    if(myfile) {
+        while(!myfile.eof()) {
+            getline(myfile, s1);
+            if(s1.size()) {//skip blank lines
+                if(s1[s1.size() - 1] == fuserflag) {//new user
+                    if(friendtemp.size()) {//if friendtemp is not empty
+                        friendList.push_back(friendtemp);//push temp vector of strings
+                    }
+                    friendtemp.clear();//clear temp vector
+                    s1 = s1.substr(0, s1.size() - 1);//get rid of : at end
+                    friendtemp.push_back(s1);//push onto temp vector
+                } else {
+                    friendtemp.push_back(s1);//puhs onto temp vect
+                }
+            }
+        }
+        if(friendtemp.size()) {//if temp vector is not empty
+            friendList.push_back(friendtemp);
+        }
 
-	myfile.close();
-    }else{
-    	std::cout << "ERROR: FILE NOT FOUND" << std::endl;
+
+        myfile.close();
+    } else {
+        std::cout << "ERROR: FILE NOT FOUND" << std::endl;
     }
-    
+
     return friendList;
 }
 
 void FileIO::writeUser(const sandwich::User* const user) {
-    
-     std::ofstream myfile;
 
-     if(myfile){
-     
-     }else{
-     	std::cout << "ERROR: FILE NOT FOUND" << std::endl;
-     }
+    std::ofstream myfile;
+
+    if(myfile){
+
+    } else {
+        std::cout << "ERROR: FILE NOT FOUND" << std::endl;
+    }
 }
 
 void FileIO::writeFriends(const sandwich::User* const user) {

@@ -1,6 +1,6 @@
 
 /* File: sandwich-social.cpp
- * Name:
+ * Name: Paulo L, Jessie G, Matt Y
  * Team: Sandwich
  * Date: 4/22/2017
  */
@@ -12,12 +12,12 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
+
 #include <ncurses.h>
 
 #include "Trie.h"
 #include "Post.h"
 #include "User.h"
-//#include "FileIO.h"
 #include "GUI.h"
 
 int main() {

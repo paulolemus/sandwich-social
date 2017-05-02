@@ -64,7 +64,7 @@ public:
     int centerX(WINDOW *w);  //returns the center x location of the window
 
     std::string payload(WINDOW* w, char s);
-    void print_menu(WINDOW *w, int h, int n, std::string s[],int d); 
+    void print_menu(WINDOW* w, int h, int n, std::string s[],int d); 
     int menu_selector(int n, int c, int* highlight, int a, int b);
     int menu_setup(WINDOW* w, int d, std::string inputArray[], int n); 
     std::string userInput(WINDOW* w, int max, bool trieBool);
@@ -73,7 +73,6 @@ public:
     void memberListSetup();
     void checkScreenSize(); 
     std::string trieAutoComplete(std::string s, WINDOW* w);
-
 };
 
 
@@ -260,11 +259,18 @@ GUI::Type GUI::homeScreen() {
     for(unsigned int i = 0; i < friends.size(); ++i) {
         theFriend = friends[i];
         posts = theFriend->getPosts();
-        int j = posts.size()-1;
-        postInfo.push_back("At " + posts[j].getTime() + ", " + theFriend->getUsername() + " said:");
-        postInfo.push_back(posts[j].getMsg());
+        if(posts.size() > 0) {
+            int j = posts.size() - 1;
+            postInfo.push_back("At " + posts[j].getTime() + ", " + theFriend->getUsername() + " said:");
+            postInfo.push_back(posts[j].getMsg());
+            postInfo.push_back(border); 
+        }
+    }
+    posts = currUser->getPosts();
+    if(posts.size() > 0) {
+        postInfo.push_back("At " + posts[posts.size() - 1].getTime() + ", you said:");
+        postInfo.push_back(posts[posts.size() - 1].getMsg());
         postInfo.push_back(border);
-     
     }
 
  
@@ -302,18 +308,17 @@ GUI::Type GUI::homeScreen() {
         }
     } while(input != 'q');
 
-   
-
     wmove(bottomMenuDisplay, 0,0);
-    curs_set(1); 
     refresh();
 
     int choice = menu_setup(bottomMenuDisplay, y * 0.25, mainMenu, n_main);
-    return submit_selection(bottomMenuDisplay, choice); 
-
 
     // Cleanup
     delwin(topDisplay);
+    delwin(bottomMenuDisplay);
+    delwin(topBox);
+
+    return submit_selection(bottomMenuDisplay, choice); 
 }
 
 /* Post to wall screen allows user to write a text post
@@ -725,8 +730,7 @@ void GUI::editProfileScreen() {
     //top and bottom windows based on the get max returns
     WINDOW* topDisplay        = newwin(y * 0.625 - 4, x - 14, 2, 7); 
     WINDOW* bottomMenuDisplay = newwin(y * 0.25, x - 10, y * 0.625 + 3, 5); 
-    //box for the top window
-    WINDOW* topBox = newwin(y * 0.625, x - 10, 0, 5); 
+    WINDOW* topBox            = newwin(y * 0.625, x - 10, 0, 5); 
     //create boxes for the box windows
     box(topBox, 0, 0); 
     box(bottomMenuDisplay, 0, 0); 

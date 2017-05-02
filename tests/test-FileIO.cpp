@@ -82,24 +82,89 @@ TEST(FileIO, readfriends){
 }
 
 TEST(FileIO, writeusers){
+	
 	const std::string inputUsertempFile = "usertemp.dat";
 	sandwich::FileIO f1(inputUsertempFile,inputFriendsFile);
+	std::vector<std::string> S1, S2;
+	int counter = 0;
+
 	sandwich::User* U1 = new User("pauloasdf","Paulo Lemus","Everytime I turn a corner I take an L.");
+	
 	sandwich::User* U2 = new User("jessieG","Jessie G","Hippy life | Yo yo dawg | 920");
+	
 	sandwich::User* U3 = new User("YamaSama","Matt Y","Anime wo suuuuugoi desu nee");
-	f1.writeUser(U1);
+	
+	//ADD posts
+	
+	f1.writeUser(U1);//write into new file
 	f1.writeUser(U2);
 	f1.writeUser(U3);
 
+	//read in inputUsertempFile and compare to users.dat
+	
+	std::ifstream myfile(inputUserFile);
+
+	if(myfile){//write original file into S1
+		while(!myfile.eof()){
+			getline(myfile, S1[counter];
+			counter++;
+		}
+		myfile.close();
+	}
+
+	myfile(inputUsertempFile);//can you change file? does it start at top?
+	counter = 0;
+
+	if(myfile){//write temp file into S2
+		while(!myfile.eof()){
+			getline(myfile, S2[counter]);
+			counter++;
+		}
+		myfile.close();
+	}
+
+	for(int counter1 = 0; counter1 < S1.size(); counter1++){//compare that S1 and S2 are equal
+		ASSERT_EQ(S1[counter1, S2[counter1]);
+	}
 
 }
 
 TEST(FileIO, writefriends){
 
-	sandwich::FileIO f1(inputUserFile, inputFriendsFile);
+	std::string inputFriendstempFile = "friendstemp.dat";
+	sandwich::FileIO f1(inputUserFile, inputFriendstempFile);
+	int counter = 0;
+	std::vector<std::string> S1, S2;
+
 	f1.writeFriends(U1);
 	f1.writeFriends(U2);
 	f1.writeFriends(U3);
+
+	std::ifstream myfile(inputFriendsFile);
+
+	if(myfile){
+		while(!myfile.eof()){
+			getline(myfile, S1[counter];
+			counter++;
+		}
+		myfile.close();
+	}
+
+	myfile(inputFriendstempFile);
+	counter = 0;
+
+	if(myfile){
+		while(!myfile.eof()){
+			getline(myfile, S2[counter];
+			counter++;
+		}
+		myfile.close();
+	}
+
+	for(int counter1 = 0; counter1 1 < S1.size(); counter1++){
+		ASSERT_EQ(S1[counter1], S2[counter1]);
+	}
+
 
 }
 

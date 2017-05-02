@@ -67,12 +67,11 @@ public:
     void print_menu(WINDOW* w, int h, int n, std::string s[],int d); 
     int menu_selector(int n, int c, int* highlight, int a, int b);
     int menu_setup(WINDOW* w, int d, std::string inputArray[], int n); 
-    std::string userInput(WINDOW* w, int max, bool trieBool);
+    std::string userInput(WINDOW* w, int max);
     Type submit_selection(WINDOW* w, int choice);
 
     void memberListSetup();
     void checkScreenSize(); 
-    std::string trieAutoComplete(std::string s, WINDOW* w);
 };
 
 
@@ -103,10 +102,6 @@ GUI::~GUI() {
 // of cleaning, but all the functionality is there. 
 GUI::Type GUI::loginScreen() {
 
-    // Guard against small screen, create initial member
-    //checkScreenSize(); 
-    //memberListSetup(); 
-
     int y, x; 
     getmaxyx(stdscr, y, x); //returns the max x & y values of the screen  
     curs_set(1);
@@ -126,7 +121,7 @@ GUI::Type GUI::loginScreen() {
     wrefresh(mainWindow); 
     wmove(inputWindow, 0, 0);
 
-    std::string loginName = userInput(inputWindow, 26, false); 
+    std::string loginName = userInput(inputWindow, 26); 
     wrefresh(mainWindow); 
     refresh();
 
@@ -166,13 +161,13 @@ GUI::Type GUI::loginScreen() {
         wrefresh(nameWindow);
 
         // Get name from user input
-        std::string nameString = userInput(nameWindow, 26, false); 
+        std::string nameString = userInput(nameWindow, 26);
         wrefresh(mainWindow);
         wrefresh(nameWindow);
         wmove(bioWindow, 0, 0);
 
         // Get bio from user input
-        std::string bioString = userInput(bioWindow, 104, false);
+        std::string bioString = userInput(bioWindow, 104);
 
         // Add a new user with the obtained information
         if(sandwich::User::validateStr(loginName)  && 
@@ -245,12 +240,10 @@ GUI::Type GUI::homeScreen() {
 
 
     auto friends = currUser->getFriends();
-    //std::string inputUsername = userInput(nameWindow, 26, false);
     //pulled from delet a friend
     std::vector<std::string> postInfo;        
     std::vector<sandwich::Post> posts;
-    int yTop, xTop;
-    getmaxyx(topDisplay, yTop, xTop);
+    int xTop = getmaxx(topDisplay);
     std::string border;
     for(int i = 0; i < xTop; ++i) border += '-';
 
@@ -345,7 +338,7 @@ void GUI::postWallScreen() {
     curs_set(1);
     wrefresh(postWin);
 
-    std::string postInput = userInput(postWin, 104, false); 
+    std::string postInput = userInput(postWin, 104);
     sandwich::Post post(postInput);
     currUser->addPost(post);
 
@@ -691,7 +684,6 @@ void GUI::viewFriendScreen() {
         }
         // Match search end
         wmove(inputWindow, 0, xCurr);
-        refresh();
         wrefresh(dataWindow);
         wrefresh(inputWindow);
         ch = wgetch(inputWindow);
@@ -717,7 +709,6 @@ void GUI::viewFriendScreen() {
     }
     else {
         // initialize some information to be used in loop
-        werase(topWindow);
         curs_set(0);
         keypad(topWindow, true);
 
@@ -759,7 +750,6 @@ void GUI::viewFriendScreen() {
             }
             wattroff(topWindow, COLOR_PAIR(1));
             wattroff(topWindow, A_REVERSE);
-            refresh();
             wrefresh(topWindow);
 
             // Get next character for scrolling
@@ -820,7 +810,7 @@ void GUI::editProfileScreen() {
     wrefresh(topDisplay);
     refresh();
 
-    bioString = userInput(bioWindow, 104, false);
+    bioString = userInput(bioWindow, 104);
     currUser->setBio(bioString);
     std::string newBioString = currUser->getBio();
     mvwprintw(topDisplay, 12, 0, "New Bio: %s", newBioString.c_str());  
@@ -974,53 +964,49 @@ void GUI::testFunc() {
 }
 
 
-void GUI::centerText(WINDOW *w, int yLoc, std::string text){
-    int len, indent, depth, width; 
-    getmaxyx(w, depth, width); 
+void GUI::centerText(WINDOW* w, int yLoc, std::string text){
+    int len, indent, width; 
+    width = getmaxx(w);
     len = text.size();  
     indent = width - len; 
-    indent /=2;
+    indent /= 2;
     mvwprintw(w, yLoc, indent, text.c_str()); 	
 }
 
 int GUI::centerY(WINDOW *w){
-    int y, x; 
-    getmaxyx(w, y, x); 
-    return y/2;
+    return getmaxy(w) / 2;
 }
 
 int GUI::centerX(WINDOW *w){
-    int y, x; 
-    getmaxyx(w, y, x); 
-    return x/2;
+    return getmaxx(w) / 2;
 }
 
 std::string GUI::payload(WINDOW* w, char s){
-    std::string temp; 
-    int xinput=0;
-    while(s!=10){
-        mvwprintw(w,0,xinput,"%c", s); 
-        xinput++; 
-        wrefresh(w); 	       
-        temp+=s; 
-        s = wgetch(w); 
-    }	
+    std::string temp;
+    int xinput = 0;
+    while(s != 10){
+        mvwprintw(w, 0, xinput,"%c", s); 
+        xinput++;
+        wrefresh(w);
+        temp += s;
+        s = wgetch(w);
+    }
     return temp; 
 }
 
 int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
-    int choice= 0; 
-    switch(c){
+    int choice = 0; 
+    switch(c) {
         case KEY_UP:
-            if(*highlight ==1) *highlight = n; 
-            else (*highlight) --; 
+            if(*highlight == 1) *highlight = n; 
+            else (*highlight)--; 
             break; 
         case KEY_DOWN: 
             if(*highlight == n) *highlight = 1; 	
-            else (*highlight) ++; 
+            else (*highlight)++; 
             break; 
         case 10: // 10 = int for enter
-            choice =* highlight; 
+            choice = *highlight; 
             return choice; 
         default:
             mvwprintw(stdscr, a, b,  "Press enter to select");
@@ -1030,23 +1016,23 @@ int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
     return 0; 
 }
 
-std::string GUI::userInput(WINDOW * w, int max, bool trieBool){
+std::string GUI::userInput(WINDOW* w, int max) {
     std::string str;
-    char s=0; 
-    int y, x, ylast, xlast,c=0; 
-    getmaxyx(w, ylast, xlast);
+    char s = 0;
+    int y, x, xlast, c = 0; 
+    xlast = getmaxx(w);
     getbegyx(w, y, x);
-    // mvwprintw(w,0,0, "ybeg: %d and xbeg %d", y, x);
-    while(s!=10){
-        s =wgetch(w);
+
+    while(s != 10){
+        s = wgetch(w);
         if (s == 27){
             werase(w);
-            mvwprintw(w,0,0, "Press ESC to Select from the Menu or Enter to continue");
+            mvwprintw(w, 0, 0, "Press ESC to Select from the Menu or Enter to continue");
             s = wgetch(w);
             if (s == 27) return "back";
             else if (s == 10){
                 wclear(w);
-                wmove(w,0,0);
+                wmove(w, 0, 0);
                 wrefresh(w);
                 refresh();
                 str.clear();
@@ -1056,103 +1042,60 @@ std::string GUI::userInput(WINDOW * w, int max, bool trieBool){
         getyx(w, y, x); 
 
         while(s == 127){
-            if(c==0) s= wgetch(w);
+            if(c == 0) s = wgetch(w);
             else{
-                s= ' ';
-                x --;
+                s = ' ';
+                x--;
                 c--;  
                 str.erase(str.end()-1);	
                 mvwprintw(w, y, x, "%c",s);
-                wmove(w,y,x); 
+                wmove(w, y, x); 
                 refresh(); 
-                if(c==max-3){
-                    mvwprintw(w,y,xlast-4, "     ");
+                if(c == max - 3){
+                    mvwprintw(w, y, xlast - 4, "     ");
                     refresh();	            
                 }
-                s=wgetch(w);
+                s = wgetch(w);
             }
         }
-        if(c>max-3){
-            mvwprintw(w,y, xlast-4, "-MAX");
+        if(c > max - 3){
+            mvwprintw(w, y, xlast - 4, "-MAX");
             refresh();
             s = ' ';
             c--;	
-            str.erase(str.end()-1);
-            mvwprintw(w,y,x, "%c", s);
-            wmove(w,y,x);
+            str.erase(str.end() - 1);
+            mvwprintw(w, y, x, "%c", s);
+            wmove(w, y, x);
             refresh();
         }
         else mvwprintw(w, y, x, "%c", s);
-        str +=s; 
-        if (trieBool){
-            str = trieAutoComplete(str, w); 
-        }
+        str += s; 
         refresh(); 
         c++; 
         wrefresh(w);
     }	
-    str.erase(std::remove(str.begin(),str.end(), '\n'), str.end());
+    str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
     return str; 
 }
 
+void GUI::print_menu(WINDOW *w, int h, int n, std::string s[], int d) {
 
-std::string GUI::trieAutoComplete(std::string s, WINDOW* w){
-	int xmax, ymax, xbeg, ybeg = 0; 
-	getmaxyx(w, ymax, xmax); 
-	getbegyx(w, ybeg, xbeg);
-	WINDOW* trieWindow = newwin(5, xmax, ybeg+1, xbeg); 
-	wbkgd(trieWindow, COLOR_PAIR(2)); 
-	wattron(trieWindow,COLOR_PAIR(1));
-	//keypad(trieWindow, true);
-	wrefresh(trieWindow);
-	refresh();
-	int j=3;
-	std::string prefix= "WORDS";
-	mvwprintw(trieWindow, ybeg+1+j, 0, "%s", prefix.c_str()); 
- 	wrefresh(trieWindow);
-	refresh();
-//	getch();
-	auto friendList = trie.getComplete(s);
-	for(auto friendPtr : friendList) {
-		int i =0;
-    		while(trie.search(s) && i<5){
-			mvwprintw(trieWindow, ybeg+1+i, 0,"%s", friendPtr->getUsername().c_str());
-			wrefresh(trieWindow);
-    		}
-   	}
-
-	wrefresh(trieWindow);
-	//refresh(); 
-	//getch();
-	//delwin(trieWindow);
-	std::string tester = "bec";
-	return tester; 
-}
-
-
-void GUI::print_menu(WINDOW *w, int h, int n, std::string s[],int d){ 
-    int x,y,i, min_depth, printRange, miniRange; 
-    x=2;
-    y=3; 
-    min_depth = n + 4; //choices + header + box edges
+    int x = 2, y = 3;
     box(w, 0, 0); 
     mvwprintw(w, 1, 1, "PRESS ENTER TO SELECT AN OPTION BELOW:"); 
     mvwprintw(w, 2, 1, "--------------------------------------"); 
 
-    if (d < min_depth)  printRange = d - 4;
-    else printRange = d;    
-
-    for (i=0; i< n; i++){
-        if(h == i+1){ //highlighter = present choice
+    for (unsigned int i = 0; i < n; ++i){
+        if(h == i + 1) { //highlighter = present choice
             wattron(w, A_REVERSE);
             mvwprintw(w, y, x, "%s", s[i].c_str());
             wattroff(w, A_REVERSE); 
         }   
         else mvwprintw(w, y, x, "%s", s[i].c_str()); 
         y++; 
-    }   
+    }
     wrefresh(w); 
-    } 
+}
 
 int GUI::menu_setup(WINDOW* w, int d, std::string inputArray[], int n){ 
     int choice = 0;
@@ -1160,11 +1103,10 @@ int GUI::menu_setup(WINDOW* w, int d, std::string inputArray[], int n){
     int y, x; 
     getmaxyx(stdscr, y, x); 
     print_menu(w, h, n, inputArray, d); 
-    while(1){
-        int c = wgetch(w); 
-        choice = menu_selector(n, c, &h, y-1, 5);  
+    while(choice == 0){
+        int c  = wgetch(w); 
+        choice = menu_selector(n, c, &h, y - 1, 5);  
         print_menu(w, h, n, inputArray, d);  
-        if(choice!=0)break; //user make a choice, break loop
     }
     return choice; 
 }
@@ -1193,7 +1135,7 @@ GUI::Type GUI::submit_selection(WINDOW* w, int choice){
             return sandwich::GUI::Type::LOGOUT;
             break;		
         default: 
-            mvwprintw(w, 10,8, "Press enter to select");
+            mvwprintw(w, 10, 8, "Press enter to select");
             wrefresh(w); 
             break; 
     }
@@ -1253,15 +1195,7 @@ void GUI::memberListSetup(){
     tester->addFriend(user2);
     tester->addFriend(user3);
     tester->addFriend(user4);
-    /*
-    //this is giving seg faults because they're not in the map
-    tester->addFriend(new sandwich::User("test1", "tester1", "sdgsdfbsdf"));
-    tester->addFriend(new sandwich::User("test2", "tester2", "sddfdfbsdf"));
-    tester->addFriend(new sandwich::User("test3", "tester3", "sdgsdfbdsv"));
-    tester->addFriend(new sandwich::User("test4", "tester4", "sdgsdfbsds"));
-    tester->addFriend(new sandwich::User("test5", "tester5", "sdgsdfbdgs"));
-    tester->addFriend(new sandwich::User("test6", "tester6", "sdsasdfbsdf"));
-    */
+
     //giving the users some posts
     std::string postInput = "My first default Post" ;
     sandwich::Post post(postInput);
@@ -1276,16 +1210,16 @@ void GUI::memberListSetup(){
     time_t now2 = time(NULL);
 
     //delay script
-    while (difftime(now2, now) ==0)  now2 = time(NULL);
+    while (difftime(now2, now) == 0)  now2 = time(NULL);
     
     sandwich::Post post1("OMG I like tacos and pizza");
     friend1->addPost(post1);
 
-    while (difftime(now2, now) ==0)  now2 = time(NULL);
+    while (difftime(now2, now) == 0)  now2 = time(NULL);
     sandwich::Post post2("I can't believe it's not butter");
     friend2->addPost(post2);
 
-    while (difftime(now2, now) ==0)  now2 = time(NULL);
+    while (difftime(now2, now) == 0)  now2 = time(NULL);
     sandwich::Post post3("Soccer game at 10! See you there!");
     friend1->addPost(post3); 
 
@@ -1293,7 +1227,7 @@ void GUI::memberListSetup(){
 }
 
 void GUI::checkScreenSize(){
-    int y,x;
+    int y, x;
     getmaxyx(stdscr, y, x); 
     if (y < 50 || x < 75){
         endwin();
@@ -1304,6 +1238,5 @@ void GUI::checkScreenSize(){
 }
 
 } // namespace sandwich
-
 
 #endif // SANDWICH_GUI_H_

@@ -86,14 +86,23 @@ TEST(FileIO, writeusers){
 	const std::string inputUsertempFile = "usertemp.dat";
 	sandwich::FileIO f1(inputUsertempFile,inputFriendsFile);
 	std::vector<std::string> S1, S2;
-	int counter = 0;
+	std::string p1, p2;
 
 	sandwich::User* U1 = new User("pauloasdf","Paulo Lemus","Everytime I turn a corner I take an L.");
-	
+	p1 = "\"That moment when peeing feels so good you start crying\"";
+	p2 = "timestamp here";
+	U1->addPost({p1,p2});
+
 	sandwich::User* U2 = new User("jessieG","Jessie G","Hippy life | Yo yo dawg | 920");
-	
+	p1 = "Sup sup yo yo yo yo yo yo I got this freeesh mixtape hit up my soundcloud jessieG";
+	p2 = "timestamp here";
+	U2->addPost({p1,p2});
+
 	sandwich::User* U3 = new User("YamaSama","Matt Y","Anime wo suuuuugoi desu nee");
-	
+	p1 = "I prayed and then jesus took the wheel";
+	p2 = "timestamp here";
+	U3->addPost({p1,p2});
+
 	//ADD posts
 	
 	f1.writeUser(U1);//write into new file
@@ -106,62 +115,72 @@ TEST(FileIO, writeusers){
 
 	if(myfile){//write original file into S1
 		while(!myfile.eof()){
-			getline(myfile, S1[counter];
-			counter++;
+			getline(myfile, p1);
+			S1.push_back(p1);
 		}
 		myfile.close();
 	}
 
-	myfile(inputUsertempFile);//can you change file? does it start at top?
-	counter = 0;
+	myfile.open(inputUsertempFile);
 
 	if(myfile){//write temp file into S2
 		while(!myfile.eof()){
-			getline(myfile, S2[counter]);
-			counter++;
+			getline(myfile, p1);
+			S2.push_back(p1);
 		}
 		myfile.close();
 	}
 
 	for(int counter1 = 0; counter1 < S1.size(); counter1++){//compare that S1 and S2 are equal
-		ASSERT_EQ(S1[counter1, S2[counter1]);
+		ASSERT_EQ(S1[counter1], S2[counter1]);
 	}
 
 }
 
 TEST(FileIO, writefriends){
-
+	
 	std::string inputFriendstempFile = "friendstemp.dat";
 	sandwich::FileIO f1(inputUserFile, inputFriendstempFile);
-	int counter = 0;
 	std::vector<std::string> S1, S2;
+	std::string p1;
 
-	f1.writeFriends(U1);
+	//create users
+	sandwich::User* U1 = new User("pauloasdf","Paulo Lemus","Everytime I turn a corner I take an L.");
+	sandwich::User* U2 = new User("jessieG","Jessie G","Hippy life | Yo yo dawg | 920");
+	sandwich::User* U3 = new User("YamaSama","Matt Y","Anime wo suuuuugoi desu nee");
+	
+	U1->addFriend(U2);//add friends into users
+	U1->addFriend(U3);//returns bool, check if this is ok
+	U2->addFriend(U1);
+	U2->addFriend(U3);
+	U3->addFriend(U1);
+	U3->addFriend(U2);
+
+	f1.writeFriends(U1);//write friends into file
 	f1.writeFriends(U2);
 	f1.writeFriends(U3);
 
 	std::ifstream myfile(inputFriendsFile);
 
-	if(myfile){
+	if(myfile){//read original file
 		while(!myfile.eof()){
-			getline(myfile, S1[counter];
-			counter++;
+			getline(myfile, p1);
+			S1.push_back(p1);
 		}
 		myfile.close();
 	}
 
-	myfile(inputFriendstempFile);
-	counter = 0;
+	myfile.open(inputFriendstempFile);//read temp file
 
 	if(myfile){
 		while(!myfile.eof()){
-			getline(myfile, S2[counter];
-			counter++;
+			getline(myfile, p1);
+			S2.push_back(p1);
 		}
 		myfile.close();
 	}
 
-	for(int counter1 = 0; counter1 1 < S1.size(); counter1++){
+	for(int counter1 = 0; counter1 < S1.size(); counter1++){//compare each line
 		ASSERT_EQ(S1[counter1], S2[counter1]);
 	}
 

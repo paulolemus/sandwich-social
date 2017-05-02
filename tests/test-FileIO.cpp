@@ -77,8 +77,6 @@ TEST(FileIO, readfriends){
 			ASSERT_EQ(fl1[counter1][counter2], fl2[counter1][counter2]);
 		}
 	}
-
-	
 }
 
 TEST(FileIO, writeusers){
@@ -89,9 +87,7 @@ TEST(FileIO, writeusers){
 	int counter = 0;
 
 	sandwich::User* U1 = new User("pauloasdf","Paulo Lemus","Everytime I turn a corner I take an L.");
-	
 	sandwich::User* U2 = new User("jessieG","Jessie G","Hippy life | Yo yo dawg | 920");
-	
 	sandwich::User* U3 = new User("YamaSama","Matt Y","Anime wo suuuuugoi desu nee");
 	
 	//ADD posts

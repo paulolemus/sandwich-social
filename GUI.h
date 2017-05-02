@@ -363,89 +363,173 @@ void GUI::viewFriendsScreen() {
  */
 void GUI::addFriendScreen() {
 
-    int x, y; 
-    getmaxyx(stdscr, y, x); 
-    //top and bottom windows based on the get max returns
-    WINDOW * topDisplay = newwin((y*.625)-4, x-14, 2, 7); 
-    //box for the top window
-    WINDOW * topBox = newwin((y*.625), x-10,0, 5); 
-    //create boxes for the box windows
-    box(topBox, 0,0); 
-    //setup keypad and refresh all windows
+	int x, y; 
+	getmaxyx(stdscr, y, x); 
+	curs_set(1);
 
-    centerText(topDisplay, 2, "List of Friends to add");
-    int i =0;
+	// Create Configure the top box which is used to take user input
+	WINDOW* topWindow   = newwin(y * 0.625 - 4, x - 14, 2, 7);
+	WINDOW* inputWindow = newwin(1, 80, 3, centerX(topWindow) - 35);
+    WINDOW* dataWindow  = newwin(y * 0.625 - 8, x - 14, 2 + 4, 7);
+    getmaxyx(topWindow, y, x);
+	wbkgd(inputWindow, COLOR_PAIR(1));
+	wmove(inputWindow, 0, 0);
+
+	centerText(topWindow, 0, "Enter friend's USERNAME below");
+	refresh();
+	wrefresh(topWindow);
+	wrefresh(inputWindow);
+
+   // Populate a new Trie with the friends of just this user
+    sandwich::Trie<const sandwich::User*> friendTrie;
+    auto friendList = currUser->getFriends();
+    for(auto person : friendList) {
+        friendTrie.store(person->getUsername(), person);
+        friendTrie.store(person->getName(),     person);
+    }
+
+
+    
+    // Populate a new Trie with the strangers to this user
+    std::string username;
+    std::string name;
+    sandwich::Trie<const sandwich::User*> strangerTrie;
+    //int i =0; for debugging
+    sandwich::User* tempUser;
+    //sandwich::Trie<const sandwich::User*> friendTrie;
+
+
     for (auto it = userMap.begin(); it != userMap.end(); it++){
-        mvwprintw(topDisplay, i+4, 0, "Username: %s", it->first.c_str()); 
-        mvwprintw(topDisplay, i+4, 30, "Name: %s", it->second->getName().c_str()); 
-        i ++; 
-    }
-
-    WINDOW* nameWindow = newwin(1, 30, centerY(topDisplay) + 4, centerX(topDisplay) - 7);
-    wbkgd(nameWindow, COLOR_PAIR(1)); 
-    wmove(nameWindow, 0, 0);
-    wrefresh(topBox);
-    wrefresh(topDisplay);
-
-
-    wrefresh(nameWindow);
-    refresh(); 
-    std::string nameString = userInput(nameWindow, 26, false); 
-
-    for (unsigned int i =0; i<nameString.size(); i++){
-        if(nameString[i] >= 'A' && nameString[i] <= 'Z'){
-            nameString[i] = nameString[i] +32;
+        if(it->first == currUser->getUsername()) it++; //skip current user
+        username = it->first;
+        name = it->second->getName();
+        auto usernameMatches = friendTrie.getComplete(username);
+        auto nameMatches = friendTrie.getComplete(name);
+        if (usernameMatches.size()<1 && nameMatches.size()<1){
+            //mvwprintw(topWindow, 16+i, 0, "Username: %s", username.c_str());       
+            //mvwprintw(topWindow, 16+i, 30, "Name: %s", name.c_str()); 
+            //i ++;
+            tempUser = userMap[username];
+            strangerTrie.store(tempUser->getUsername(), tempUser);
+            strangerTrie.store(tempUser->getName(), tempUser);
         }
+        // debugging and testing
+        //auto strangers = strangerTrie.getComplete(username);
+        //if (strangers.size()>0){
+        //    mvwprintw(topWindow, 25+i, 0, "found %s", username.c_str());
+        //}
     }
+    
+    
+    wrefresh(topWindow);
+    getch();
 
+    
+   
+    
 
-    int ymax, xmax, ybeg, xbeg=0;
-    getmaxyx(nameWindow, ymax, xmax); 
-    getbegyx(nameWindow, ybeg, xbeg); 
-    // WINDOW* trieWindow = newwin(5, xmax, ybeg+1, xbeg); 
+    
 
-    std::string prefix;
-    // auto friendList = trie.getComplete(prefix);
-    // int t_size = temp.size();
-    // for(auto friendPtr : friendList) {
+    // Get all user input and populate the topWindow with user matches    
+    std::string usernameInput;
+    std::string border;
+    for(int i = 0; i < getmaxx(dataWindow); ++i) border += '-';
+    int xMin = 0, xMax = 79, xCurr = 0;
 
-    //	    mvwprintw(friendPtr->getUsername().c_str();
-    //	friendPtr->getName().c_str();
-    //	friendPtr->getBio().c_str();
-    //      draw line to deparate users
-    // }
+    int ch = wgetch(inputWindow);
+    while(ch != 10) { // 10 == "Enter"
 
-
-    sandwich::User* friendCopy;
-
-    if(trie.search(nameString)){
-        //	auto temp = trie.getComplete(prefix);
-        //	auto tempString = temp.pop_back();
-        mvwprintw(topDisplay, i+12, 0, "User: %s found!", nameString.c_str());   
-        auto friendList = trie.getComplete(nameString);
-        if(friendList.size() < 1) {
-            //      display "No matching users. Please broaden your search"
+        // User input begin
+        if(ch == 27) { // esc
+            // TODO
         }
-        // clear the currently displayed friends here
-        for(auto friendPtr : friendList) {
-            if(friendPtr->getUsername() == nameString){
-                mvwprintw(topDisplay, i+20, 0,"%s is almost your friend", friendPtr->getUsername().c_str());
-                i++;
-                friendCopy = friendPtr;
+        else if(ch == 127) { // delete
+            if(xCurr > xMin) {
+                mvwaddch(inputWindow, 0, --xCurr, ' ');
+                if(usernameInput.size() > 0) usernameInput.pop_back();
             }
         }
-        //      display friendPtr->getName().c_str()
-        //      display friendPtr->getBio().c_str()
-        //      draw line to deparate users
-        // }
-        currUser->addFriend(friendCopy);
-        wrefresh(topDisplay); 
-    } 
-    getch();
-    delwin(topDisplay);
-    delwin(nameWindow);
-    delwin(topBox);
+        else {
+            if(xCurr < xMax) {
+                mvwaddch(inputWindow, 0, xCurr++, ch);
+                usernameInput += ch;
+            }
+        }
+        // User input end
+        
+        // Match search begin
+        werase(dataWindow);
+        auto matches = strangerTrie.getComplete(usernameInput);
+        if(matches.size() < 1) {
+            centerText(dataWindow, getmaxy(dataWindow) / 2, "No matches for your search!");
+        }
+        else {
+
+            // Print all user data to screen
+            int          line   = 0;
+            unsigned int mIndex = 0;
+            while(line < getmaxy(dataWindow) && mIndex < matches.size()) {
+                mvwprintw(dataWindow, line, 0, border.c_str());
+                line++;
+                if(line < getmaxy(dataWindow) && mIndex < matches.size()) {
+                    mvwprintw(dataWindow, line, 0, "Username: %s", matches[mIndex]->getUsername().c_str());
+                }
+                line++;
+                if(line < getmaxy(dataWindow) && mIndex < matches.size()) {
+                    mvwprintw(dataWindow, line, 0, "Name    : %s", matches[mIndex]->getName().c_str());
+                }
+                line++;
+                if(line < getmaxy(dataWindow) && mIndex < matches.size()) {
+                    mvwprintw(dataWindow, line, 0, "Bio     : %s", matches[mIndex]->getBio().c_str());
+                }
+                line++;
+                mIndex++;
+            }
+        }
+        // Match search end
+        wmove(inputWindow, 0, xCurr);
+        refresh();
+        wrefresh(dataWindow);
+        wrefresh(inputWindow);
+        ch = wgetch(inputWindow);
+    } // end while
+
+    // ADD friend if exists
+    wclear(dataWindow);
+    auto possibleUsers = strangerTrie.get(usernameInput);
+    if(possibleUsers.size() < 1) {
+        centerText(dataWindow, getmaxy(dataWindow) / 2, "Could not find the friend");
+    }
+    else {
+        // Convert usernameInput to lowercase
+        usernameInput = sandwich::User::lowercaseify(usernameInput);
+
+        // ADD the friend
+        bool isAdded = false;
+        for(auto friendPtr : possibleUsers) {
+            if(friendPtr->getLower() == usernameInput) {
+                currUser->addFriend(friendPtr);
+                isAdded = true;
+            }
+        }
+        if(isAdded){
+            centerText(dataWindow, getmaxy(dataWindow) / 2, usernameInput + " is now your Friend!");
+        }
+        else {
+            centerText(dataWindow, getmaxy(dataWindow) / 2, "Something went wrong");
+        }
+    }
+    centerText(dataWindow, getmaxy(dataWindow) / 2 + 1, "Press any key to continue");
+    wrefresh(dataWindow);
+    refresh();
+    wgetch(dataWindow);
+    
+    // cleanup
+    delwin(topWindow);
+    delwin(inputWindow);
+    delwin(dataWindow);
 }
+
 
 /* View friend screen allows you to view a particular friend entirely.
 * This will display the friend's name, username, and entire history
@@ -621,7 +705,7 @@ void GUI::removeFriendScreen() {
 	wbkgd(inputWindow, COLOR_PAIR(1));
 	wmove(inputWindow, 0, 0);
 
-	centerText(topWindow, 0, "Enter friend's name below");
+	centerText(topWindow, 0, "Enter friend's USERNAME below");
 	refresh();
 	wrefresh(topWindow);
 	wrefresh(inputWindow);
@@ -725,6 +809,7 @@ void GUI::removeFriendScreen() {
     }
     centerText(dataWindow, getmaxy(dataWindow) / 2 + 1, "Press any key to continue");
     wrefresh(dataWindow);
+    refresh();
     wgetch(dataWindow);
     
     // cleanup

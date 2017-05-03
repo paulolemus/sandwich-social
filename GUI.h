@@ -273,7 +273,7 @@ GUI::Type GUI::homeScreen() {
     box(topBox, 0, 0); 
     box(bottomMenuDisplay, 0, 0); 
     keypad(bottomMenuDisplay, true); 
-	keypad(topDisplay,        true);
+	//keypad(topDisplay,        true);
 
     // Draw all changes to screen
     wrefresh(topBox); 
@@ -312,46 +312,58 @@ GUI::Type GUI::homeScreen() {
         postInfo.push_back(border);
     }
 
- 
-    int input, index = 0;
-    int yMax = postInfo.size() > y - 5 ? y - 5 : postInfo.size();
-    do {
-        // Print everything to screen
-        wattron(topDisplay, A_REVERSE);
-        wattron(topDisplay, COLOR_PAIR(2)); 
-        centerText(topDisplay, 0, "Use arrows to scroll or press 'q' to select from the bottom menu");
-        centerText(topDisplay, 3, "Welcome to your Homescreen");
-        centerText(topDisplay, 4, "-------------------- Posts  --------------------");
-        mvwprintw(topDisplay, 5, 0, border.c_str());
-        wattroff(topDisplay, COLOR_PAIR(2)); 
-        wattron(topDisplay, COLOR_PAIR(1)); 
-        for(int i = 0; i < yMax; ++i) {
-            mvwprintw(topDisplay, i + 7, 0, "%s", postInfo[index + i].c_str());
-        }
-        wattroff(topDisplay, COLOR_PAIR(1));
-        wattroff(topDisplay, A_REVERSE);
-        refresh();
-        wrefresh(topDisplay);
+    curs_set(0);
+    keypad(topDisplay, true);
+    
 
-        // Get next character for scrolling
-        input = wgetch(topDisplay);
-        switch(input) {
-            case KEY_UP: // key up
-                if(index > 0) index--; 
-                break;
-            case KEY_DOWN: // key down
-                if(index + yMax < postInfo.size()) index++;
-                break;
-            default:
-                break;
-        }
-    } while(input != 'q');
+    y = getmaxy(topDisplay); 
+    int input, index = 0;
+    int yMax = postInfo.size() > y - 7 ? y - 7 : postInfo.size();
+    int choice;
+    do { 
+        do {
+            // Print everything to screen
+            werase(topDisplay);
+            wattron(topDisplay, A_REVERSE);
+            wattron(topDisplay, COLOR_PAIR(2)); 
+            centerText(topDisplay, 0, "Use arrows to scroll or press 'q' to switch between the top and bottom menu");
+            centerText(topDisplay, 3, "Welcome to your Homescreen");
+            centerText(topDisplay, 4, "-------------------- Posts  --------------------");
+            mvwprintw(topDisplay, 5, 0, border.c_str());
+            wattroff(topDisplay, COLOR_PAIR(2)); 
+            wattron(topDisplay, COLOR_PAIR(1)); 
+            for(int i = 0; i < yMax; ++i) {
+                mvwprintw(topDisplay, i + 7, 0, "%s", postInfo[index + i].c_str());
+            }
+            wattroff(topDisplay, COLOR_PAIR(1));
+            wattroff(topDisplay, A_REVERSE);
+                    
+            // initialize some information to be used in loop
+            refresh();
+            wrefresh(topDisplay);
+
+            // Get next character for scrolling
+            input = wgetch(topDisplay);
+            switch(input) {
+                case KEY_UP: // key up
+                    if(index > 0) index--; 
+                    break;
+                case KEY_DOWN: // key down
+                    if(index + yMax < postInfo.size()) index++;
+                    break;
+                default:
+                    break;
+            }
+        } while(input != 'q');
+        choice = menu_setup(bottomMenuDisplay, mainMenu, n_main);
+    } while(choice == 'q');
+
+
 
     wmove(bottomMenuDisplay, 0,0);
     refresh();
 
-    int choice = menu_setup(bottomMenuDisplay, mainMenu, n_main);
-
+    
     // Cleanup
     delwin(topDisplay);
     delwin(bottomMenuDisplay);
@@ -1058,6 +1070,8 @@ int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
         case 10: // 10 = int for enter
             choice = *highlight; 
             return choice; 
+        case 'q':
+            return 'q';
         default:
             mvwprintw(stdscr, a, b,  "Press enter to select");
             refresh(); 

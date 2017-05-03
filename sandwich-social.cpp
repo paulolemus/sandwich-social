@@ -15,6 +15,7 @@
 
 #include <ncurses.h>
 
+#include "FileIO.h"
 #include "Trie.h"
 #include "Post.h"
 #include "User.h"

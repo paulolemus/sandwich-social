@@ -327,8 +327,8 @@ GUI::Type GUI::homeScreen() {
             wattron(topDisplay, A_REVERSE);
             wattron(topDisplay, COLOR_PAIR(2)); 
             centerText(topDisplay, 0, "Use arrows to scroll or press 'q' to switch between the top and bottom menu");
-            centerText(topDisplay, 3, "Welcome to your Homescreen");
-            centerText(topDisplay, 4, "-------------------- Posts  --------------------");
+            centerText(topDisplay, 3, "Welcome " + currUser->getUsername() + " to your Homescreen");
+  	    centerText(topDisplay, 4, "-------------------- Posts  --------------------");
             mvwprintw(topDisplay, 5, 0, border.c_str());
             wattroff(topDisplay, COLOR_PAIR(2)); 
             wattron(topDisplay, COLOR_PAIR(1)); 

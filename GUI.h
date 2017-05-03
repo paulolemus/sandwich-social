@@ -31,6 +31,17 @@ class GUI {
     sandwich::User*&                                  currUser;
 
     const std::string EXIT_STR = "EXIT_STR_NOW_SPECIAL#$%";
+    std::string mainMenu[7] = 
+    {
+        "Post to Wall", 
+        "View Friend List", 
+        "Add Friend", 
+        "Edit Your Bio", 
+        "View Friend", 
+        "Delete Friend", 
+        "Logout"
+    }; 
+    int n_main = sizeof(mainMenu) / sizeof(std::string);
 
 public:
     enum class Type : int {
@@ -44,8 +55,6 @@ public:
         LOGOUT,
         QUIT
     };
-    std::string mainMenu[7] = {"Post to Wall", "View Friend List", "Add Friend", "Edit Your Bio", "View Friend", "Delete Friend", "Logout"}; 
-    int n_main = sizeof(mainMenu) / sizeof(std::string);
     GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
         sandwich::Trie<sandwich::User*>&                  trie,
         sandwich::User*&                                  currUser);

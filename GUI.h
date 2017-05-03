@@ -513,7 +513,7 @@ void GUI::addFriendScreen() {
             delwin(dataWindow);
             return;
         }
-        else if(ch == 127) { // delete
+        else if(ch == KEY_BACKSPACE) { // delete 127
             if(xCurr > xMin) {
                 mvwaddch(inputWindow, 0, --xCurr, ' ');
                 if(usernameInput.size() > 0) usernameInput.pop_back();
@@ -617,6 +617,7 @@ void GUI::viewFriendScreen() {
 	WINDOW* topWindow   = newwin(y * 0.625 - 4, x - 14, 2, 7);
 	WINDOW* inputWindow = newwin(1, 80, 3, centerX(topWindow) - 35);
     WINDOW* dataWindow  = newwin(y * 0.625 - 8, x - 14, 2 + 4, 7);
+    keypad(inputWindow, true);
     getmaxyx(topWindow, y, x);
 	wbkgd(inputWindow, COLOR_PAIR(1));
 	wmove(inputWindow, 0, 0);
@@ -645,15 +646,18 @@ void GUI::viewFriendScreen() {
 
         // User input begin
         if(ch == 27) { // esc
-            // TODO
+            delwin(topWindow);
+            delwin(inputWindow);
+            delwin(dataWindow);
+            return;
         }
-        else if(ch == 127) { // delete
+        else if(ch == KEY_BACKSPACE) { // delete
             if(xCurr > xMin) {
                 mvwaddch(inputWindow, 0, --xCurr, ' ');
                 if(usernameInput.size() > 0) usernameInput.pop_back();
             }
         }
-        else {
+        else if(isalpha(ch) || ch == ' ') {
             if(xCurr < xMax) {
                 mvwaddch(inputWindow, 0, xCurr++, ch);
                 usernameInput += ch;
@@ -847,6 +851,7 @@ void GUI::removeFriendScreen() {
 	WINDOW* topWindow   = newwin(y * 0.625 - 4, x - 14, 2, 7);
 	WINDOW* inputWindow = newwin(1, 80, 3, centerX(topWindow) - 35);
     WINDOW* dataWindow  = newwin(y * 0.625 - 8, x - 14, 2 + 4, 7);
+    keypad(inputWindow, true);
     getmaxyx(topWindow, y, x);
 	wbkgd(inputWindow, COLOR_PAIR(1));
 	wmove(inputWindow, 0, 0);
@@ -875,15 +880,18 @@ void GUI::removeFriendScreen() {
 
         // User input begin
         if(ch == 27) { // esc
-            // TODO
+            delwin(topWindow);
+            delwin(inputWindow);
+            delwin(dataWindow);
+            return;
         }
-        else if(ch == 127) { // delete
+        else if(ch == KEY_BACKSPACE) { // delete
             if(xCurr > xMin) {
                 mvwaddch(inputWindow, 0, --xCurr, ' ');
                 if(usernameInput.size() > 0) usernameInput.pop_back();
             }
         }
-        else {
+        else if(isalpha(ch) || ch == ' ') {
             if(xCurr < xMax) {
                 mvwaddch(inputWindow, 0, xCurr++, ch);
                 usernameInput += ch;

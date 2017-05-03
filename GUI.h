@@ -31,7 +31,7 @@ class GUI {
     sandwich::User*&                                  currUser;
 
     const std::string EXIT_STR = "EXIT_STR_NOW_SPECIAL#$%";
-    std::string mainMenu[7] = 
+    const std::string mainMenu[7] = 
     {
         "Post to Wall", 
         "View Friend List", 
@@ -41,7 +41,7 @@ class GUI {
         "Delete Friend", 
         "Logout"
     }; 
-    int n_main = sizeof(mainMenu) / sizeof(std::string);
+    const int n_main = sizeof(mainMenu) / sizeof(std::string);
 
 public:
     enum class Type : int {

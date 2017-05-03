@@ -33,46 +33,66 @@ int main() {
     std::unordered_map<std::string, sandwich::User*> userMap;
     sandwich::Trie<sandwich::User*>                  trie;
     sandwich::FileIO                                 fileIO("users.dat", "friends.dat");
-    std::vector<sandwich::User*>		     IOusers = fileIO.readUsers();
-    std::vector<std::vector<std::string>> 	     IOfriends = fileIO.readFriends();
 
+    // Loop to populate map and trie with users from file
+    {
+        std::vector<sandwich::User*>          IOusers   = fileIO.readUsers();
+        std::vector<std::vector<std::string>> IOfriends = fileIO.readFriends();
 
-    //puts friend data into users
-    for(unsigned int IOcounter = 0; IOcounter < IOfriends.size(); IOcounter++){				 //iterate vct strings
-    	for(unsigned int IOcounter2 = 0; IOcounter2 < IOusers.size(); IOcounter2++){			 //iterate vct users
-	    if(IOfriends[IOcounter][0] == IOusers[IOcounter2]->getUsername()){				 //username matches first string
-	     	for(unsigned int IOcounter3 = 1; IOcounter3 < IOfriends[IOcounter].size(); IOcounter3++){//iterate friends
-		    for(unsigned int IOcounter4 = 0; IOcounter4 < IOusers.size(); IOcounter4++){	 //iterate users
-			if(IOfriends[IOcounter][IOcounter3] == IOusers[IOcounter4]->getUsername()){	 //friend matches username
-			     IOusers[IOcounter2]->addFriend(IOusers[IOcounter4]);			 //IOfriends[IOcounter][IOcounter3] is a string
-		     	}
-		    }
-	        }
-	    }
+        // Add to map
+        for(auto userPtr : IOusers) {
+            userMap[userPtr->getLower()] = userPtr;
+            trie.store(userPtr->getUsername(), userPtr);
+            trie.store(userPtr->getName(),     userPtr);
+        }
+
+        // Update all user's friends
+        for(unsigned int i = 0; i < IOfriends.size(); ++i) {
+            std::string topUsername = sandwich::User::lowercaseify(IOfriends[i][0]);
+            sandwich::User* topUser = nullptr;
+
+            // Get the current user to add the friends to
+            auto topUserMatches = trie.get(topUsername);
+            for(unsigned int j = 0; j < topUserMatches.size(); ++j) {
+                if(topUserMatches[j]->getLower() == topUsername) {
+                    topUser = topUserMatches[j];
+                    j = topUserMatches.size();
+                }
+            }
+
+            // If the top user exists and has friends, add all of them to user's friend list
+            if(topUser != nullptr && IOfriends[i].size() > 1) {
+                for(unsigned int j = 1; j < IOfriends[i].size(); ++j) {
+                    std::string friendUsername = sandwich::User::lowercaseify(IOfriends[i][j]);
+                    sandwich::User* friendPtr  = nullptr;
+                    auto friendMatches = trie.get(friendUsername);
+
+                    for(unsigned int k = 0; k < friendMatches.size(); ++k) {
+                        if(friendMatches[k]->getLower() == friendUsername) {
+                            friendPtr = friendMatches[k];
+                            k = friendMatches.size();
+                        }
+                    }
+                    if(friendPtr != nullptr) {
+                        topUser->addFriend(friendPtr);
+                    }
+                }
+            }
         }
     }
 
-    for(unsigned int IOcounter = 0; IOcounter < IOusers.size(); IOcounter++){
-    	userMap.insert({IOusers[IOcounter]->getLower(),IOusers[IOcounter]});//adds users into map
-    }
-
-    for(unsigned int IOcounter = 0;IOcounter < IOusers.size(); IOcounter++){//adds users into trie
-    	trie.add(IOusers[IOcounter]->getUsername());
-	trie.add(IOusers[IOcounter]->getName());
-	trie.store(IOusers[IOcounter]->getUsername(), IOusers[IOcounter]);
-	trie.store(IOusers[IOcounter]->getName(), IOusers[IOcounter]);
-    }
-
-
-
+    // Current user who is logged in
     sandwich::User* currUser;
 
     sandwich::GUI gui(userMap, trie, currUser);
     gui.checkScreenSize();
-    gui.memberListSetup();
+    //gui.memberListSetup();
 
+    // This is the start of the GUI. This login screen is the initial login that
+    // sets the current user or creates a new one if needed.
+    // The while loop is what will loop through each window until the user decided to 
+    // quit the program.
     sandwich::GUI::Type nextScreen = gui.loginScreen();
-
     while(nextScreen != sandwich::GUI::Type::QUIT) {
 
         while(nextScreen != sandwich::GUI::Type::LOGOUT &&

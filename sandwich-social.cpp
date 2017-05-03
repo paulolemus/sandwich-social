@@ -43,7 +43,7 @@ int main() {
 	    if(IOfriends[IOcounter][0] == IOusers[IOcounter2]->getUsername()){				 //username matches first string
 	     	for(unsigned int IOcounter3 = 1; IOcounter3 < IOfriends[IOcounter].size(); IOcounter3++){//iterate friends
 		    for(unsigned int IOcounter4 = 0; IOcounter4 < IOusers.size(); IOcounter4++){	 //iterate users
-			if(IOfriends[IOcounter][IOcounter3] == IOusers[IOcounter4].getUsername()){	 //friend matches username
+			if(IOfriends[IOcounter][IOcounter3] == IOusers[IOcounter4]->getUsername()){	 //friend matches username
 			     IOusers[IOcounter2]->addFriend(IOusers[IOcounter4]);			 //IOfriends[IOcounter][IOcounter3] is a string
 		     	}
 		    }
@@ -52,9 +52,9 @@ int main() {
         }
     }
 
-    userMap.insert({->getLower(), });//adds users into map
+    //userMap.insert({->getLower(), });//adds users into map
 
-    for(IOcounter = 0;IOcounter < IOusers.size(); IOcounter++){//adds users into trie
+    for(unsigned int IOcounter = 0;IOcounter < IOusers.size(); IOcounter++){//adds users into trie
     	trie.add(IOusers[IOcounter]->getUsername());
 	trie.add(IOusers[IOcounter]->getName());
 	trie.store(IOusers[IOcounter]->getUsername(), IOusers[IOcounter]);

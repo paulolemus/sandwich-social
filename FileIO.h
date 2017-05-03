@@ -221,10 +221,23 @@ std::vector<std::vector<std::string>> FileIO::readFriends() {
 
 void FileIO::writeUser(const sandwich::User* const user) {
 
-    std::ofstream myfile;
+    std::ofstream outfile(userFileName, std::ofstream::app);
+    std::vector<sandwich::Post>  P1 = user->getPosts();  
 
-    if(myfile){
+    if(outfile){
+	outfile << validusername  << user->getUsername() << std::endl;
+	outfile << validname 	  << user->getName()	 << std::endl;
+	outfile << validbio       << user->getBio()  	 << std::endl;
+	outfile << std::endl;
 
+	for(int counter1 = 0; counter1 < P1.size(); counter1++){
+		outfile << validpost 	  << P1[counter1].getMsg() 	<< std::endl;
+		outfile << validtime	  << P1[counter1].getTime() 	<< std::endl;
+		outfile << std::endl;
+	}
+
+	outfile << endpostflag	  << std::endl;	
+	outfile.close();
     } else {
         std::cout << "ERROR: FILE NOT FOUND" << std::endl;
     }

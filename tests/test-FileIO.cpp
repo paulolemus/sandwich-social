@@ -78,7 +78,7 @@ TEST(FileIO, readfriends){
 		}
 	}
 }
-/*
+
 TEST(FileIO, writeusers){
 	
 	const std::string inputUsertempFile = "usertemp.dat";
@@ -86,23 +86,24 @@ TEST(FileIO, writeusers){
 	std::vector<std::string> S1, S2;
 	std::string p1, p2;
 
-	sandwich::User* U1 = new User("pauloasdf","Paulo Lemus","Everytime I turn a corner I take an L.");
+	sandwich::User* U1 = new sandwich::User("pauloasdf","Paulo Lemus","Everytime I turn a corner I take an L.");
 	p1 = "\"That moment when peeing feels so good you start crying\"";
 	p2 = "timestamp here";
 	U1->addPost({p1,p2});
 
-	sandwich::User* U2 = new User("jessieG","Jessie G","Hippy life | Yo yo dawg | 920");
+	sandwich::User* U2 = new sandwich::User("jessieG","Jessie G","Hippy life | Yo yo dawg | 920");
 	p1 = "Sup sup yo yo yo yo yo yo I got this freeesh mixtape hit up my soundcloud jessieG";
 	p2 = "timestamp here";
 	U2->addPost({p1,p2});
 
-	sandwich::User* U3 = new User("YamaSama","Matt Y","Anime wo suuuuugoi desu nee");
+	sandwich::User* U3 = new sandwich::User("YamaSama","Matt Y","Anime wo suuuuugoi desu nee");
 	p1 = "I prayed and then jesus took the wheel";
 	p2 = "timestamp here";
 	U3->addPost({p1,p2});
 
 	//ADD posts
-	
+	std::ofstream outfile(inputUsertempFile, std::ofstream::out);
+	outfile.close();	
 	f1.writeUser(U1);//write into new file
 	f1.writeUser(U2);
 	f1.writeUser(U3);
@@ -129,12 +130,12 @@ TEST(FileIO, writeusers){
 		myfile.close();
 	}
 
-	for(int counter1 = 0; counter1 < S1.size(); counter1++){//compare that S1 and S2 are equal
+	for(unsigned int counter1 = 0; counter1 < S1.size(); counter1++){//compare that S1 and S2 are equal
 		ASSERT_EQ(S1[counter1], S2[counter1]);
 	}
 
 }
-
+/*
 TEST(FileIO, writefriends){
 	
 	std::string inputFriendstempFile = "friendstemp.dat";

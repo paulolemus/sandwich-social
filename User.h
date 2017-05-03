@@ -72,7 +72,7 @@ public:
     bool addFriend   (const User* user);
     bool removeFriend(const User* user);
     bool hasFriend   (const User* user);
-    std::vector<const sandwich::User*> getFriends();
+    std::vector<const sandwich::User*> getFriends() const;
 
     // Special
     static bool        validateStr(const std::string& str);
@@ -162,7 +162,7 @@ bool User::hasFriend(const User* user) {
     return false;
 }
 
-std::vector<const sandwich::User*> User::getFriends() {
+std::vector<const sandwich::User*> User::getFriends() const{
     return friends;
 }
 

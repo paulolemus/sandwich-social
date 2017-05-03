@@ -135,18 +135,20 @@ TEST(FileIO, writeusers){
 	}
 
 }
-/*
+
 TEST(FileIO, writefriends){
 	
 	std::string inputFriendstempFile = "friendstemp.dat";
 	sandwich::FileIO f1(inputUserFile, inputFriendstempFile);
 	std::vector<std::string> S1, S2;
 	std::string p1;
+	std::ofstream outfile(inputFriendstempFile,std::ofstream::out);
+	outfile.close();
 
 	//create users
-	sandwich::User* U1 = new User("pauloasdf","Paulo Lemus","Everytime I turn a corner I take an L.");
-	sandwich::User* U2 = new User("jessieG","Jessie G","Hippy life | Yo yo dawg | 920");
-	sandwich::User* U3 = new User("YamaSama","Matt Y","Anime wo suuuuugoi desu nee");
+	sandwich::User* U1 = new sandwich::User("pauloasdf","Paulo Lemus","Everytime I turn a corner I take an L.");
+	sandwich::User* U2 = new sandwich::User("jessieG","Jessie G","Hippy life | Yo yo dawg | 920");
+	sandwich::User* U3 = new sandwich::User("YamaSama","Matt Y","Anime wo suuuuugoi desu nee");
 	
 	U1->addFriend(U2);//add friends into users
 	U1->addFriend(U3);//returns bool, check if this is ok
@@ -179,14 +181,14 @@ TEST(FileIO, writefriends){
 		myfile.close();
 	}
 
-	for(int counter1 = 0; counter1 < S1.size(); counter1++){//compare each line
+	for(unsigned int counter1 = 0; counter1 < S1.size(); counter1++){//compare each line
 		ASSERT_EQ(S1[counter1], S2[counter1]);
 	}
 
 
 }
 
-*/
+
 int main(int argc, char** argv){
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();

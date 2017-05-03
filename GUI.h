@@ -12,15 +12,16 @@
 #ifndef SANDWICH_GUI_H_
 #define SANDWICH_GUI_H_
 
-#include <algorithm>
 #include <ncurses.h>
+
+#include <algorithm>
 #include <cstdlib>
+#include <ctime>
 #include <unordered_map>
 #include <vector>
 #include <string>
 #include "User.h"
 #include "Trie.h"
-#include <ctime>
 
 namespace sandwich {
 
@@ -28,6 +29,8 @@ class GUI {
     std::unordered_map<std::string, sandwich::User*>& userMap;
     sandwich::Trie<sandwich::User*>&                  trie;
     sandwich::User*&                                  currUser;
+
+    const std::string EXIT_STR = "EXIT_STR_NOW_SPECIAL#$%";
 
 public:
     enum class Type : int {
@@ -42,12 +45,12 @@ public:
         QUIT
     };
     std::string mainMenu[7] = {"Post to Wall", "View Friend List", "Add Friend", "Edit Your Bio", "View Friend", "Delete Friend", "Logout"}; 
-    int n_main = sizeof(mainMenu)/sizeof(std::string); 
+    int n_main = sizeof(mainMenu) / sizeof(std::string);
     GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
         sandwich::Trie<sandwich::User*>&                  trie,
         sandwich::User*&                                  currUser);
 
-    ~GUI(); 
+    ~GUI();
     Type loginScreen();
     Type homeScreen();
 
@@ -63,10 +66,9 @@ public:
     int centerY(WINDOW *w); //returns the center y location of the window
     int centerX(WINDOW *w);  //returns the center x location of the window
 
-    std::string payload(WINDOW* w, char s);
-    void print_menu(WINDOW* w, int h, int n, std::string s[],int d); 
+    void print_menu(WINDOW* w, int h, int n, std::string s[], int d);
     int menu_selector(int n, int c, int* highlight, int a, int b);
-    int menu_setup(WINDOW* w, int d, std::string inputArray[], int n); 
+    int menu_setup(WINDOW* w, int d, std::string inputArray[], int n);
     std::string userInput(WINDOW* w, int max);
     Type submit_selection(WINDOW* w, int choice);
 
@@ -128,8 +130,12 @@ GUI::Type GUI::loginScreen() {
     // variable to hold return option
     sandwich::GUI::Type returnOption;
 
+    // Check for exit string
+    if(loginName == EXIT_STR) {
+        returnOption = sandwich::GUI::Type::QUIT;
+    }
     // verify login is correct
-    if(!sandwich::User::validateStr(loginName)) {
+    else if(!sandwich::User::validateStr(loginName)) {
         returnOption = sandwich::GUI::Type::LOGOUT;
     }
     // Check if the user exists in the map or the tree
@@ -236,7 +242,6 @@ GUI::Type GUI::homeScreen() {
 
     print_menu(bottomMenuDisplay, 1, n_main, mainMenu, y/4); 
     wrefresh(bottomMenuDisplay);
-    //int choice = menu_setup(bottomMenuDisplay, y * 0.25, mainMenu, n_main);
 
 
     auto friends = currUser->getFriends();
@@ -339,16 +344,18 @@ void GUI::postWallScreen() {
     wrefresh(postWin);
 
     std::string postInput = userInput(postWin, 104);
-    sandwich::Post post(postInput);
-    currUser->addPost(post);
+    if(postInput != EXIT_STR) {
+        sandwich::Post post(postInput);
+        currUser->addPost(post);
 
-    mvwprintw(topDisplay,(y - 4) * 0.25 + 6, 2, "At %s, you posted: ", post.getCTime());
-    mvwprintw(topDisplay,(y - 4) * 0.25 + 7, 2, "%s", post.getCMsg()); 
-    mvwprintw(topDisplay,(y - 4) * 0.25 + 9, 2, "Press any key to continue"); 
-    curs_set(0);
-    wrefresh(topDisplay);
-    refresh();
-    getch();
+        mvwprintw(topDisplay,(y - 4) * 0.25 + 6, 2, "At %s, you posted: ", post.getCTime());
+        mvwprintw(topDisplay,(y - 4) * 0.25 + 7, 2, "%s", post.getCMsg()); 
+        mvwprintw(topDisplay,(y - 4) * 0.25 + 9, 2, "Press any key to continue"); 
+        curs_set(0);
+        wrefresh(topDisplay);
+        refresh();
+        getch();
+    }
 }
 
 
@@ -811,17 +818,20 @@ void GUI::editProfileScreen() {
     refresh();
 
     bioString = userInput(bioWindow, 104);
-    currUser->setBio(bioString);
-    std::string newBioString = currUser->getBio();
-    mvwprintw(topDisplay, 12, 0, "New Bio: %s", newBioString.c_str());  
-    wrefresh(topBox);
-    wrefresh(topDisplay);
-    refresh();
 
-    // Pseudocode
-    // 1. Display currUser username, name, and bio, then draw line
-    // 2. Display currUser's posts
-    // 3. Prompt user to enter a new bio or to press esc to quit
+    if(bioString != EXIT_STR) {
+        currUser->setBio(bioString);
+        std::string newBioString = currUser->getBio();
+        mvwprintw(topDisplay, 12, 0, "New Bio: %s", newBioString.c_str());  
+        wrefresh(topBox);
+        wrefresh(topDisplay);
+        refresh();
+    }
+    // Clear
+    delwin(topDisplay);
+    delwin(bottomMenuDisplay);
+    delwin(topBox);
+    delwin(bioWindow);
 }
 
 /* This screen allows you to remove a friend by username
@@ -965,10 +975,7 @@ void GUI::testFunc() {
 
 
 void GUI::centerText(WINDOW* w, int yLoc, std::string text){
-    int len, indent, width; 
-    width = getmaxx(w);
-    len = text.size();  
-    indent = width - len; 
+    int indent = getmaxx(w) - text.size();
     indent /= 2;
     mvwprintw(w, yLoc, indent, text.c_str()); 	
 }
@@ -979,19 +986,6 @@ int GUI::centerY(WINDOW *w){
 
 int GUI::centerX(WINDOW *w){
     return getmaxx(w) / 2;
-}
-
-std::string GUI::payload(WINDOW* w, char s){
-    std::string temp;
-    int xinput = 0;
-    while(s != 10){
-        mvwprintw(w, 0, xinput,"%c", s); 
-        xinput++;
-        wrefresh(w);
-        temp += s;
-        s = wgetch(w);
-    }
-    return temp; 
 }
 
 int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
@@ -1019,25 +1013,13 @@ int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
 std::string GUI::userInput(WINDOW* w, int max) {
     std::string str;
     char s = 0;
-    int y, x, xlast, c = 0; 
-    xlast = getmaxx(w);
-    getbegyx(w, y, x);
+    int y, x, c = 0; 
+    int xlast = getmaxx(w);
 
-    while(s != 10){
+    while(s != 10) {
         s = wgetch(w);
-        if (s == 27){
-            werase(w);
-            mvwprintw(w, 0, 0, "Press ESC to Select from the Menu or Enter to continue");
-            s = wgetch(w);
-            if (s == 27) return "back";
-            else if (s == 10){
-                wclear(w);
-                wmove(w, 0, 0);
-                wrefresh(w);
-                refresh();
-                str.clear();
-                s = wgetch(w);
-            }
+        if(s == 27) { // ESC
+            return EXIT_STR;
         }
         getyx(w, y, x); 
 
@@ -1070,8 +1052,8 @@ std::string GUI::userInput(WINDOW* w, int max) {
         }
         else mvwprintw(w, y, x, "%c", s);
         str += s; 
-        refresh(); 
         c++; 
+        refresh(); 
         wrefresh(w);
     }	
     str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
@@ -1085,7 +1067,7 @@ void GUI::print_menu(WINDOW *w, int h, int n, std::string s[], int d) {
     mvwprintw(w, 1, 1, "PRESS ENTER TO SELECT AN OPTION BELOW:"); 
     mvwprintw(w, 2, 1, "--------------------------------------"); 
 
-    for (unsigned int i = 0; i < n; ++i){
+    for (int i = 0; i < n; ++i){
         if(h == i + 1) { //highlighter = present choice
             wattron(w, A_REVERSE);
             mvwprintw(w, y, x, "%s", s[i].c_str());

@@ -78,5 +78,7 @@ int main() {
             nextScreen = gui.loginScreen();
         }
     }
+    // TODO: Write all users and friends to file:
+    
     return 0;
 }

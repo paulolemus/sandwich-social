@@ -1170,7 +1170,7 @@ void GUI::memberListSetup(){
 
     sandwich::User* user2 = new sandwich::User("jemima", "Aunt Jemima", "I'll creep on your page and tell you parents about everything you post but I make delicious pancakes");
     userMap.insert({user2->getLower(), user2});
-    trie.store(user1->getUsername(), user2);
+    trie.store(user2->getUsername(), user2);
 
     sandwich::User* user3 = new sandwich::User("thepitt", "Brad Pitt", "I'm getting old but I'm still a  #totalbabe");
     userMap.insert({user3->getLower(), user3});
@@ -1180,12 +1180,39 @@ void GUI::memberListSetup(){
     userMap.insert({user4->getLower(), user4});
     trie.store(user4->getUsername(), user4);
 
+
+    sandwich::User* user5 = new sandwich::User("thedonald", "Donald J. Trump", "Little keyboards are greeeaat for my little hands");
+    userMap.insert({user5->getLower(), user5});
+    trie.store(user5->getUsername(), user5);
+
+    sandwich::User* user6 = new sandwich::User("billyg", "Bill Gate", "I'm riiiiiiiiich "); 
+    userMap.insert({user6->getLower(), user6});
+    trie.store(user6->getUsername(), user6);
+
+    sandwich::User* user7 = new sandwich::User("biebs", "Justin Bieber", "I'm a belieber"); 
+    userMap.insert({user7->getLower(), user7});
+    trie.store(user7->getUsername(), user7);
+
+    sandwich::User* user8 = new sandwich::User("yonce", "Queen Bey", "If you like it then you shoulda putta ring on it");    
+    userMap.insert({user8->getLower(), user8});
+    trie.store(user8->getUsername(), user8);
+
+
+    
+    
+    
+    
     tester->addFriend(friend1);
     tester->addFriend(friend2);
     tester->addFriend(user1);
     tester->addFriend(user2);
     tester->addFriend(user3);
     tester->addFriend(user4);
+    tester->addFriend(user5);
+    tester->addFriend(user6);
+    tester->addFriend(user7);
+    tester->addFriend(user8);
+
 
     //giving the users some posts
     std::string postInput = "My first default Post" ;

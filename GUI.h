@@ -57,40 +57,40 @@ public:
     };
 	
     //findex
-    GUI(std::unordered_map<std::string, sandwich::User*>& userMap, 	//f01
+    GUI(std::unordered_map<std::string, sandwich::User*>& userMap, 	    //f01
         sandwich::Trie<sandwich::User*>&                  trie,
         sandwich::User*&                                  currUser);
 
-    ~GUI();								//f02
-    void testFunc();							//f03
+    ~GUI();                         								    //f02
+    void testFunc();				                    			    //f03
 	
     //the main two types of screens
-    Type loginScreen();							//f04
-    Type homeScreen();							//f05
+    Type loginScreen();							                        //f04
+    Type homeScreen();						                    	    //f05
 
     //other screen options
-    void postWallScreen();						//f06
-    void viewFriendsScreen();						//f07
-    void addFriendScreen();						//f08
-    void viewFriendScreen();						//f09
-    void editProfileScreen();						//f10
-    void removeFriendScreen();						//f11
+    void postWallScreen();						                        //f06
+    void viewFriendsScreen();					                	    //f07
+    void addFriendScreen();					                    	    //f08
+    void viewFriendScreen();						                    //f09
+    void editProfileScreen();						                    //f10
+    void removeFriendScreen();					                       	//f11
 
     //menu functions
     int menu_setup(WINDOW* w, const std::string inputArray[], int n);	//f12
     void print_menu(WINDOW* w, int h, int n, const std::string s[]);	//f13
-    int menu_selector(int n, int c, int* highlight, int a, int b);	//f14
-    Type submit_selection(WINDOW* w, int choice);			//f15
+    int menu_selector(int n, int c, int* highlight, int a, int b);	    //f14
+    Type submit_selection(WINDOW* w, int choice);			            //f15
 	
     //other functions
-    void centerText(WINDOW *w, int yLoc, std::string text); 		//f16
-    int centerY(WINDOW *w); 						//f17
-    int centerX(WINDOW *w);  						//f18
-    std::string userInput(WINDOW* w, int max);				//f19
+    void centerText(WINDOW *w, int yLoc, std::string text); 		    //f16
+    int centerY(WINDOW *w); 						                    //f17
+    int centerX(WINDOW *w);  						                    //f18
+    std::string userInput(WINDOW* w, int max);				            //f19
 	
     //functions for setup in the main driver	
-    void memberListSetup();						//f20
-    void checkScreenSize();						//f21
+    void memberListSetup();						                        //f20
+    void checkScreenSize();						                        //f21
 };
 
 //f01

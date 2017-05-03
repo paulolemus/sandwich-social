@@ -535,7 +535,8 @@ void GUI::addFriendScreen() {
         auto userPtr = userPair.second;
         auto matches = friendTrie.getComplete(userPair.first);
 
-        if (std::find(matches.begin(), matches.end(), userPtr) == matches.end()) {
+        if (std::find(matches.begin(), matches.end(), userPtr) == matches.end() &&
+            userPtr != currUser) {
             strangerTrie.store(userPtr->getUsername(), userPtr);
             strangerTrie.store(userPtr->getName(),     userPtr);
         }

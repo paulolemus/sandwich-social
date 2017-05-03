@@ -273,7 +273,7 @@ GUI::Type GUI::homeScreen() {
     box(topBox, 0, 0); 
     box(bottomMenuDisplay, 0, 0); 
     keypad(bottomMenuDisplay, true); 
-	keypad(topDisplay,        true);
+	//keypad(topDisplay,        true);
 
     // Draw all changes to screen
     wrefresh(topBox); 
@@ -312,7 +312,9 @@ GUI::Type GUI::homeScreen() {
         postInfo.push_back(border);
     }
 
- 
+        curs_set(0);
+        keypad(topDisplay, true);
+        
     int input, index = 0;
     int yMax = postInfo.size() > y - 5 ? y - 5 : postInfo.size();
     do {
@@ -330,6 +332,8 @@ GUI::Type GUI::homeScreen() {
         }
         wattroff(topDisplay, COLOR_PAIR(1));
         wattroff(topDisplay, A_REVERSE);
+                
+        // initialize some information to be used in loop
         refresh();
         wrefresh(topDisplay);
 

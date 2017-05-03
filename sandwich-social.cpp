@@ -52,7 +52,9 @@ int main() {
         }
     }
 
-    //userMap.insert({->getLower(), });//adds users into map
+    for(unsigned int IOcounter = 0; IOcounter < IOusers.size(); IOcounter++){
+    	userMap.insert({IOusers[IOcounter]->getLower(),IOusers[IOcounter]});//adds users into map
+    }
 
     for(unsigned int IOcounter = 0;IOcounter < IOusers.size(); IOcounter++){//adds users into trie
     	trie.add(IOusers[IOcounter]->getUsername());

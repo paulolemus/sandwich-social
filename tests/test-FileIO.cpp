@@ -81,7 +81,7 @@ TEST(FileIO, readfriends){
 
 TEST(FileIO, writeusers){
 	
-	const std::string inputUsertempFile = "usertemp.dat";
+	const std::string inputUsertempFile = "tests/usertemp.dat";
 	sandwich::FileIO f1(inputUsertempFile,inputFriendsFile);
 	std::vector<std::string> S1, S2;
 	std::string p1, p2;
@@ -138,7 +138,7 @@ TEST(FileIO, writeusers){
 
 TEST(FileIO, writefriends){
 	
-	std::string inputFriendstempFile = "friendstemp.dat";
+	std::string inputFriendstempFile = "tests/friendstemp.dat";
 	sandwich::FileIO f1(inputUserFile, inputFriendstempFile);
 	std::vector<std::string> S1, S2;
 	std::string p1;

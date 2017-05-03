@@ -177,16 +177,28 @@ GUI::Type GUI::loginScreen() {
 
         // Get name from user input
         std::string nameString = userInput(nameWindow, 26);
+        if(nameString == EXIT_STR) {
+            delwin(mainWindow);
+            delwin(inputWindow);
+            delwin(outerBox);
+            return sandwich::GUI::Type::LOGOUT;
+        }
         wrefresh(mainWindow);
         wrefresh(nameWindow);
         wmove(bioWindow, 0, 0);
 
         // Get bio from user input
         std::string bioString = userInput(bioWindow, 104);
+        if(bioString == EXIT_STR) {
+            delwin(mainWindow);
+            delwin(inputWindow);
+            delwin(outerBox);
+            return sandwich::GUI::Type::LOGOUT;
+        }
 
         // Add a new user with the obtained information
         if(sandwich::User::validateStr(loginName)  && 
-                sandwich::User::validateStr(nameString) ) {
+           sandwich::User::validateStr(nameString) ) {
 
             currUser = new sandwich::User(loginName, nameString, bioString);
             userMap[currUser->getLower()] = currUser;
@@ -241,7 +253,7 @@ GUI::Type GUI::homeScreen() {
     box(topBox, 0, 0); 
     box(bottomMenuDisplay, 0, 0); 
     keypad(bottomMenuDisplay, true); 
-	keypad(topDisplay, true);
+	keypad(topDisplay,        true);
 
     // Draw all changes to screen
     wrefresh(topBox); 

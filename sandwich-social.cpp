@@ -30,7 +30,10 @@ int main() {
      */
     std::unordered_map<std::string, sandwich::User*> userMap;
     sandwich::Trie<sandwich::User*>                  trie;
-    //sandwich::FileIO                                 fileIO;
+    sandwich::FileIO                                 fileIO("users.dat", "friends.dat");
+    std::vector<sandwich::User*>		     IOusers = fileIO.readUsers();
+    std::vector<std::vector<std:string>> 	     IOfriends = fileIO.readFriends();
+
 
     sandwich::User* currUser;
 

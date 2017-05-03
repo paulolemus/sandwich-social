@@ -75,9 +75,9 @@ public:
     int centerY(WINDOW *w); //returns the center y location of the window
     int centerX(WINDOW *w);  //returns the center x location of the window
 
-    void print_menu(WINDOW* w, int h, int n, const std::string s[], int d);
+    void print_menu(WINDOW* w, int h, int n, const std::string s[]);
     int menu_selector(int n, int c, int* highlight, int a, int b);
-    int menu_setup(WINDOW* w, int d, const std::string inputArray[], int n);
+    int menu_setup(WINDOW* w, const std::string inputArray[], int n);
     std::string userInput(WINDOW* w, int max);
     Type submit_selection(WINDOW* w, int choice);
 
@@ -249,7 +249,7 @@ GUI::Type GUI::homeScreen() {
     wrefresh(topDisplay); 
     refresh();  
 
-    print_menu(bottomMenuDisplay, 1, n_main, mainMenu, y/4); 
+    print_menu(bottomMenuDisplay, 1, n_main, mainMenu); 
     wrefresh(bottomMenuDisplay);
 
 
@@ -318,7 +318,7 @@ GUI::Type GUI::homeScreen() {
     wmove(bottomMenuDisplay, 0,0);
     refresh();
 
-    int choice = menu_setup(bottomMenuDisplay, y * 0.25, mainMenu, n_main);
+    int choice = menu_setup(bottomMenuDisplay, mainMenu, n_main);
 
     // Cleanup
     delwin(topDisplay);
@@ -1069,7 +1069,7 @@ std::string GUI::userInput(WINDOW* w, int max) {
     return str; 
 }
 
-void GUI::print_menu(WINDOW *w, int h, int n, const std::string s[], int d) {
+void GUI::print_menu(WINDOW *w, int h, int n, const std::string s[]) {
 
     int x = 2, y = 3;
     box(w, 0, 0); 
@@ -1088,16 +1088,16 @@ void GUI::print_menu(WINDOW *w, int h, int n, const std::string s[], int d) {
     wrefresh(w); 
 }
 
-int GUI::menu_setup(WINDOW* w, int d, const std::string inputArray[], int n){ 
+int GUI::menu_setup(WINDOW* w, const std::string inputArray[], int n){ 
     int choice = 0;
     int h = 1;
     int y, x; 
     getmaxyx(stdscr, y, x); 
-    print_menu(w, h, n, inputArray, d); 
+    print_menu(w, h, n, inputArray);
     while(choice == 0){
         int c  = wgetch(w); 
         choice = menu_selector(n, c, &h, y - 1, 5);  
-        print_menu(w, h, n, inputArray, d);  
+        print_menu(w, h, n, inputArray);
     }
     return choice; 
 }

@@ -230,7 +230,7 @@ void FileIO::writeUser(const sandwich::User* const user) {
 	outfile << validbio       << user->getBio()  	 << std::endl;
 	outfile << std::endl;
 
-	for(int counter1 = 0; counter1 < P1.size(); counter1++){
+	for(unsigned int counter1 = 0; counter1 < P1.size(); counter1++){
 		outfile << validpost 	  << P1[counter1].getMsg() 	<< std::endl;
 		outfile << validtime	  << P1[counter1].getTime() 	<< std::endl;
 		outfile << std::endl;
@@ -245,8 +245,17 @@ void FileIO::writeUser(const sandwich::User* const user) {
 
 void FileIO::writeFriends(const sandwich::User* const user) {
 
-}
+     std::ofstream outfile(friendsFileName, std::ofstream::app);
+     std::vector<const sandwich::User*> V1 = user->getFriends();
 
+     outfile << user->getUsername() << fuserflag << std::endl;
+
+     for(unsigned int counter = 0; counter < V1.size(); counter++){
+     	 outfile << V1[counter]->getUsername() << std::endl;
+     }
+     outfile << std::endl;
+    	 outfile.close();
+}
 
 } // namespace sandwich
 

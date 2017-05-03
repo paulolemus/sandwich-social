@@ -246,10 +246,6 @@ username: leroy
 name    : LeRoy B
 bio     : I'm the real OG
 
-<<<<<<< HEAD
-POST: I prayed and then jesus took the wheel
-TIME: Mon May  1 14:12:45 2017
-=======
 POST: My first default Post
 TIME: Tue May  2 20:33:25 2017
 
@@ -258,7 +254,6 @@ TIME: Tue May  2 20:33:26 2017
 
 POST: My first default Post
 TIME: Tue May  2 20:35:59 2017
->>>>>>> f76d7a836741376138249e15bb836ae41a74ed04
 
 END_POSTS
 

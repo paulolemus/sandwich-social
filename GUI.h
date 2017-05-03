@@ -75,9 +75,9 @@ public:
     int centerY(WINDOW *w); //returns the center y location of the window
     int centerX(WINDOW *w);  //returns the center x location of the window
 
-    void print_menu(WINDOW* w, int h, int n, std::string s[], int d);
+    void print_menu(WINDOW* w, int h, int n, const std::string s[], int d);
     int menu_selector(int n, int c, int* highlight, int a, int b);
-    int menu_setup(WINDOW* w, int d, std::string inputArray[], int n);
+    int menu_setup(WINDOW* w, int d, const std::string inputArray[], int n);
     std::string userInput(WINDOW* w, int max);
     Type submit_selection(WINDOW* w, int choice);
 
@@ -1069,7 +1069,7 @@ std::string GUI::userInput(WINDOW* w, int max) {
     return str; 
 }
 
-void GUI::print_menu(WINDOW *w, int h, int n, std::string s[], int d) {
+void GUI::print_menu(WINDOW *w, int h, int n, const std::string s[], int d) {
 
     int x = 2, y = 3;
     box(w, 0, 0); 
@@ -1088,7 +1088,7 @@ void GUI::print_menu(WINDOW *w, int h, int n, std::string s[], int d) {
     wrefresh(w); 
 }
 
-int GUI::menu_setup(WINDOW* w, int d, std::string inputArray[], int n){ 
+int GUI::menu_setup(WINDOW* w, int d, const std::string inputArray[], int n){ 
     int choice = 0;
     int h = 1;
     int y, x; 

@@ -129,7 +129,6 @@ int main() {
             nextScreen = gui.loginScreen();
         }
     }
-    // TODO: Write all users and friends to file:
     
     // Write everything back to file
     {
@@ -140,9 +139,9 @@ int main() {
         outfile.open("friends.dat", std::ofstream::out);
         outfile.close();
 
-        for(unsigned int counter = 0; counter < IOusers.size(); counter++){
+        for(unsigned int counter = 0; counter < IOusers.size(); ++counter) {
             fileIO.writeUser(IOusers[counter]);
-        fileIO.writeFriends(IOusers[counter]);
+            fileIO.writeFriends(IOusers[counter]);
         }
     }
 

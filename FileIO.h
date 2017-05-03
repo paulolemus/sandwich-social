@@ -156,7 +156,7 @@ std::vector<sandwich::User*> FileIO::readUsers() {
 
                                     s1 = s1.substr(validpost.size());//extract substrings
                                     s2 = s2.substr(validtime.size());
-                                    U->addPost({s1, s2});//new post
+                                    U->addPost(sandwich::Post(s1, s2));//new post
 
                                 }else{
                                     que.push(s2);

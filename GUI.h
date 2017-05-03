@@ -462,6 +462,7 @@ void GUI::addFriendScreen() {
 	WINDOW* topWindow   = newwin(y * 0.625 - 4, x - 14, 2, 7);
 	WINDOW* inputWindow = newwin(1, 80, 3, centerX(topWindow) - 35);
     WINDOW* dataWindow  = newwin(y * 0.625 - 8, x - 14, 2 + 4, 7);
+    keypad(inputWindow, true);
     getmaxyx(topWindow, y, x);
 	wbkgd(inputWindow, COLOR_PAIR(1));
 	wmove(inputWindow, 0, 0);
@@ -479,31 +480,19 @@ void GUI::addFriendScreen() {
         friendTrie.store(person->getName(),     person);
     }
 
-    
-    // Populate a new Trie with the strangers to this user
-    std::string username;
-    std::string name;
+    // Populate a stranger Trie with all users that are not your friends.
+    // Iterate through each user in the userMap. Check if it exists in the
+    // friendTrie. If it does not, then add it to the strangerTrie.
     sandwich::Trie<const sandwich::User*> strangerTrie;
-    //int i =0; //for debugging
-    sandwich::User* tempUser;
-    for (auto it = userMap.begin(); it != userMap.end(); it++){
-        username = it->first;
-        name = it->second->getName();
-        auto usernameMatches = friendTrie.getComplete(username);
-        auto nameMatches = friendTrie.getComplete(name);
-        if (usernameMatches.size()<1 && nameMatches.size()<1 && username !=currUser->getUsername()){
-            //mvwprintw(topWindow, 16+i, 0, "Username: %s", username.c_str());       
-            //mvwprintw(topWindow, 16+i, 30, "Name: %s", name.c_str()); 
-            //i ++;
-            tempUser = userMap[username];
-            strangerTrie.store(tempUser->getUsername(), tempUser);
-            strangerTrie.store(tempUser->getName(), tempUser);
+    for(auto userPair : userMap){
+
+        auto userPtr = userPair.second;
+        auto matches = friendTrie.getComplete(userPair.first);
+
+        if (std::find(matches.begin(), matches.end(), userPtr) == matches.end()) {
+            strangerTrie.store(userPtr->getUsername(), userPtr);
+            strangerTrie.store(userPtr->getName(),     userPtr);
         }
-        // debugging and testing
-        //auto strangers = strangerTrie.getComplete(username);
-        //if (strangers.size()>0){
-        //    mvwprintw(topWindow, 25+i, 0, "found %s", username.c_str());
-        //}
     }
 
     wrefresh(topWindow);
@@ -519,7 +508,10 @@ void GUI::addFriendScreen() {
 
         // User input begin
         if(ch == 27) { // esc
-            // TODO
+            delwin(topWindow);
+            delwin(inputWindow);
+            delwin(dataWindow);
+            return;
         }
         else if(ch == 127) { // delete
             if(xCurr > xMin) {
@@ -527,7 +519,7 @@ void GUI::addFriendScreen() {
                 if(usernameInput.size() > 0) usernameInput.pop_back();
             }
         }
-        else {
+        else if(isalpha(ch) || ch == ' ') {
             if(xCurr < xMax) {
                 mvwaddch(inputWindow, 0, xCurr++, ch);
                 usernameInput += ch;

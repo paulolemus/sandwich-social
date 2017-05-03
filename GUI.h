@@ -548,7 +548,7 @@ void GUI::addFriendScreen() {
             delwin(dataWindow);
             return;
         }
-        else if(ch == KEY_BACKSPACE) { // delete 127
+        else if(ch == KEY_BACKSPACE || ch == 127) { // delete 127
             if(xCurr > xMin) {
                 mvwaddch(inputWindow, 0, --xCurr, ' ');
                 if(usernameInput.size() > 0) usernameInput.pop_back();
@@ -687,7 +687,7 @@ void GUI::viewFriendScreen() {
             delwin(dataWindow);
             return;
         }
-        else if(ch == KEY_BACKSPACE) { // delete
+        else if(ch == KEY_BACKSPACE || ch == 127) { // delete
             if(xCurr > xMin) {
                 mvwaddch(inputWindow, 0, --xCurr, ' ');
                 if(usernameInput.size() > 0) usernameInput.pop_back();

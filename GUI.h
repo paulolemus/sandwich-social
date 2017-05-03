@@ -475,7 +475,7 @@ void GUI::viewFriendsScreen() {
                 default:
                     break;
             }
-        } while(input != 'q');
+        } while(input != 'q' && input != 27);
     }
     // clean up
     delwin(topDisplay);

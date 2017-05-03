@@ -55,37 +55,45 @@ public:
         LOGOUT,
         QUIT
     };
-    GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
+	
+    //findex
+    GUI(std::unordered_map<std::string, sandwich::User*>& userMap, 	    //f01
         sandwich::Trie<sandwich::User*>&                  trie,
         sandwich::User*&                                  currUser);
 
-    ~GUI();
-    Type loginScreen();
-    Type homeScreen();
+    ~GUI();                         								    //f02
+    void testFunc();				                    			    //f03
+	
+    //the main two types of screens
+    Type loginScreen();							                        //f04
+    Type homeScreen();						                    	    //f05
 
-    void postWallScreen();
-    void viewFriendsScreen();
-    void addFriendScreen();
-    void viewFriendScreen();
-    void editProfileScreen();
-    void removeFriendScreen();
+    //other screen options
+    void postWallScreen();						                        //f06
+    void viewFriendsScreen();					                	    //f07
+    void addFriendScreen();					                    	    //f08
+    void viewFriendScreen();						                    //f09
+    void editProfileScreen();						                    //f10
+    void removeFriendScreen();					                       	//f11
 
-    void testFunc();
-    void centerText(WINDOW *w, int yLoc, std::string text); //centers text in the input window
-    int centerY(WINDOW *w); //returns the center y location of the window
-    int centerX(WINDOW *w);  //returns the center x location of the window
-
-    void print_menu(WINDOW* w, int h, int n, const std::string s[]);
-    int menu_selector(int n, int c, int* highlight, int a, int b);
-    int menu_setup(WINDOW* w, const std::string inputArray[], int n);
-    std::string userInput(WINDOW* w, int max);
-    Type submit_selection(WINDOW* w, int choice);
-
-    void memberListSetup();
-    void checkScreenSize(); 
+    //menu functions
+    int menu_setup(WINDOW* w, const std::string inputArray[], int n);	//f12
+    void print_menu(WINDOW* w, int h, int n, const std::string s[]);	//f13
+    int menu_selector(int n, int c, int* highlight, int a, int b);	    //f14
+    Type submit_selection(WINDOW* w, int choice);			            //f15
+	
+    //other functions
+    void centerText(WINDOW *w, int yLoc, std::string text); 		    //f16
+    int centerY(WINDOW *w); 						                    //f17
+    int centerX(WINDOW *w);  						                    //f18
+    std::string userInput(WINDOW* w, int max);				            //f19
+	
+    //functions for setup in the main driver	
+    void memberListSetup();						                        //f20
+    void checkScreenSize();						                        //f21
 };
 
-
+//f01
 GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
         sandwich::Trie<sandwich::User*>&                  trie,
         sandwich::User*&                                  currUser) :
@@ -101,7 +109,7 @@ GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
     init_pair(1,COLOR_BLACK,COLOR_CYAN);// black letters with Cyan background
     init_pair(2,COLOR_BLACK,COLOR_GREEN); //red letters with white background
 }
-
+//f02
 GUI::~GUI() {
     if(isendwin() == FALSE) {
         endwin();
@@ -109,6 +117,17 @@ GUI::~GUI() {
     }
 }
 
+//f03
+void GUI::testFunc() {
+
+    std::string username = "Test username";
+    currUser = new User(username, "name", "bio");
+
+    trie.store(currUser->getUsername(), currUser);
+    userMap[currUser->getLower()] = currUser;
+}
+
+//f04
 // Login screen is done. All that is left is minor optimizations and a bit 
 // of cleaning, but all the functionality is there. 
 GUI::Type GUI::loginScreen() {
@@ -234,6 +253,7 @@ GUI::Type GUI::loginScreen() {
  * 6. Remove Friend
  * 7. Logout
  */
+//f05
 GUI::Type GUI::homeScreen() {
 //The homescreen will show the latest post from all of the user's friends
 
@@ -344,6 +364,7 @@ GUI::Type GUI::homeScreen() {
  * with a cap of 100 characters. This post will appear on
  * the user's feed, as well as all of his/her friend's feeds.
  */
+//f06
 void GUI::postWallScreen() {
 
     int x, y; 
@@ -383,6 +404,7 @@ void GUI::postWallScreen() {
 /* view friends screen lets the user view all of his/her
  * friends names and usernames
  */
+//f07
 void GUI::viewFriendsScreen() {
 
     int x, y;
@@ -464,6 +486,7 @@ void GUI::viewFriendsScreen() {
  * and add them based on username. It will reactively display 
  * all the possible friends that match the string the user is typing.
  */
+//f08
 void GUI::addFriendScreen() {
 
 	int x, y; 
@@ -619,6 +642,7 @@ void GUI::addFriendScreen() {
 * This will display the friend's name, username, and entire history
 * of posts.
 */
+//f09
 void GUI::viewFriendScreen() {
 
 	int x, y; 
@@ -798,6 +822,7 @@ void GUI::viewFriendScreen() {
 
 /* This screen will allow you to edit your bio to fit your liking
 */
+//f10
 void GUI::editProfileScreen() {
 
     erase(); 
@@ -853,6 +878,7 @@ void GUI::editProfileScreen() {
 
 /* This screen allows you to remove a friend by username
 */
+//f11
 void GUI::removeFriendScreen() {
 
 	int x, y; 
@@ -985,30 +1011,42 @@ void GUI::removeFriendScreen() {
     delwin(dataWindow);
 }
 
-void GUI::testFunc() {
-
-    std::string username = "Test username";
-    currUser = new User(username, "name", "bio");
-
-    trie.store(currUser->getUsername(), currUser);
-    userMap[currUser->getLower()] = currUser;
+//f12
+int GUI::menu_setup(WINDOW* w, const std::string inputArray[], int n){ 
+    int choice = 0;
+    int h = 1;
+    int y, x; 
+    getmaxyx(stdscr, y, x); 
+    print_menu(w, h, n, inputArray);
+    while(choice == 0){
+        int c  = wgetch(w); 
+        choice = menu_selector(n, c, &h, y - 1, 5);  
+        print_menu(w, h, n, inputArray);
+    }
+    return choice; 
 }
 
+//f13
+void GUI::print_menu(WINDOW *w, int h, int n, const std::string s[]) {
 
-void GUI::centerText(WINDOW* w, int yLoc, std::string text){
-    int indent = getmaxx(w) - text.size();
-    indent /= 2;
-    mvwprintw(w, yLoc, indent, text.c_str()); 	
+    int x = 2, y = 3;
+    box(w, 0, 0); 
+    mvwprintw(w, 1, 1, "PRESS ENTER TO SELECT AN OPTION BELOW:"); 
+    mvwprintw(w, 2, 1, "--------------------------------------"); 
+
+    for (int i = 0; i < n; ++i){
+        if(h == i + 1) { //highlighter = present choice
+            wattron(w, A_REVERSE);
+            mvwprintw(w, y, x, "%s", s[i].c_str());
+            wattroff(w, A_REVERSE); 
+        }   
+        else mvwprintw(w, y, x, "%s", s[i].c_str()); 
+        y++; 
+    }
+    wrefresh(w); 
 }
 
-int GUI::centerY(WINDOW *w){
-    return getmaxy(w) / 2;
-}
-
-int GUI::centerX(WINDOW *w){
-    return getmaxx(w) / 2;
-}
-
+//f14
 int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
     int choice = 0; 
     switch(c) {
@@ -1031,6 +1069,60 @@ int GUI::menu_selector(int n, int c, int* highlight, int a, int b){
     return 0; 
 }
 
+//f15
+GUI::Type GUI::submit_selection(WINDOW* w, int choice){
+    switch(choice){
+        case 1:
+            return sandwich::GUI::Type::POST_TO_WALL;
+            break;	
+        case 2: 
+            return sandwich::GUI::Type::VIEW_FRIENDS;
+            break;
+        case 3: 
+            return sandwich::GUI::Type::ADD_FRIEND;
+            break; 
+        case 4: 
+            return sandwich::GUI::Type::EDIT_PROFILE;
+            break;
+        case 5: 
+            return sandwich::GUI::Type::VIEW_FRIEND;
+            break;
+        case 6: 
+            return sandwich::GUI::Type::REMOVE_FRIEND;
+            break;
+        case 7:
+            return sandwich::GUI::Type::LOGOUT;
+            break;		
+        default: 
+            mvwprintw(w, 10, 8, "Press enter to select");
+            wrefresh(w); 
+            break; 
+    }
+    return sandwich::GUI::Type::HOME; 
+}
+
+//centers text in the input window
+//f16
+void GUI::centerText(WINDOW* w, int yLoc, std::string text){
+    int indent = getmaxx(w) - text.size();
+    indent /= 2;
+    mvwprintw(w, yLoc, indent, text.c_str()); 	
+}
+
+
+//returns the center y location of the window
+//f17
+int GUI::centerY(WINDOW *w){
+    return getmaxy(w) / 2;
+}
+
+//returns the center x location of the window
+//f18
+int GUI::centerX(WINDOW *w){
+    return getmaxx(w) / 2;
+}
+
+//f19
 std::string GUI::userInput(WINDOW* w, int max) {
     std::string str;
     char s = 0;
@@ -1081,70 +1173,8 @@ std::string GUI::userInput(WINDOW* w, int max) {
     return str; 
 }
 
-void GUI::print_menu(WINDOW *w, int h, int n, const std::string s[]) {
-
-    int x = 2, y = 3;
-    box(w, 0, 0); 
-    mvwprintw(w, 1, 1, "PRESS ENTER TO SELECT AN OPTION BELOW:"); 
-    mvwprintw(w, 2, 1, "--------------------------------------"); 
-
-    for (int i = 0; i < n; ++i){
-        if(h == i + 1) { //highlighter = present choice
-            wattron(w, A_REVERSE);
-            mvwprintw(w, y, x, "%s", s[i].c_str());
-            wattroff(w, A_REVERSE); 
-        }   
-        else mvwprintw(w, y, x, "%s", s[i].c_str()); 
-        y++; 
-    }
-    wrefresh(w); 
-}
-
-int GUI::menu_setup(WINDOW* w, const std::string inputArray[], int n){ 
-    int choice = 0;
-    int h = 1;
-    int y, x; 
-    getmaxyx(stdscr, y, x); 
-    print_menu(w, h, n, inputArray);
-    while(choice == 0){
-        int c  = wgetch(w); 
-        choice = menu_selector(n, c, &h, y - 1, 5);  
-        print_menu(w, h, n, inputArray);
-    }
-    return choice; 
-}
-
-GUI::Type GUI::submit_selection(WINDOW* w, int choice){
-    switch(choice){
-        case 1:
-            return sandwich::GUI::Type::POST_TO_WALL;
-            break;	
-        case 2: 
-            return sandwich::GUI::Type::VIEW_FRIENDS;
-            break;
-        case 3: 
-            return sandwich::GUI::Type::ADD_FRIEND;
-            break; 
-        case 4: 
-            return sandwich::GUI::Type::EDIT_PROFILE;
-            break;
-        case 5: 
-            return sandwich::GUI::Type::VIEW_FRIEND;
-            break;
-        case 6: 
-            return sandwich::GUI::Type::REMOVE_FRIEND;
-            break;
-        case 7:
-            return sandwich::GUI::Type::LOGOUT;
-            break;		
-        default: 
-            mvwprintw(w, 10, 8, "Press enter to select");
-            wrefresh(w); 
-            break; 
-    }
-    return sandwich::GUI::Type::HOME; 
-}
-
+	
+//f20
 void GUI::memberListSetup(){
     //create a start user for testing
     std::string username = "jack";
@@ -1208,11 +1238,6 @@ void GUI::memberListSetup(){
     sandwich::User* user8 = new sandwich::User("yonce", "Queen Bey", "If you like it then you shoulda putta ring on it");    
     userMap.insert({user8->getLower(), user8});
     trie.store(user8->getUsername(), user8);
-
-
-    
-    
-    
     
     tester->addFriend(friend1);
     tester->addFriend(friend2);
@@ -1256,6 +1281,7 @@ void GUI::memberListSetup(){
 
 }
 
+//f21
 void GUI::checkScreenSize(){
     int y, x;
     getmaxyx(stdscr, y, x); 

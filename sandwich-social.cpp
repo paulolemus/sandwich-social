@@ -19,6 +19,7 @@
 #include "Post.h"
 #include "User.h"
 #include "GUI.h"
+#include "FileIO.h"
 
 int main() {
 
@@ -32,7 +33,33 @@ int main() {
     sandwich::Trie<sandwich::User*>                  trie;
     sandwich::FileIO                                 fileIO("users.dat", "friends.dat");
     std::vector<sandwich::User*>		     IOusers = fileIO.readUsers();
-    std::vector<std::vector<std:string>> 	     IOfriends = fileIO.readFriends();
+    std::vector<std::vector<std::string>> 	     IOfriends = fileIO.readFriends();
+
+
+    //puts friend data into users
+    for(unsigned int IOcounter = 0; IOcounter < IOfriends.size(); IOcounter++){				 //iterate vct strings
+    	for(unsigned int IOcounter2 = 0; IOcounter2 < IOusers.size(); IOcounter2++){			 //iterate vct users
+	    if(IOfriends[IOcounter][0] == IOusers[IOcounter2]->getUsername()){				 //username matches first string
+	     	for(unsigned int IOcounter3 = 1; IOcounter3 < IOfriends[IOcounter].size(); IOcounter3++){//iterate friends
+		    for(unsigned int IOcounter4 = 0; IOcounter4 < IOusers.size(); IOcounter4++){	 //iterate users
+			if(IOfriends[IOcounter][IOcounter3] == IOusers[IOcounter4].getUsername()){	 //friend matches username
+			     IOusers[IOcounter2]->addFriend(IOusers[IOcounter4]);			 //IOfriends[IOcounter][IOcounter3] is a string
+		     	}
+		    }
+	        }
+	    }
+        }
+    }
+
+    userMap.insert({->getLower(), });//adds users into map
+
+    for(IOcounter = 0;IOcounter < IOusers.size(); IOcounter++){//adds users into trie
+    	trie.add(IOusers[IOcounter]->getUsername());
+	trie.add(IOusers[IOcounter]->getName());
+	trie.store(IOusers[IOcounter]->getUsername(), IOusers[IOcounter]);
+	trie.store(IOusers[IOcounter]->getName(), IOusers[IOcounter]);
+    }
+
 
 
     sandwich::User* currUser;

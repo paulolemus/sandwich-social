@@ -20,4 +20,3 @@ What is the safest way to store a password both inside the program, and how to s
 # 4) Comments:
 
 We may have chewed off more than we should have, but I think we pulled everything off successfully. There may be some very minor bugs, however we wrote expected usage in the README.md so that anyone should know how to use the program through the GUI.
-

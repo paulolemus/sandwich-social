@@ -1134,58 +1134,45 @@ int GUI::centerX(WINDOW *w){
 
 //f19
 std::string GUI::userInput(WINDOW* w, int max) {
-    std::string str;
-    char s = 0;
-    int y, x, c, xmax, ymax = 0; 
-    int xlast = getmaxx(w); 
-    getmaxyx(w, ymax, xmax); 
-    while(s != 10) {
-        s = wgetch(w);
-        if(s == 27) { // ESC
+
+    std::string inputStr;
+    char ch   = 0;
+    int yCurr = 0, xCurr = 0;
+    int xMax  = getmaxx(w);
+    int yMax  = getmaxy(w);
+
+    while(ch != 10) {
+        ch = wgetch(w);
+        if(ch == 27) { // ESC
             return EXIT_STR;
         }
-        getyx(w, y, x); 
-        while(s == 127){
-            if(c == 0) s = wgetch(w);
+        else if(ch == 127) { // backspace
             
-            else{
-                s = ' ';
-                if(x == 0 && y > 0){
-                    y = y-1; 
-                    x = xmax-1; 
-                }
-                else x--;
-                c--;  
-                str.erase(str.end() - 1);	
-                mvwprintw(w, y, x, "%c", s);
-                wmove(w, y, x); 
-                //getyx(w, y, x);
-                refresh(); 
-                if(c == max - 3){
-                    mvwprintw(w, y, xlast - 4, "     ");
-                    refresh();	            
-                }
-                s = wgetch(w);
+            xCurr--;
+            if(xCurr < 0 && yCurr > 0) {
+                xCurr = xMax - 1;
+                yCurr--;
             }
+            if(xCurr < 0) xCurr = 0;
+            if(yCurr < 0) yCurr = 0;
+            mvwprintw(w, yCurr, xCurr, " ");
+            wmove(w, yCurr, xCurr);
+            if(inputStr.size() > 0) inputStr.pop_back();
         }
-        if(c > max - 3){
-            mvwprintw(w, y, xlast - 4, "-MAX");
-            refresh();
-            s = ' ';
-            c--;	
-            str.erase(str.end() - 1);
-            mvwprintw(w, y, x, "%c", s);
-            wmove(w, y, x);
-            refresh();
+        else if(inputStr.size() >= max);
+        else if(xCurr < xMax && yCurr < yMax){
+            mvwprintw(w, yCurr, xCurr++, "%c", ch);
+            if(xCurr >= xMax) {
+                xCurr = 0;
+                yCurr++;
+            }
+            wmove(w, yCurr, xCurr);
+            inputStr += ch;
         }
-        else mvwprintw(w, y, x, "%c", s);
-        str += s; 
-        c++; 
-        refresh(); 
         wrefresh(w);
-    }	
-    str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
-    return str; 
+    }
+    inputStr.erase(std::remove(inputStr.begin(), inputStr.end(), '\n'), inputStr.end());
+    return inputStr; 
 }
 
 	

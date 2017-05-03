@@ -2,6 +2,20 @@
 
 A Twitter / Facebook - like social networking client made for Team Sandwich's EE 205 final project
 
+Once logged in to your account, you as a user of Sandwich Social are able to post messages to your wall, view your friend list, add new friends, view the profile of a particular friend, edit your profile, remove a friend, and logout.
+
+# How it works
+
+The program has a couple key features. The program is ran in a terminal-based GUI.
+For the GUI, we used the NCURSES library, as it provided us easy and complete control over the terminal display. 
+
+As NCURSES also gave us complete control over user input, we were able to make all of our input fields reactive. As a user types the name of another user while searching, we are able to display a list of the closest matches immediately, without the need for the user to press "enter". The list updates as the user types.
+
+To get this autosuggestion feature working, we used a homemade generic Trie class.
+We push back User pointers onto the end of each Trie branch that holds their name or username. Every time input is changed, we do a search to get all completion suggestions and display them to the screen.
+
+The program also remembers changes across sessions. We use a FileIO class to parse in user and friend data from .dat files upon launching the program, and then we write all user and friend data to the same dat files before the program exits.
+
 # Class descriptions
 
 ## User.h
@@ -10,22 +24,52 @@ Fields:
 Username        - std::string
 Name            - std::string
 Bio             - std::string
-Post History    - std::vector<std::string>
-Friends         - HashSet<User*>
+Post History    - std::vector<std::Post>
+Friends         - std::vector<sandwich::User*>
 
-# Trie.h
+User objects must be created with a username, name, and bio. 
+Each user holds a set of their friends. The set is actually a vector, but the way friends are added gives the vector the properties of a set.
+Each user also holds a complete history of their Posts, held in chronological order.
+Bundling Friends and Posts with the user class allows us to make all changes we need to an account if we have a pointer to the User.
+
+## Trie.h
 
 Functions:
 
-add(std::string)
-    Adds the string to the trie structure.
-search(std::string)
-    This returns true if the tree contains a matching string.
-complete(std::string) 
-    Returns a vector of all possible strings that are completions of it.
-delete(std::string)
-    Not going to use for now
+bool add(std::string key)
+    - This function creates a branch of the given key.
+    - If the branch exists, it simply marks the last node as a "word".
 
+bool search(std::string key)
+    - This returns true if the exact key given is found in the Trie.
+
+std::vector<std::string> complete(std::string key = "")
+    - Given a prefix string, this will return a vector of all strings that contain
+      the given prefix
+
+bool store(std::string key, const T& datum)
+    - This does what add does, however it also adds the datum to the last node of the branch. 
+      This is useful because we can later retrieve it with a given string or prefix string.
+
+std::vector<T> get(std::string key)
+    - Return a vector of all the datum stored at the end of the given key's branch
+
+std::vector<T> get(std::vector<std::string> keys)
+    - Do the same as the previous get, but this returns datum for multiple string searches.
+
+std::vector<T> getComplete(std::string key = "")
+    - Get all datum at the end of branches that complete the given prefix
+
+The Trie class is very useful for quick search/retrieval/storage of data or keys. It is very valuable because it allows us to get all data that completes a prefix string.
+
+## Post.h
+
+This class is a wrapper for a post string as well as a timestamp string for when the post was created.
+This bundling of post data and timestamp lets us display information as they are on social networking sites; with a timestamp.
+
+## FileIO.h
+
+## GUI.h
 
 
 # Milestones:

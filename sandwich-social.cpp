@@ -20,7 +20,6 @@
 #include "Post.h"
 #include "User.h"
 #include "GUI.h"
-#include "FileIO.h"
 
 int main() {
 
@@ -132,6 +131,7 @@ int main() {
     }
     // TODO: Write all users and friends to file:
     
+    // Write everything back to file
     {
         auto IOusers = trie.getComplete();
         

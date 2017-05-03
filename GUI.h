@@ -1137,25 +1137,30 @@ int GUI::centerX(WINDOW *w){
 std::string GUI::userInput(WINDOW* w, int max) {
     std::string str;
     char s = 0;
-    int y, x, c = 0; 
-    int xlast = getmaxx(w);
-
+    int y, x, c, xmax, ymax = 0; 
+    int xlast = getmaxx(w); 
+    getmaxyx(w, ymax, xmax); 
     while(s != 10) {
         s = wgetch(w);
         if(s == 27) { // ESC
             return EXIT_STR;
         }
         getyx(w, y, x); 
-
         while(s == 127){
             if(c == 0) s = wgetch(w);
+            
             else{
                 s = ' ';
-                x--;
+                if(x == 0 && y > 0){
+                    y = y-1; 
+                    x = xmax-1; 
+                }
+                else x--;
                 c--;  
-                str.erase(str.end()-1);	
-                mvwprintw(w, y, x, "%c",s);
+                str.erase(str.end() - 1);	
+                mvwprintw(w, y, x, "%c", s);
                 wmove(w, y, x); 
+                //getyx(w, y, x);
                 refresh(); 
                 if(c == max - 3){
                     mvwprintw(w, y, xlast - 4, "     ");

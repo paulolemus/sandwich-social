@@ -549,9 +549,8 @@ void GUI::addFriendScreen() {
     for(int i = 0; i < getmaxx(dataWindow); ++i) border += '-';
     int xMin = 0, xMax = 79, xCurr = 0;
 
-    int ch = wgetch(inputWindow);
-    while(ch != 10) { // 10 == "Enter"
-
+    int ch = 0;
+    do {
         // User input begin
         if(ch == 27) { // esc
             delwin(topWindow);
@@ -608,7 +607,7 @@ void GUI::addFriendScreen() {
         wrefresh(dataWindow);
         wrefresh(inputWindow);
         ch = wgetch(inputWindow);
-    } // end while
+    } while(ch != 10); // 10 == enter
 
     // ADD friend if exists
     wclear(dataWindow);
@@ -687,8 +686,8 @@ void GUI::viewFriendScreen() {
     for(int i = 0; i < getmaxx(dataWindow); ++i) border += '-';
     int xMin = 0, xMax = 79, xCurr = 0;
 
-    int ch = wgetch(inputWindow);
-    while(ch != 10) { // 10 == "Enter"
+    int ch = 0;
+    do {
 
         // User input begin
         if(ch == 27) { // esc
@@ -745,7 +744,7 @@ void GUI::viewFriendScreen() {
         wrefresh(dataWindow);
         wrefresh(inputWindow);
         ch = wgetch(inputWindow);
-    } // end while
+    } while(ch != 10); // != enter
 
     // Get the user pointer
     usernameInput = sandwich::User::lowercaseify(usernameInput);
@@ -922,8 +921,8 @@ void GUI::removeFriendScreen() {
     for(int i = 0; i < getmaxx(dataWindow); ++i) border += '-';
     int xMin = 0, xMax = 79, xCurr = 0;
 
-    int ch = wgetch(inputWindow);
-    while(ch != 10) { // 10 == "Enter"
+    int ch = 0;
+    do {
 
         // User input begin
         if(ch == 27) { // esc
@@ -981,7 +980,7 @@ void GUI::removeFriendScreen() {
         wrefresh(dataWindow);
         wrefresh(inputWindow);
         ch = wgetch(inputWindow);
-    } // end while
+    } while(ch != 10); // != enter
 
     // Delete friend if exists
     wclear(dataWindow);

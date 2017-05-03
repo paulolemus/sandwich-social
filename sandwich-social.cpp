@@ -20,6 +20,7 @@
 #include "Post.h"
 #include "User.h"
 #include "GUI.h"
+#include "FileIO.h"
 
 int main() {
 
@@ -32,18 +33,65 @@ int main() {
     std::unordered_map<std::string, sandwich::User*> userMap;
     sandwich::Trie<sandwich::User*>                  trie;
     sandwich::FileIO                                 fileIO("users.dat", "friends.dat");
-    std::vector<sandwich::User*>		     IOusers = fileIO.readUsers();
-    std::vector<std::vector<std:string>> 	     IOfriends = fileIO.readFriends();
 
+    // Loop to populate map and trie with users from file
+    {
+        std::vector<sandwich::User*>          IOusers   = fileIO.readUsers();
+        std::vector<std::vector<std::string>> IOfriends = fileIO.readFriends();
 
+        // Add to map
+        for(auto userPtr : IOusers) {
+            userMap[userPtr->getLower()] = userPtr;
+            trie.store(userPtr->getUsername(), userPtr);
+            trie.store(userPtr->getName(),     userPtr);
+        }
+
+        // Update all user's friends
+        for(unsigned int i = 0; i < IOfriends.size(); ++i) {
+            std::string topUsername = sandwich::User::lowercaseify(IOfriends[i][0]);
+            sandwich::User* topUser = nullptr;
+
+            // Get the current user to add the friends to
+            auto topUserMatches = trie.get(topUsername);
+            for(unsigned int j = 0; j < topUserMatches.size(); ++j) {
+                if(topUserMatches[j]->getLower() == topUsername) {
+                    topUser = topUserMatches[j];
+                    j = topUserMatches.size();
+                }
+            }
+
+            // If the top user exists and has friends, add all of them to user's friend list
+            if(topUser != nullptr && IOfriends[i].size() > 1) {
+                for(unsigned int j = 1; j < IOfriends[i].size(); ++j) {
+                    std::string friendUsername = sandwich::User::lowercaseify(IOfriends[i][j]);
+                    sandwich::User* friendPtr  = nullptr;
+                    auto friendMatches = trie.get(friendUsername);
+
+                    for(unsigned int k = 0; k < friendMatches.size(); ++k) {
+                        if(friendMatches[k]->getLower() == friendUsername) {
+                            friendPtr = friendMatches[k];
+                            k = friendMatches.size();
+                        }
+                    }
+                    if(friendPtr != nullptr) {
+                        topUser->addFriend(friendPtr);
+                    }
+                }
+            }
+        }
+    }
+
+    // Current user who is logged in
     sandwich::User* currUser;
 
     sandwich::GUI gui(userMap, trie, currUser);
     gui.checkScreenSize();
-    gui.memberListSetup();
 
+    // This is the start of the GUI. This login screen is the initial login that
+    // sets the current user or creates a new one if needed.
+    // The while loop is what will loop through each window until the user decided to 
+    // quit the program.
     sandwich::GUI::Type nextScreen = gui.loginScreen();
-
     while(nextScreen != sandwich::GUI::Type::QUIT) {
 
         while(nextScreen != sandwich::GUI::Type::LOGOUT &&
@@ -84,5 +132,19 @@ int main() {
     }
     // TODO: Write all users and friends to file:
     
+    {
+        auto IOusers = trie.getComplete();
+        
+        std::ofstream outfile("users.dat", std::ofstream::out);
+        outfile.close();
+        outfile.open("friends.dat", std::ofstream::out);
+        outfile.close();
+
+        for(unsigned int counter = 0; counter < IOusers.size(); counter++){
+            fileIO.writeUser(IOusers[counter]);
+        fileIO.writeFriends(IOusers[counter]);
+        }
+    }
+
     return 0;
 }

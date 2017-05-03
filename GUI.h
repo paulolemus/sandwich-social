@@ -83,10 +83,10 @@ public:
     Type submit_selection(WINDOW* w, int choice);			            //f15
 	
     //other functions
-    void centerText(WINDOW *w, int yLoc, std::string text); 		    //f16
-    int centerY(WINDOW *w); 						                    //f17
-    int centerX(WINDOW *w);  						                    //f18
-    std::string userInput(WINDOW* w, int max);				            //f19
+    void centerText(WINDOW* w, int yLoc, std::string text);             //f16
+    int centerY(WINDOW *w);                                             //f17
+    int centerX(WINDOW *w);                                             //f18
+    std::string userInput(WINDOW* w, int max);                          //f19
 	
     //functions for setup in the main driver	
     void memberListSetup();						                        //f20
@@ -95,8 +95,8 @@ public:
 
 //f01
 GUI::GUI(std::unordered_map<std::string, sandwich::User*>& userMap,
-        sandwich::Trie<sandwich::User*>&                  trie,
-        sandwich::User*&                                  currUser) :
+         sandwich::Trie<sandwich::User*>&                  trie,
+         sandwich::User*&                                  currUser) :
     userMap(userMap),
     trie(trie),
     currUser(currUser)
@@ -122,14 +122,14 @@ void GUI::testFunc() {
 
     std::string username = "Test username";
     currUser = new User(username, "name", "bio");
-
     trie.store(currUser->getUsername(), currUser);
     userMap[currUser->getLower()] = currUser;
 }
 
 //f04
-// Login screen is done. All that is left is minor optimizations and a bit 
-// of cleaning, but all the functionality is there. 
+// 1. Get a username from user.
+// 2. If the username belongs to an existing user, set currUser to it.
+// 3. Else, create a new user then set curr user as it.
 GUI::Type GUI::loginScreen() {
 
     int y, x; 

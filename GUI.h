@@ -497,7 +497,6 @@ void GUI::addFriendScreen() {
 	WINDOW* topWindow   = newwin(y * 0.625 - 4, x - 14, 2, 7);
 	WINDOW* inputWindow = newwin(1, 80, 3, centerX(topWindow) - 35);
     WINDOW* dataWindow  = newwin(y * 0.625 - 8, x - 14, 2 + 4, 7);
-    keypad(inputWindow, true);
     getmaxyx(topWindow, y, x);
 	wbkgd(inputWindow, COLOR_PAIR(1));
 	wmove(inputWindow, 0, 0);
@@ -548,7 +547,7 @@ void GUI::addFriendScreen() {
             delwin(dataWindow);
             return;
         }
-        else if(ch == KEY_BACKSPACE || ch == 127) { // delete 127
+        else if(ch == 127) { // delete 127
             if(xCurr > xMin) {
                 mvwaddch(inputWindow, 0, --xCurr, ' ');
                 if(usernameInput.size() > 0) usernameInput.pop_back();
@@ -653,7 +652,6 @@ void GUI::viewFriendScreen() {
 	WINDOW* topWindow   = newwin(y * 0.625 - 4, x - 14, 2, 7);
 	WINDOW* inputWindow = newwin(1, 80, 3, centerX(topWindow) - 35);
     WINDOW* dataWindow  = newwin(y * 0.625 - 8, x - 14, 2 + 4, 7);
-    keypad(inputWindow, true);
     getmaxyx(topWindow, y, x);
 	wbkgd(inputWindow, COLOR_PAIR(1));
 	wmove(inputWindow, 0, 0);
@@ -687,7 +685,7 @@ void GUI::viewFriendScreen() {
             delwin(dataWindow);
             return;
         }
-        else if(ch == KEY_BACKSPACE || ch == 127) { // delete
+        else if(ch == 127) { // delete
             if(xCurr > xMin) {
                 mvwaddch(inputWindow, 0, --xCurr, ' ');
                 if(usernameInput.size() > 0) usernameInput.pop_back();
@@ -889,7 +887,6 @@ void GUI::removeFriendScreen() {
 	WINDOW* topWindow   = newwin(y * 0.625 - 4, x - 14, 2, 7);
 	WINDOW* inputWindow = newwin(1, 80, 3, centerX(topWindow) - 35);
     WINDOW* dataWindow  = newwin(y * 0.625 - 8, x - 14, 2 + 4, 7);
-    keypad(inputWindow, true);
     getmaxyx(topWindow, y, x);
 	wbkgd(inputWindow, COLOR_PAIR(1));
 	wmove(inputWindow, 0, 0);
@@ -923,7 +920,7 @@ void GUI::removeFriendScreen() {
             delwin(dataWindow);
             return;
         }
-        else if(ch == KEY_BACKSPACE) { // delete
+        else if(ch == 127) { // delete
             if(xCurr > xMin) {
                 mvwaddch(inputWindow, 0, --xCurr, ' ');
                 if(usernameInput.size() > 0) usernameInput.pop_back();

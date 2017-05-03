@@ -14,17 +14,6 @@ name    : Nusaret
 bio     : I'm instafamous #saltlife
 
 END_POSTS
-username: yonce
-name    : Queen Bey
-bio     : If you like it then you shoulda putta ring on it
-
-POST: My first default Post
-TIME: Tue May  2 20:33:25 2017
-
-POST: My first default Post
-TIME: Tue May  2 20:35:59 2017
-
-END_POSTS
 username: pauloasdf
 name    : Paulo L
 bio     : Everytime I turn a corner I take an L
@@ -149,11 +138,6 @@ END_POSTS
 username: billyg
 name    : Bill Gate
 bio     : I'm riiiiiiiiich 
-
-END_POSTS
-username: yonce
-name    : Queen Bey
-bio     : If you like it then you shoulda putta ring on it
 
 END_POSTS
 username: thepitt

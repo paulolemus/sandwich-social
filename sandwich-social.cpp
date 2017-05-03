@@ -86,7 +86,6 @@ int main() {
 
     sandwich::GUI gui(userMap, trie, currUser);
     gui.checkScreenSize();
-    //gui.memberListSetup();
 
     // This is the start of the GUI. This login screen is the initial login that
     // sets the current user or creates a new one if needed.
@@ -133,5 +132,19 @@ int main() {
     }
     // TODO: Write all users and friends to file:
     
+    {
+        auto IOusers = trie.getComplete();
+        
+        std::ofstream outfile("users.dat", std::ofstream::out);
+        outfile.close();
+        outfile.open("friends.dat", std::ofstream::out);
+        outfile.close();
+
+        for(unsigned int counter = 0; counter < IOusers.size(); counter++){
+            fileIO.writeUser(IOusers[counter]);
+        fileIO.writeFriends(IOusers[counter]);
+        }
+    }
+
     return 0;
 }

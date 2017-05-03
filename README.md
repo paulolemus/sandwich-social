@@ -16,6 +16,22 @@ We push back User pointers onto the end of each Trie branch that holds their nam
 
 The program also remembers changes across sessions. We use a FileIO class to parse in user and friend data from .dat files upon launching the program, and then we write all user and friend data to the same dat files before the program exits.
 
+# How to use it
+
+At the login screen, enter a string containing only alpha characters and spaces. If the string matches an existing username, then you login as that account. Otherwise, you will be brought to the user creation screen where you will enter your name and bio. At any time, you can press ESC to exit the program or to go back a screen.
+
+The next screen is the HomeScreen.
+This screen is split into two windows, the feed and the menu. To switch between them, press 'q'. While controlling the top window, use the arrow keys to scroll through top posts. While controlling the bottom, use arrow keys to scroll through the options. Press enter to select an option.
+
+In any of the menu-selected screens, you usually have options to enter characters into an input window or to press ESC to exit the screen.
+
+# How to make
+
+To make the main program, simply type `make`
+To make any of the tests, type `export TESTCASE=test-<name>`
+then type `make run-test`.
+Alternatively, type `make tests` then cd into the test folder and type `./run-all-tests.sh`
+
 # Class descriptions
 
 ## User.h

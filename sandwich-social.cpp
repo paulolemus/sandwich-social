@@ -51,8 +51,8 @@ int main() {
                 case sandwich::GUI::Type::POST_TO_WALL:
                     gui.postWallScreen();
                     break;
-                case sandwich::GUI::Type::VIEW_FRIENDS:
-                    gui.viewFriendsScreen();
+                case sandwich::GUI::Type::FRIEND_LIST:
+                    gui.friendListScreen();
                     break;
                 case sandwich::GUI::Type::ADD_FRIEND:
                     gui.addFriendScreen();

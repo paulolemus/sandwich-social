@@ -38,7 +38,7 @@ class GUI {
         "Add Friend", 
         "Edit Your Bio", 
         "View Friend", 
-        "Delete Friend", 
+        "Remove Friend", 
         "Logout"
     }; 
     const int n_main = sizeof(mainMenu) / sizeof(std::string);
@@ -47,7 +47,7 @@ public:
     enum class Type : int {
         HOME,
         POST_TO_WALL,
-        VIEW_FRIENDS,
+        FRIEND_LIST,
         ADD_FRIEND,
         VIEW_FRIEND,
         REMOVE_FRIEND,
@@ -69,8 +69,8 @@ public:
     Type homeScreen();						                    	    //f05
 
     //other screen options
-    void postWallScreen();						                        //f06
-    void viewFriendsScreen();					                	    //f07
+    void postWallScreen();                                              //f06
+    void friendListScreen();                                            //f07
     void addFriendScreen();					                    	    //f08
     void viewFriendScreen();						                    //f09
     void editProfileScreen();						                    //f10
@@ -405,7 +405,7 @@ void GUI::postWallScreen() {
  * friends names and usernames
  */
 //f07
-void GUI::viewFriendsScreen() {
+void GUI::friendListScreen() {
 
     int x, y;
     getmaxyx(stdscr, y, x);
@@ -1076,7 +1076,7 @@ GUI::Type GUI::submit_selection(WINDOW* w, int choice){
             return sandwich::GUI::Type::POST_TO_WALL;
             break;	
         case 2: 
-            return sandwich::GUI::Type::VIEW_FRIENDS;
+            return sandwich::GUI::Type::FRIEND_LIST;
             break;
         case 3: 
             return sandwich::GUI::Type::ADD_FRIEND;

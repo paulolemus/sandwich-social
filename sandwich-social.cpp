@@ -113,5 +113,17 @@ int main() {
     }
     // TODO: Write all users and friends to file:
     
+    IOusers = trie.getComplete();
+	
+    std::ofstream outfile("users.dat",std::ofstream::out);
+    outfile.close();
+    outfile.open("friends.dat",std::ofstream::out);
+    outfile.close();
+
+    for(unsigned int counter = 0; counter < IOusers.size(); counter++){
+    	fileIO.writeUser(IOusers[counter]);
+	fileIO.writeFriends(IOusers[counter]);
+    }
+
     return 0;
 }
